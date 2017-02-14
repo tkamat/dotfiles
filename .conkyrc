@@ -1,0 +1,173 @@
+conky.config = {
+
+-------------------------------------
+--  Generic Settings
+-------------------------------------
+background=true,
+update_interval=1,
+double_buffer=true,
+no_buffers=true,
+imlib_cache_size=10,
+
+draw_shades=false,
+draw_outline=false,
+draw_borders=false,
+
+
+-------------------------------------
+--  Window Specifications
+-------------------------------------
+gap_x=0,
+gap_y=280,
+
+alignment="middle_right",
+
+minimum_height=400,
+minimum_width=600,
+
+own_window=true,
+own_window_type="override",
+own_window_transparent=true,
+own_window_hints="undecorated,below,sticky,skip_taskbar,skip_pager",
+
+own_window_argb_visual=true,
+own_window_argb_value=0,
+
+
+-------------------------------------
+--  Text Settings
+-------------------------------------
+use_xft=true,
+xftalpha=1,
+font="Droid Sans:size=10",
+text_buffer_size=256,
+override_utf8_locale=true,
+
+
+-------------------------------------
+--  Color Scheme
+-------------------------------------
+default_color='2f343f',
+
+color0='2f343f', -- clock
+color1='2f343f', -- date
+color2='FFFFFF', -- current temperature
+color3='FFFFFF', -- high tempratures
+color4='FFFFFF', -- low tempratures
+color5='2f343f', -- days
+
+
+-------------------------------------
+--  Icon Sources
+-------------------------------------
+template0='~/.conky-vision-icons/#fff__32',  --  today
+template1='~/.conky-vision-icons/#fff__32',  --  +1day
+template2='~/.conky-vision-icons/#fff__32',  --  +2days
+template3='~/.conky-vision-icons/#fff__32',  --  +3days
+template4='~/.conky-vision-icons/#fff__32',  --  +4days
+
+
+-------------------------------------
+--  API Key
+-------------------------------------
+template6="c572c8494853aadabe5ef0397f651e29",
+
+
+-------------------------------------
+--  City ID
+-------------------------------------
+template7="4170894",
+
+
+-------------------------------------
+--  Temp Unit (default, metric, imperial)
+-------------------------------------
+template8="imperial",
+
+
+-------------------------------------
+--  Locale (e.g. "es_ES.UTF-8")
+--  Leave empty for default
+-------------------------------------
+template9=""
+
+}
+
+
+---------------------------------------------------
+---------------------------------------------------
+
+
+conky.text = [[
+\
+\
+\
+\
+${execi 300 l=${template9}; l=${l%%_*}; curl -s "api.openweathermap.org/data/2.5/forecast/daily?APPID=${template6}&id=${template7}&cnt=5&units=${template8}&lang=$l" -o ~/.cache/forecast.json}\
+${execi 300 l=${template9}; l=${l%%_*}; curl -s "api.openweathermap.org/data/2.5/weather?APPID=${template6}&id=${template7}&cnt=5&units=${template8}&lang=$l" -o ~/.cache/weather.json}\
+\
+\
+\
+\
+${font Poiret One:weight=Light:size=96}${color0}\
+${alignc}${time %I:%M}\
+${font}${color}
+\
+\
+\
+\
+${font Poiret One:weight=Light:size=28}${color1}\
+${voffset 30}\
+${alignc}${execi 300 LANG=${template9} LC_TIME=${template9} date +"%A, %B %d"}\
+${font}${color}
+\
+\
+\
+\
+${font Poiret One:size=18}${color2}\
+${voffset 36}\
+${goto 60}${execi 300 jq .main.temp ~/.cache/weather.json | awk '{print int($1+0.5)}' # round num}°\
+${font}${color}\
+\
+\
+\
+\
+${font Poiret One:size=12}${color3}\
+${goto 164}${execi 300 jq .list[1].temp.max ~/.cache/forecast.json | awk '{print int($1+0.5)}' # round num}°\
+${goto 272}${execi 300 jq .list[2].temp.max ~/.cache/forecast.json | awk '{print int($1+0.5)}' # round num}°\
+${goto 378}${execi 300 jq .list[3].temp.max ~/.cache/forecast.json | awk '{print int($1+0.5)}' # round num}°\
+${goto 484}${execi 300 jq .list[4].temp.max ~/.cache/forecast.json | awk '{print int($1+0.5)}' # round num}°\
+${font}${color}\
+\
+\
+\
+\
+${font Poiret One:size=12}${color4}\
+${voffset 52}\
+${goto 218}${execi 300 jq .list[1].temp.min ~/.cache/forecast.json | awk '{print int($1+0.5)}' # round num}°\
+${goto 324}${execi 300 jq .list[2].temp.min ~/.cache/forecast.json | awk '{print int($1+0.5)}' # round num}°\
+${goto 430}${execi 300 jq .list[3].temp.min ~/.cache/forecast.json | awk '{print int($1+0.5)}' # round num}°\
+${goto 536}${execi 300 jq .list[4].temp.min ~/.cache/forecast.json | awk '{print int($1+0.5)}' # round num}°\
+${font}${color}
+\
+\
+\
+\
+${font Poiret One:size=14}${color5}\
+${voffset 20}\
+${goto 76}${execi 300 LANG=${template9} LC_TIME=${template9} date +%^a}\
+${goto 182}${execi 300 LANG=${template9} LC_TIME=${template9} date -d +1day +%^a}\
+${goto 288}${execi 300 LANG=${template9} LC_TIME=${template9} date -d +2days +%^a}\
+${goto 394}${execi 300 LANG=${template9} LC_TIME=${template9} date -d +3days +%^a}\
+${goto 500}${execi 300 LANG=${template9} LC_TIME=${template9} date -d +4days +%^a}\
+${font}${color}
+\
+\
+\
+\
+${execi 300 cp -f ${template0}/$(jq .weather[0].id ~/.cache/weather.json).png ~/.cache/current.png}${image ~/.cache/current.png -p 72,268 -s 32x32}\
+${execi 300 cp -f ${template1}/$(jq .list[1].weather[0].id ~/.cache/forecast.json).png ~/.cache/forecast-1.png}${image ~/.cache/forecast-1.png -p 178,268 -s 32x32}\
+${execi 300 cp -f ${template2}/$(jq .list[2].weather[0].id ~/.cache/forecast.json).png ~/.cache/forecast-2.png}${image ~/.cache/forecast-2.png -p 284,268 -s 32x32}\
+${execi 300 cp -f ${template3}/$(jq .list[3].weather[0].id ~/.cache/forecast.json).png ~/.cache/forecast-3.png}${image ~/.cache/forecast-3.png -p 390,268 -s 32x32}\
+${execi 300 cp -f ${template4}/$(jq .list[4].weather[0].id ~/.cache/forecast.json).png ~/.cache/forecast-4.png}${image ~/.cache/forecast-4.png -p 496,268 -s 32x32}\
+]]
