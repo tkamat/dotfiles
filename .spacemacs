@@ -66,6 +66,7 @@ values."
    dotspacemacs-additional-packages '(thesaurus
                                       gradle-mode
                                       groovy-mode
+                                      writegood-mode
                                       golden-ratio
                                       langtool
                                       latex-preview-pane
@@ -142,14 +143,14 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(zenburn
+   dotspacemacs-themes '(Arc-Dark
                         )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 14
+                               :size 12
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -282,7 +283,7 @@ values."
    dotspacemacs-highlight-delimiters 'all
    ;; If non nil, advise quit functions to keep server open when quitting.
    ;; (default nil)
-   dotspacemacs-persistent-server nil
+   dotspacemacs-persistent-server t
    ;; List of search tool executable names. Spacemacs uses the first installed
    ;; tool of the list. Supported tools are `ag', `pt', `ack' and `grep'.
    ;; (default '("ag" "pt" "ack" "grep"))
@@ -315,8 +316,8 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-  (server-start)
   (add-to-list 'load-path "~/emacs-eclim")
+  (server-start)
   (require 'eclim)
   (global-eclim-mode)
   (require 'eclimd)
@@ -328,7 +329,6 @@ you should place your code here."
   (global-company-mode t)
   (require 'company)
   (require 'langtool)
-  (linum-relative-global-mode)
   (latex-preview-pane-enable)
   (setq langtool-language-tool-jar "/home/tushaar/Downloads/LanguageTool-3.6/languagetool-commandline.jar")
   (setq langtool-default-language "en-US")
@@ -337,10 +337,14 @@ you should place your code here."
   (setq calendar-location-name "Jacksonville, FL")
   (setq calendar-latitude 29.9)
   (setq calendar-longitude -81.3)
+  (load-theme 'zenburn)
+  (if (display-graphic-p)
+      (enable-theme 'Arc-Dark)
+    (enable-theme 'default))
   (defun toggle-maximize-buffer () "Maximize buffer"
          (interactive)
          (if (= 1 (length (window-list)))
-             (jump-to-register '_) 
+             (jump-to-register '_)
            (progn
              (window-configuration-to-register '_)
              (delete-other-windows))))
@@ -350,21 +354,23 @@ you should place your code here."
       (end-of-line)
       (insert ";")))
   (setq tab-always-indent 'complete)
+  (evil-leader/set-key-for-mode 'java-mode "hj" 'eclim-java-doc-comment)
+  (evil-leader/set-key-for-mode 'latex-mode "pm" 'latex-preview-pane-mode)
   (defvar my-keys-minor-mode-map
     (let ((map (make-sparse-keymap)))
       (define-key map (kbd "C-;") 'insert-semicolon-at-the-end-of-this-line)
       (define-key map (kbd "C-'") 'flyspell-auto-correct-previous-word)
       (define-key map (kbd "<f1>") 'langtool-check)
-        (define-key map (kbd "<f2>") 'langtool-check-done)
-        (define-key map (kbd "<f3>") 'thesaurus-choose-synonym-and-replace)
-        (define-key map (kbd "M-[") 'yas-expand)
-        map)
-      "my-keys-minor-mode keymap.")
-
-    (define-minor-mode my-keys-minor-mode
-      "A minor mode so that my key settings override annoying major modes."
-      :init-value t
-      :lighter " my-keys")
+      (define-key map (kbd "<f2>") 'langtool-check-done)
+      (define-key map (kbd "<f3>") 'thesaurus-choose-synonym-and-replace)
+      (define-key map (kbd "M-[") 'yas-expand)
+      map)
+    "my-keys-minor-mode keymap.")
+  
+  (define-minor-mode my-keys-minor-mode
+    "A minor mode so that my key settings override annoying major modes."
+    :init-value t
+    :lighter " my-keys")
 
     (my-keys-minor-mode 1)
     (add-hook 'after-load-functions 'my-keys-have-priority)
@@ -386,15 +392,56 @@ Called via the `after-load-functions' special hook."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
+ '(custom-safe-themes
+   (quote
+    ("69b99d91297cc0d029205e9d9c6848e7e9c6acb9b168d904fce9bd9c3e86abe3" "c4303fb3d4e93cb81d8f79b85af53c7ea577c2cfac9bb4c277797c0b31086622" "9d91458c4ad7c74cf946bd97ad085c0f6a40c370ac0a1cbeb2e3879f15b40553" default)))
  '(doc-view-continuous t)
  '(eclim-executable (quote ~/eclipse/eclim))
+ '(eclimd-autostart t)
  '(eclimd-executable "~/eclipse/eclimd")
+ '(eclimd-wait-for-process nil)
  '(evil-escape-key-sequence "jk")
  '(evil-want-Y-yank-to-eol nil)
- '(line-number-mode t)
+ '(fci-rule-color "#383838" t)
+ '(nrepl-message-colors
+   (quote
+    ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(package-archives
    (quote
     (("melpa" . "https://melpa.org/packages/")
      ("org" . "http://orgmode.org/elpa/")
      ("gnu" . "https://elpa.gnu.org/packages/")
-     ("MELPA" . "melpa.milkbox.net/#/")))))
+     ("MELPA" . "melpa.milkbox.net/#/"))))
+ '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
+ '(send-mail-function (quote mailclient-send-it))
+ '(vc-annotate-background "#2B2B2B")
+ '(vc-annotate-color-map
+   (quote
+    ((20 . "#BC8383")
+     (40 . "#CC9393")
+     (60 . "#DFAF8F")
+     (80 . "#D0BF8F")
+     (100 . "#E0CF9F")
+     (120 . "#F0DFAF")
+     (140 . "#5F7F5F")
+     (160 . "#7F9F7F")
+     (180 . "#8FB28F")
+     (200 . "#9FC59F")
+     (220 . "#AFD8AF")
+     (240 . "#BFEBBF")
+     (260 . "#93E0E3")
+     (280 . "#6CA0A3")
+     (300 . "#7CB8BB")
+     (320 . "#8CD0D3")
+     (340 . "#94BFF3")
+     (360 . "#DC8CC3"))))
+ '(vc-annotate-very-old-color "#DC8CC3")
+ '(writegood-weasel-words nil))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:background nil)))))

@@ -24,6 +24,16 @@ font pango:monospace 8
 # X core fonts rendering does not support right-to-left and this being a bitmap
 # font, it doesn’t scale on retina/hidpi displays.
 
+# colors
+set $white #d1d1d1
+set $gray #585858
+set $black #cc0000
+set $red #c795ae
+set $blue #5294E2
+set $yellow #c7ae95
+set $green #aec795
+set $background #2f343f
+
 # use these keys for focus, movement, and resize directions when reaching for
 # the arrows is not convenient
 set $up k
@@ -128,8 +138,9 @@ bindsym Mod1+Shift+8 move container to workspace 8
 bindsym Mod1+Shift+9 move container to workspace 9
 bindsym Mod1+Shift+0 move container to workspace 10
 
-for_window [class="^.*"] border pixel 0
-gap_size 8
+for_window [class="^.*"] border pixel 2
+gaps inner 10 
+gaps outer 4
 
 set $borderwidth 1
 
@@ -168,10 +179,10 @@ bindsym Mod1+r mode "resize"
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
-client.focused #6c71c4 #6c71c4 #fdf6e3 #6c71c4
-client.focused_inactive #073642 #073642 #eee8d5 #6c71c4
-client.unfocused #073642 #073642 #93a1a1 #586e75
-client.urgent #d33682 #d33682 #fdf6e3 #dc322f
+client.focused $blue $blue $white $white
+client.focused_inactive $background $background $background $background
+client.unfocused $background $background $background $background
+client.urgent $background $background $background $background
 
 #######################################################################
 # automatically start i3-config-wizard to offer the user to create a
@@ -188,12 +199,15 @@ exec i3-config-wizard
 bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -D pulse sset Master 2%+
 bindsym XF86AudioLowerVolume exec --no-startup-id amixer -D pulse sset Master 2%-
 bindsym XF86AudioMute exec --no-startup-id amixer -D pulse sset Master toggle
+bindsym Mod1+z exec xautolock -disable && notify-send "xautolock" "Disabled" -i /usr/share/pixmaps/idle.xpm -t 5000
+bindsym Mod1+Shift+z exec xautolock -enable && notify-send "xautolock" "Enabled" -i /usr/share/pixmaps/idle.xpm -t 5000
 exec --no-startup-id polybar Bar
 exec_always --no-startup-id compton
 exec_always --no-startup-id feh --bg-scale ~/Pictures/X7ePnRs.jpg
 exec --no-startup-id xflux -z 32092
 exec --no-startup-id conky
 bindsym Print exec scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures/'
-bindsym Mod1+x exec lock                            
+bindsym Mod1+x exec "sleep 5 && xset dpms force off && lock"
 exec --no-startup-id gnome-settings-daemon
-exec --no-startup-id xautolock -time 5 -locker '/usr/local/bin/lock'
+exec --no-startup-id xautolock -time 5 -locker "sleep 1 && xset dpms force off && lock"
+exec --no-startup-id xss-lock -- "/usr/local/bin/lock" &

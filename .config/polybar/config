@@ -10,7 +10,7 @@ white = #d1d1d1
 gray = #585858
 black = #cc0000
 red = #c795ae
-blue = #95aec7
+blue = #5294E2
 yellow = #c7ae95
 green = #aec795
 
@@ -30,23 +30,32 @@ padding-right = 1
 module-margin-left = 0
 
 modules-right = battery wlan date menu0
-modules-center = volume
+modules-center = volume music 
 modules-left = i3
 
 ;background = #66090909
 background = #2f343f
 foreground = ${colors.white}
 
-underline-size = 2
-underline-color = ${colors.white}
+underline-size = 3
+underline-color = ${colors.blue}
 
 tray-detached = false
 tray-offset-x = 
 tray-maxsize = 
 tray-padding = 
 
-font-0 = Source Code Pro:size=10;0
+font-0 = Ubuntu Mono:size=10:weight=heavy;0
 font-1 = FontAwesome:size=10;0
+
+
+[module/music]
+type = custom/script
+interval = 1
+
+label = %output%
+exec = ~/polybar-spotify.sh
+
 
 [module/xwindow]
 type = internal/xwindow
@@ -103,14 +112,15 @@ label-visible-font = 4
 
 label-focused = 
 ;label-focused = %index%
-;label-focused-background = ${colors.gray}
+;label-focused-foreground = ${colors.blue}
+label-focused-underline = ${colors.blue}
 label-focused-padding = 1
 
 label-unfocused = 
 ;label-unfocused = %index%
 label-unfocused-padding = 1
-;label-unfocused-background = ${colors.black}
-label-unfocused-underlinde = ${colors.white}
+;label-unfocused-background = ${colors.blue}
+label-unfocused-underline = ${colors.white}
 
 label-urgent = 
 ;label-urgent = %index%!
@@ -215,7 +225,7 @@ format-connected-padding = 1
 format-disconnected-padding = 1
 
 format-connected = <label-connected>
-format-connected-underline = ${colors.white}
+format-connected-underline = ${colors.blue}
 format-disconnected-underline = ${colors.gray}
 
 label-connected =  %essid%
@@ -241,10 +251,10 @@ label-disconnected-foreground = ${colors.gray}
 
 [module/date]
 type = internal/date
-date-alt =   %A %l:%M 
+date-alt =   %A,  %d %B %Y 
 date =   %l:%M 
 interval = 5
-format-underline = ${colors.white}
+format-underline = ${colors.blue}
 ;format-background = ${colors.black}
 format-foreground = ${colors.white}
 format-padding = 1
@@ -262,12 +272,12 @@ label-muted =  sound muted
 label-muted-foreground = ${colors.gray}
 
 bar-volume-width = 10
-bar-volume-foreground-0 = ${colors.green}
-bar-volume-foreground-1 = ${colors.green}
-bar-volume-foreground-2 = ${colors.green}
-bar-volume-foreground-3 = ${colors.green}
-bar-volume-foreground-4 = ${colors.yellow}
-bar-volume-foreground-5 = ${colors.red}
+bar-volume-foreground-0 = ${colors.blue}
+bar-volume-foreground-1 = ${colors.blue}
+bar-volume-foreground-2 = ${colors.blue}
+bar-volume-foreground-3 = ${colors.blue}
+bar-volume-foreground-4 = ${colors.blue}
+bar-volume-foreground-5 = ${colors.blue}
 bar-volume-gradient = false
 bar-volume-indicator = 
 bar-volume-indicator-font = 4
@@ -286,11 +296,11 @@ adapter = AC
 full-at = 98
 
 format-charging = <animation-charging> <label-charging>
-format-charging-underline = ${colors.green}
+format-charging-underline = ${colors.blue}
 format-charging-padding = 1
 
 format-discharging = <ramp-capacity> <label-discharging>
-format-discharging-underline = ${colors.yellow}
+format-discharging-underline = ${colors.blue}
 format-discharging-padding = 1
 
 format-full =   <label-full>
@@ -299,8 +309,10 @@ format-full-overline = ${self.format-charging-underline}
 format-full-padding = 1
 
 ramp-capacity-0 = 
-ramp-capacity-1 = 
-ramp-capacity-2 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
 ramp-capacity-foreground = ${colors.white}
 
 animation-charging-0 = 
@@ -338,7 +350,7 @@ ramp-foreground = #55
 type = custom/menu
 
 format = <label-toggle> <menu>
-format-underline = ${colors.white}
+format-underline = ${colors.blue}
 format-padding = 1
 
 menu-0-0 =  shutdown
