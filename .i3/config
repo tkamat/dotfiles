@@ -217,5 +217,7 @@ exec --no-startup-id xflux -z 32092
 exec --no-startup-id conky
 exec --no-startup-id gnome-settings-daemon
 
+
 # Miscellaneous keybindings
 bindsym Print exec scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures/' && notify-send "scrot" "Screenshot taken" -i /usr/share/pixmaps/idle.xpm -t 5000
+
