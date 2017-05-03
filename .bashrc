@@ -139,4 +139,5 @@ function deadarchive() {
 
 export -f deadarchive
 TERMINAL=gnome-terminal
+alias cast='mkchromecast --encoder-backend ffmpeg -c flac &'
 
