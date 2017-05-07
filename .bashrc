@@ -139,5 +139,7 @@ function deadarchive() {
 
 export -f deadarchive
 TERMINAL=gnome-terminal
-alias cast='mkchromecast --encoder-backend ffmpeg -c flac &'
+alias cast='mkchromecast --encoder-backend ffmpeg -c wav &'
+export PATH=$HOME/bin:$PATH
+export PATH=$PATH:~/bin/gradle/gradle-3.5/bin
 

@@ -73,6 +73,7 @@ values."
                                       latex-preview-pane
                                       focus-autosave-mode
                                       org-gcal
+                                      litable
                                       ranger
                                       pandoc-mode)
    ;; A list of packages that cannot be updated.
@@ -320,14 +321,15 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
-  ;;org-mode config
+  ;; org-mode config
+
+  ;; agenda files
   (setq org-agenda-files (list "~/Dropbox/org/test.org.txt" "~/Dropbox/org/gcal.org"))
   (focus-autosave-mode)
-
+  ;; todo settings
   (setq org-todo-keywords
         (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
                 (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))))
-
   (setq org-todo-keyword-faces
         (quote (("TODO" :foreground "red" :weight bold)
                 ("NEXT" :foreground "blue" :weight bold)
@@ -335,10 +337,9 @@ you should place your code here."
                 ("WAITING" :foreground "orange" :weight bold)
                 ("HOLD" :foreground "magenta" :weight bold)
                 ("CANCELLED" :foreground "forest green" :weight bold))))
-
   (setq org-use-fast-todo-selection t)
   (setq org-default-notes-file "~/Dropbox/org/test.org.txt")
-
+  ;; capture settings
   (setq org-capture-templates
         (quote (("t" "todo" entry (file "~/Dropbox/org/test.org.txt")
                  "** TODO %?\n%U\n%a\n")
@@ -350,11 +351,12 @@ you should place your code here."
                  "** NEXT %?\n%U\n%aSCHEDULED:
                %(format-time-string \"<%Y-%m-%d .+1d>\")\n:PROPERTIES:\n:STYLE:
                habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
+  ;; refiling settings 
   (setq org-refile-targets '((nil :maxlevel . 9)
                              (org-agenda-files :maxlevel . 9)))
   (setq org-outline-path-complete-in-steps nil)         ; Refile in a single go
   (setq org-refile-use-outline-path t)                  ; Show full paths for refiling
-
+  ;; archiving settings
   (defun bh/skip-non-archivable-tasks ()
     "Skip trees that are not available for archiving"
     (save-restriction
@@ -377,16 +379,8 @@ you should place your code here."
                     nil))  ; available to archive
               (or subtree-end (point-max)))
           next-headline))))
-
-  (advice-add 'org-deadline :after 'org-save-all-org-buffers)
-  (advice-add 'org-schedule :after 'org-save-all-org-buffers)
-  (advice-add 'org-todo :after 'org-save-all-org-buffers)
-  (advice-add 'org-ctrl-c-ctrl-c :after 'org-save-all-org-buffers)
-  (advice-add 'org-refile :after 'org-save-all-org-buffers)
-
-  ;;org mode and gcal
+  ;; org mode and gcal
   (setq package-check-signature nil)
-
   (use-package org-gcal
     :ensure t
     :config
@@ -394,20 +388,37 @@ you should place your code here."
           org-gcal-client-secret "fpKpegO_7Q6jUqcoaOFSOZOC"
           org-gcal-file-alist '(("platypusdiamond@gmail.com" .  "~/Dropbox/org/gcal.org"))))
   (add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync) ))
+  ;; functions
+  (defun my/org-agenda-gcal ()
+    (interactive)
+    (browse-url "https://calendar.google.com/calendar/render#main_7%7Cmonth")) 
+  ;; keybindings
+  (evil-leader/set-key-for-mode 'org-mode "k" 'org-gcal-delete-at-point)
+  (evil-leader/set-key-for-mode 'org-mode "g" 'org-gcal-sync)
+  (evil-leader/set-key-for-mode 'org-agenda-mode "g" 'my/org-agenda-gcal)
 
 
-  (add-to-list 'load-path "~/emacs-eclim")
+  ;;server
+
   (server-start)
+
+
+  ;;java config
+
+  ;;required packages
   (require 'eclim)
-  (global-eclim-mode)
   (require 'eclimd)
   (require 'gradle-mode)
-  (add-hook 'java-mode-hook '(lambda() (gradle-mode 1)))
   (require 'company)
   (require 'company-emacs-eclim)
+  ;;eclim settings
+  (add-to-list 'load-path "~/emacs-eclim")
+  (add-hook 'java-mode-hook '(lambda() (gradle-mode 1)))
+  (evil-leader/set-key-for-mode 'java-mode "hj" 'eclim-java-doc-comment)
   (company-emacs-eclim-setup)
+  ;;global modes
   (global-company-mode t)
-  (require 'company)
+  (global-eclim-mode t)
   (require 'langtool)
   (setq browse-url-browser-function 'browse-url-generic
       browse-url-generic-program "google-chrome")
@@ -417,33 +428,14 @@ you should place your code here."
   (setq langtool-default-language "en-US")
   (define-key company-mode-map (kbd "M-SPC") 'company-complete)
   (setq thesaurus-bhl-api-key "07f0c234466e384b056158c3f50f545f")
+
+  ;; miscellaneous
+
+  ;; location
   (setq calendar-location-name "Jacksonville, FL")
   (setq calendar-latitude 29.9)
   (setq calendar-longitude -81.3)
-
-  ;; adapt webkit according to window configuration chagne automatically
-  ;; without this hook, every time you change your window configuration,
-  ;; you must press 'a' to adapt webkit content to new window size
-  (add-hook 'window-configuration-change-hook (lambda ()
-                                                (when (equal major-mode 'xwidget-webkit-mode)
-                                                  (xwidget-webkit-adjust-size-dispatch))))
-
-  ;; by default, xwidget reuses previous xwidget window,
-  ;; thus overriding your current website, unless a prefix argument
-  ;; is supplied
-  ;;
-  ;; This function always opens a new website in a new window
-  (defun xwidget-browse-url-no-reuse (url &optional sessoin)
-    (interactive (progn
-                   (require 'browse-url)
-                   (browse-url-interactive-arg "xwidget-webkit URL: "
-                                               )))
-    (xwidget-webkit-browse-url url t))
-
-  (load-theme 'zenburn)
-  (if (display-graphic-p)
-      (enable-theme 'Arc-Dark)
-    (enable-theme 'default))
+  ;; maximize buffer function
   (defun toggle-maximize-buffer () "Maximize buffer"
          (interactive)
          (if (= 1 (length (window-list)))
@@ -451,17 +443,24 @@ you should place your code here."
            (progn
              (window-configuration-to-register '_)
              (delete-other-windows))))
+  ;; insert semicolon function
   (defun insert-semicolon-at-the-end-of-this-line ()
     (interactive)
     (save-excursion
       (end-of-line)
       (insert ";")))
   (setq tab-always-indent 'complete)
-  (evil-leader/set-key-for-mode 'java-mode "hj" 'eclim-java-doc-comment)
+
+
+  ;; keybindings
+
   (evil-leader/set-key-for-mode 'latex-mode "pm" 'latex-preview-pane-mode)
+  ;; my-keys mode
   (defvar my-keys-minor-mode-map
     (let ((map (make-sparse-keymap)))
       (define-key map (kbd "C-;") 'insert-semicolon-at-the-end-of-this-line)
+      (define-key map (kbd "C-k") 'evil-scroll-up)
+      (define-key map (kbd "C-j") 'evil-scroll-down)
       (define-key map (kbd "C-'") 'flyspell-auto-correct-previous-word)
       (define-key map (kbd "<f1>") 'langtool-check)
       (define-key map (kbd "<f2>") 'langtool-check-done)
@@ -469,7 +468,6 @@ you should place your code here."
       (define-key map (kbd "M-[") 'yas-expand)
       map)
     "my-keys-minor-mode keymap.")
-  
   (define-minor-mode my-keys-minor-mode
     "A minor mode so that my key settings override annoying major modes."
     :init-value t
@@ -477,7 +475,6 @@ you should place your code here."
 
     (my-keys-minor-mode 1)
     (add-hook 'after-load-functions 'my-keys-have-priority)
-
     (defun my-keys-have-priority (_file)
       "Try to ensure that my keybindings retain priority over other minor modes.
 
@@ -526,8 +523,10 @@ Called via the `after-load-functions' special hook."
                (quote bh/skip-non-archivable-tasks))
               (org-tags-match-list-sublevels nil))
              nil))))))
+ '(org-babel-load-languages (quote ((shell . t) (emacs-lisp . t) (java . t))))
  '(org-habit-graph-column 40)
  '(org-refile-use-outline-path t)
+ '(org-src-tab-acts-natively t)
  '(package-archives
    (quote
     (("melpa" . "https://melpa.org/packages/")
@@ -536,7 +535,7 @@ Called via the `after-load-functions' special hook."
      ("MELPA" . "melpa.milkbox.net/#/"))))
  '(package-selected-packages
    (quote
-    (focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org thesaurus tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs ranger rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md gandalf-theme flyspell-correct-helm flycheck-pos-tip flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
+    (org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org thesaurus tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs ranger rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md gandalf-theme flyspell-correct-helm flycheck-pos-tip flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(send-mail-function (quote mailclient-send-it))
  '(vc-annotate-background "#2B2B2B")
