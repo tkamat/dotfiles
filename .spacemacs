@@ -455,6 +455,7 @@ you should place your code here."
   ;; keybindings
 
   (evil-leader/set-key-for-mode 'latex-mode "pm" 'latex-preview-pane-mode)
+
   ;; my-keys mode
   (defvar my-keys-minor-mode-map
     (let ((map (make-sparse-keymap)))
