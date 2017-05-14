@@ -1,0 +1,9 @@
+inoremap jk <ESC>
+map <Space>wl :action NextTab<CR>
+map <Space>wh :action PreviousTab<CR>
+map <Space>wd :action CloseActiveTab<CR>
+map <Space>wd :action CloseContent<CR>
+map <Space>' :action ActivateTerminalToolWindow<CR>
+map <Space>pc :action Run<CR>
+map <Space>pt :action ActivateProjectToolWindow<CR>
+map <Space><Space> :action SearchEverywhere<CR>
