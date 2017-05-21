@@ -1,5 +1,5 @@
 (deftheme Arc-Dark
-  "Created 2017-02-21.")
+  "Created 2017-05-19.")
 
 (custom-theme-set-variables
  'Arc-Dark
@@ -8,7 +8,6 @@
 
 (custom-theme-set-faces
  'Arc-Dark
- '(default ((t (:foreground "#d1d1d1" :background "#2F343F"))))
  '(cursor ((t (:foreground "#DCDCCC" :background "#FFFFEF"))))
  '(fixed-pitch ((t (:family "Monospace"))))
  '(variable-pitch ((t (:family "Sans Serif"))))
@@ -61,7 +60,6 @@
  '(completions-annotations ((t (:foreground "#656555"))))
  '(menu ((t (:foreground "#DCDCCC" :background "#2F343F"))))
  '(vertical-border ((t (:foreground "#DCDCCC"))))
- '(c-annotation-face ((t (:inherit font-lock-constant-face))))
  '(anzu-mode-line ((t (:foreground "#93E0E3" :weight bold))))
  '(anzu-mode-line-no-match ((t (:foreground "#CC9393" :weight bold))))
  '(anzu-match-1 ((t (:foreground "#2F343F" :background "#7F9F7F"))))
@@ -190,19 +188,12 @@
  '(show-paren-match ((t (:background "#6F6F6F" :weight bold))))
  '(sp-show-pair-mismatch-face ((t (:foreground "#DCA3A3" :background "#6F6F6F" :weight bold))))
  '(sp-show-pair-match-face ((t (:background "#6F6F6F" :weight bold))))
- '(term-color-black ((t (:foreground "#2F343F" :background "#2B2B2B"))))
- '(term-color-red ((t (:foreground "#AC7373" :background "#8C5353"))))
- '(term-color-green ((t (:foreground "#7F9F7F" :background "#9FC59F"))))
- '(term-color-yellow ((t (:foreground "#DFAF8F" :background "#F0DFAF"))))
- '(term-color-blue ((t (:foreground "#7CB8BB" :background "#4C7073"))))
- '(term-color-magenta ((t (:foreground "#DC8CC3" :background "#CC9393"))))
- '(term-color-cyan ((t (:foreground "#93E0E3" :background "#8CD0D3"))))
- '(term-color-white ((t (:foreground "#DCDCCC" :background "#656555"))))
  '(undo-tree-visualizer-active-branch-face ((t (:foreground "#FFFFEF" :weight bold))))
  '(undo-tree-visualizer-current-face ((t (:foreground "#BC8383" :weight bold))))
  '(undo-tree-visualizer-default-face ((t (:foreground "#DCDCCC"))))
  '(undo-tree-visualizer-register-face ((t (:foreground "#F0DFAF"))))
  '(undo-tree-visualizer-unmodified-face ((t (:foreground "#93E0E3"))))
- '(vhl/default-face ((t (:background "#383838")))))
+ '(vhl/default-face ((t (:background "#383838"))))
+ '(default ((t (:foreground "#d1d1d1" :background "#2F343F")))))
 
 (provide-theme 'Arc-Dark)
