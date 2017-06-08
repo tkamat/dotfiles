@@ -1,1 +1,1 @@
-rofi -modi drun,window -show drun -lines 10 -eh 2 -width 100 -padding 320 -opacity 85 -bw 0 -color-window "argb:f22d303b, #7c8389, #1d1f21" -color-normal "argb:3000000, #c4cbd4, argb:96404552, #4084d6, #f9f9f9" -color-active "argb:2000000, #b5bd68, argb:e42d303b, #8c9440, #f9f9f9" -color-urgent "argb:2000000, #cc6666, argb:e52d303b, #a54242, #f9f9f9"
+rofi -modi drun,window -show drun -lines 10 -eh 2 -width 100 -padding 320 -opacity 50 -bw 0 

@@ -144,4 +144,6 @@ export PATH=$HOME/bin:$PATH
 export PATH=$PATH:~/bin/gradle/gradle-3.5/bin
 export GRADLE_OPS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"
 export CURSOR=Breeze
-
+alias e=$EDITOR 
+source "/home/tushaar/.cache/wal/colors.sh"
+(wal -r -t &)

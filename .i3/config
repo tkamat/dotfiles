@@ -180,10 +180,18 @@ bindsym Mod1+r mode "resize"
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
-client.focused $blue $blue $white $white
-client.focused_inactive $background $background $white $white
-client.unfocused $background $background $white $white
-client.urgent $background $background $white $white
+set_from_resource $fg i3wm.color15 #f0f0f0
+set_from_resource $bg i3wm.color6 #f0f0f0
+set_from_resource $un i3wm.color1
+
+# class                 border  backgr. text indicator child_border
+client.focused          $bg     $bg     $fg  $bg       $bg
+client.focused_inactive $un     $un     $fg  $bg       $un
+client.unfocused        $un     $un     $fg  $bg       $un
+client.urgent           $bg     $bg     $fg  $bg       $bg
+client.placeholder      $bg     $bg     $fg  $bg       $bg
+
+client.background       $bg
 
 #######################################################################
 # automatically start i3-config-wizard to offer the user to create a
@@ -198,6 +206,11 @@ exec i3-config-wizard
 
 # User Config
 
+
+# wall configuration
+exec --no-startup-id "killall polybar; wal -i $HOME/Pictures/Wallpapers -t; bash /home/tushaar/wal-set; polybar Bar"
+bindsym Mod1+c exec "wal -i $HOME/Pictures/Wallpapers -t; bash /home/tushaar/wal-set; killall polybar; polybar Bar"
+
 # Media keys
 bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -D pulse sset Master 2%+
 bindsym XF86AudioLowerVolume exec --no-startup-id amixer -D pulse sset Master 2%-
@@ -211,10 +224,8 @@ bindsym Mod1+z exec xautolock -disable && notify-send "xautolock" "Disabled" -i 
 bindsym Mod1+Shift+z exec xautolock -enable && notify-send "xautolock" "Enabled" -i /usr/share/pixmaps/idle.xpm -t 5000
 
 # Startup applications
-exec --no-startup-id polybar Bar
 exec --no-startup-id compton
 exec --no-startup-id xflux -z 32092
-exec --no-startup-id conky
 exec --no-startup-id dropbox start
 exec --no-startup-id feh --bg-scale ~/Pictures/X7ePnRs.jpg
 
@@ -224,5 +235,6 @@ bindsym Print exec scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures
 bindsym Mod1+g exec notify-send "Google Assistant" "Enabled" -i /usr/share/pixmaps/idle.xpm -t 5000 && python -m googlesamples.assistant
 bindsym Mod1+Shift+g exec pkill python && notify-send "Google Assistant" "Disabled" -i /usr/share/pixmaps/idle.xpm -t 5000
 focus_on_window_activation focus
+
 
 

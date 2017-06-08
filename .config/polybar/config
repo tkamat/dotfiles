@@ -13,6 +13,8 @@ red = #c795ae
 blue = #5294E2
 yellow = #c7ae95
 green = #aec795
+fg = ${xrdb:color7}
+bg = ${xrdb:color0}
 
 
 [bar/Bar]
@@ -34,11 +36,11 @@ modules-center = volume music
 modules-left = i3
 
 ;background = #66090909
-background = #2f343f
-foreground = ${colors.white}
+background = ${colors.bg}
+foreground = ${colors.fg}
 
 underline-size = 3
-underline-color = ${colors.blue}
+underline-color = ${xrdb:color1}
 
 tray-detached = false
 tray-offset-x = 
@@ -113,7 +115,7 @@ label-visible-font = 4
 label-focused = 
 ;label-focused = %index%
 ;label-focused-foreground = ${colors.blue}
-label-focused-underline = ${colors.blue}
+label-focused-underline = ${xrdb:color1}
 label-focused-padding = 1
 
 label-unfocused = 
@@ -225,7 +227,7 @@ format-connected-padding = 1
 format-disconnected-padding = 1
 
 format-connected = <label-connected>
-format-connected-underline = ${colors.blue}
+format-connected-underline = ${xrdb:color1}
 format-disconnected-underline = ${colors.gray}
 
 label-connected =  %essid%
@@ -254,9 +256,8 @@ type = internal/date
 date-alt =   %A,  %d %B %Y 
 date =   %l:%M 
 interval = 5
-format-underline = ${colors.blue}
+format-underline = ${xrdb:color1}
 ;format-background = ${colors.black}
-format-foreground = ${colors.white}
 format-padding = 1
 
 
@@ -272,12 +273,12 @@ label-muted =  sound muted
 label-muted-foreground = ${colors.gray}
 
 bar-volume-width = 10
-bar-volume-foreground-0 = ${colors.blue}
-bar-volume-foreground-1 = ${colors.blue}
-bar-volume-foreground-2 = ${colors.blue}
-bar-volume-foreground-3 = ${colors.blue}
-bar-volume-foreground-4 = ${colors.blue}
-bar-volume-foreground-5 = ${colors.blue}
+bar-volume-foreground-0 = ${xrdb:color1}
+bar-volume-foreground-1 = ${xrdb:color1}
+bar-volume-foreground-2 = ${xrdb:color1}
+bar-volume-foreground-3 = ${xrdb:color1}
+bar-volume-foreground-4 = ${xrdb:color1}
+bar-volume-foreground-5 = ${xrdb:color1}
 bar-volume-gradient = false
 bar-volume-indicator = 
 bar-volume-indicator-font = 4
@@ -296,11 +297,11 @@ adapter = AC
 full-at = 98
 
 format-charging = <animation-charging> <label-charging>
-format-charging-underline = ${colors.blue}
+format-charging-underline = ${xrdb:color1}
 format-charging-padding = 1
 
 format-discharging = <ramp-capacity> <label-discharging>
-format-discharging-underline = ${colors.blue}
+format-discharging-underline = ${xrdb:color1}
 format-discharging-padding = 1
 
 format-full =   <label-full>
@@ -313,14 +314,14 @@ ramp-capacity-1 = 
 ramp-capacity-2 = 
 ramp-capacity-3 = 
 ramp-capacity-4 = 
-ramp-capacity-foreground = ${colors.white}
+ramp-capacity-foreground = ${xrdb:color1}
 
 animation-charging-0 = 
 animation-charging-1 = 
 animation-charging-2 = 
 animation-charging-3 = 
 animation-charging-4 = 
-animation-charging-foreground = ${colors.white}
+animation-charging-foreground = ${xrdb:color1}
 animation-charging-framerate = 500
 
 
@@ -350,7 +351,7 @@ ramp-foreground = #55
 type = custom/menu
 
 format = <label-toggle> <menu>
-format-underline = ${colors.blue}
+format-underline = ${xrdb:color1}
 format-padding = 1
 
 menu-0-0 =  shutdown
