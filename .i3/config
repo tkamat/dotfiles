@@ -228,6 +228,7 @@ exec --no-startup-id compton
 exec --no-startup-id xflux -z 32092
 exec --no-startup-id dropbox start
 exec --no-startup-id feh --bg-scale ~/Pictures/X7ePnRs.jpg
+exec --no-startup-id xmodmap ~/.Xmodmap
 
 
 # Miscellaneous keybindings
