@@ -13,8 +13,8 @@ red = #c795ae
 blue = #5294E2
 yellow = #c7ae95
 green = #aec795
-fg = ${xrdb:color7}
-bg = ${xrdb:color0}
+fg = ${xrdb:foreground}
+bg = ${xrdb:background}
 
 
 [bar/Bar]
@@ -22,17 +22,14 @@ bottom = false
 dock = false
 wm-restack = i3
 width = 100%
-height = 21
+height = 24
 
 enable-ipc = true
 
-padding-left = 0
-padding-right = 1
 
-module-margin-left = 0
 
 modules-right = battery wlan date menu0
-modules-center = volume music 
+modules-center = volume
 modules-left = i3
 
 ;background = #66090909
@@ -40,14 +37,13 @@ background = ${colors.bg}
 foreground = ${colors.fg}
 
 underline-size = 3
-underline-color = ${xrdb:color1}
 
 tray-detached = false
 tray-offset-x = 
 tray-maxsize = 
 tray-padding = 
 
-font-0 = Ubuntu Mono:size=10:weight=heavy;0
+font-0 = Source Code Pro:size=10:weight=medium;0
 font-1 = FontAwesome:size=10;0
 
 
@@ -74,7 +70,6 @@ mount-0 = /
 ;mount-2 = /invalid/mountpoint
 
 label-mounted =  %free%
-label-mounted-underline = ${colors.white}
 label-mounted-padding = 1
 
 label-unmounted =
@@ -87,7 +82,6 @@ ws-icon-default = x
 
 label-active = %index%
 label-active-background = #ee333333
-label-active-underline= #cc333333
 label-active-padding = 2
 
 label-occupied = %index%
@@ -112,28 +106,27 @@ label-unfocused-font = 4
 label-urgent-font = 4
 label-visible-font = 4 
 
-label-focused = 
-;label-focused = %index%
-;label-focused-foreground = ${colors.blue}
-label-focused-underline = ${xrdb:color1}
-label-focused-padding = 1
+;label-focused = 
+label-focused = %index%
+label-focused-background = ${xrdb:color3}
+label-focused-foreground = ${colors.black
+label-focused-padding = 2
 
-label-unfocused = 
-;label-unfocused = %index%
-label-unfocused-padding = 1
-;label-unfocused-background = ${colors.blue}
-label-unfocused-underline = ${colors.white}
+;label-unfocused = 
+label-unfocused = %index%
+label-unfocused-padding = 2
+label-unfocused-background = ${xrdb:color2}
 
-label-urgent = 
-;label-urgent = %index%!
+;label-urgent = 
+label-urgent = %index%!
 ;label-urgent-background = ${colors.red}
-label-urgent-padding = 1
+label-urgent-padding = 2
 label-urgent-foreground = ${colors.red}
 
-label-visible = 
-;label-visible = %index%
+;label-visible = 
+label-visible = %index%
 label-visible-foreground = ${colors.white}
-label-visible-padding = 1
+label-visible-padding = 2
 
 
 
@@ -141,15 +134,14 @@ label-visible-padding = 1
 type = internal/mpd
 
 host = 127.0.0.1
-port = 4200
+port = 6600
 
-intervel = 2
+interval = 10
 
 format-online = <label-song> <icon-prev> <icon-play> <icon-pause> <icon-next> 
 format-offline = <label-offline>
 
 label-offline =  no music
-label-offline-foreground = ${colors.gray}
 
 label-song = %artist% - %title%
 label-song-maxlen = 95
@@ -165,9 +157,6 @@ icon-seekf = >>
 
 icon-random = S
 icon-repeat = R
-
-toggle-on-foreground = #e60053
-toggle-off-foreground = #66
 
 
 [module/backlight]
@@ -201,12 +190,10 @@ ramp-coreload-4 = ▅
 ramp-coreload-5 = ▆
 ramp-coreload-6 = ▇
 ramp-coreload-7 = █
-ramp-coreload-underline = ${colors.white}
 
 type = internal/cpu
 interval = 2
 label = %{F${colors.white}  %percentage% %{F-}
-label-underline = ${colors.white}
 padding= 2
 
 
@@ -215,7 +202,6 @@ type = internal/memory
 interval = 2
 
 label = %{F${colors.white}  %percentage_used% %{F-}
-label-underline = ${colors.white}
 label-foreground = ${colors.white}
 
 [module/wlan]
@@ -223,12 +209,12 @@ type = internal/network
 interface = wlp2s0
 interval = 3.0
 
+format-connected-background = ${xrdb:color1}
+
 format-connected-padding = 1
 format-disconnected-padding = 1
 
 format-connected = <label-connected>
-format-connected-underline = ${xrdb:color1}
-format-disconnected-underline = ${colors.gray}
 
 label-connected =  %essid%
 label-disconnected = 
@@ -243,8 +229,6 @@ interval = 3.0
 format-connected-padding = 1
 format-disconnected-padding = 1
 
-format-connected-underline = ${colors.white}
-format-disconnected-underline = ${colors.gray}
 
 label-connected =  
 label-disconnected = 
@@ -256,8 +240,7 @@ type = internal/date
 date-alt =   %A,  %d %B %Y 
 date =   %l:%M 
 interval = 5
-format-underline = ${xrdb:color1}
-;format-background = ${colors.black}
+format-background = ${xrdb:color11}
 format-padding = 1
 
 
@@ -267,7 +250,8 @@ type = internal/volume
 format-volume = <bar-volume>
 
 label-volume = VOL
-label-volume-foreground = ${root.foreground}
+label-volume-foreground = ${colors.foreground}
+label-volume-background = ${xrdb:color2}
 
 label-muted =  sound muted
 label-muted-foreground = ${colors.gray}
@@ -296,17 +280,17 @@ battery = BAT0
 adapter = AC
 full-at = 98
 
+format-full-background = ${xrdb:color2}
+format-charging-background = ${xrdb:color3}
+format-discharging-background = ${xrdb:color10}
+
 format-charging = <animation-charging> <label-charging>
-format-charging-underline = ${xrdb:color1}
 format-charging-padding = 1
 
 format-discharging = <ramp-capacity> <label-discharging>
-format-discharging-underline = ${xrdb:color1}
 format-discharging-padding = 1
 
 format-full =   <label-full>
-format-full-underline = ${self.format-charging-underline}
-format-full-overline = ${self.format-charging-underline}
 format-full-padding = 1
 
 ramp-capacity-0 = 
@@ -314,7 +298,7 @@ ramp-capacity-1 = 
 ramp-capacity-2 = 
 ramp-capacity-3 = 
 ramp-capacity-4 = 
-ramp-capacity-foreground = ${xrdb:color1}
+ramp-capacity-foreground = ${xrdb:foreground}
 
 animation-charging-0 = 
 animation-charging-1 = 
@@ -331,9 +315,7 @@ thermal-zone = 0
 warn-temperature = 65
 
 format = <label>
-format-underline = ${colors.white}
 format-warn = <label-warn>
-format-warn-underline = ${colors.red}
 
 format-padding = 1
 format-warn-padidng = 1
@@ -351,18 +333,19 @@ ramp-foreground = #55
 type = custom/menu
 
 format = <label-toggle> <menu>
-format-underline = ${xrdb:color1}
 format-padding = 1
 
-menu-0-0 =  shutdown
+menu-0-0 =   shutdown 
 menu-0-0-exec = shutdown now
-menu-0-1 =  restart
+menu-0-1 =   restart
 menu-0-1-exec = shutdown -r now
 menu-0-2 =   cancel
 
 
 label-open =   
 label-close =
+
+format-background = ${xrdb:color4}
 
 [module/updates]
 type = custom/script
@@ -395,5 +378,10 @@ menu-2-0-exec = sudo poweroff
 menu-2-1 = cancel
 menu-2-1-exec = menu-open-0
 
-; vim:ft=dosini
-Contact GitHub API Training Shop Blog About
+[settings]
+format-spacing = 1
+format-padding = 1
+format-margin = 1
+
+
+

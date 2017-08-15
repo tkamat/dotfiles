@@ -32,7 +32,6 @@ set $red #c795ae
 set $blue #5294E2
 set $yellow #c7ae95
 set $green #aec795
-set $background #2f343f
 
 # use these keys for focus, movement, and resize directions when reaching for
 # the arrows is not convenient
@@ -46,7 +45,7 @@ set $right l
 floating_modifier Mod1
 
 # start a terminal
-bindsym Mod1+Return exec gnome-terminal
+bindsym Mod1+Return exec tilix
 
 # kill focused window
 bindsym Mod1+Shift+q kill
@@ -149,6 +148,7 @@ set $borderwidth 1
 bindsym Mod1+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym Mod1+Shift+r restart
+bindsym Mod1+Shift+b exec "killall polybar; polybar Bar"
 # exit i3 (logs you out of your X session)
 bindsym Mod1+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
@@ -217,22 +217,22 @@ bindsym XF86AudioLowerVolume exec --no-startup-id amixer -D pulse sset Master 2%
 bindsym XF86AudioMute exec --no-startup-id amixer -D pulse sset Master toggle
 
 # Xautolock configuration
-exec --no-startup-id xautolock -time 5 -locker "sleep 1 && xset dpms force off && lock"
+exec --no-startup-id xautolock -time 10 -locker "sleep 5 && xset dpms force off && lock"
 exec --no-startup-id xss-lock -- "/usr/local/bin/lock" &
-bindsym Mod1+x exec "sleep 5 && xset dpms force off && lock"
-bindsym Mod1+z exec xautolock -disable && notify-send "xautolock" "Disabled" -i /usr/share/pixmaps/idle.xpm -t 5000
-bindsym Mod1+Shift+z exec xautolock -enable && notify-send "xautolock" "Enabled" -i /usr/share/pixmaps/idle.xpm -t 5000
+bindsym Mod1+x exec "lock"
+bindsym Mod1+z exec xautolock -disable && notify-send -h string:bgcolor:$background -h string:fgcolor:$foreground "xautolock" "Disabled" -i /usr/share/pixmaps/idle.xpm -t 5000
+bindsym Mod1+Shift+z exec xautolock -enable && notify-send -h string:bgcolor:$background -h string:fgcolor:$foreground "xautolock" "Enabled" -i /usr/share/pixmaps/idle.xpm -t 5000
 
 # Startup applications
 exec --no-startup-id compton
 exec --no-startup-id xflux -z 32092
 exec --no-startup-id dropbox start
-exec --no-startup-id feh --bg-scale ~/Pictures/X7ePnRs.jpg
 exec --no-startup-id xmodmap ~/.Xmodmap
+exec --no-startup-id dunst
 
 
 # Miscellaneous keybindings
-bindsym Print exec scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures/' && notify-send "scrot" "Screenshot taken" -i /usr/share/pixmaps/idle.xpm -t 5000
+bindsym Print exec scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/Pictures/' && notify-send -h string:bgcolor:$background -h string:fgcolor:$foreground "scrot" "Screenshot taken" -i /usr/share/pixmaps/idle.xpm -t 5000
 bindsym Mod1+g exec notify-send "Google Assistant" "Enabled" -i /usr/share/pixmaps/idle.xpm -t 5000 && python -m googlesamples.assistant
 bindsym Mod1+Shift+g exec pkill python && notify-send "Google Assistant" "Disabled" -i /usr/share/pixmaps/idle.xpm -t 5000
 focus_on_window_activation focus
