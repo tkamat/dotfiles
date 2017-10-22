@@ -13,8 +13,8 @@ red = #c795ae
 blue = #5294E2
 yellow = #c7ae95
 green = #aec795
-fg = ${xrdb:foreground}
-bg = ${xrdb:background}
+fg = ${xrdb:color7}
+bg = ${xrdb:color0}
 
 
 [bar/Bar]
@@ -23,13 +23,15 @@ dock = false
 wm-restack = i3
 width = 100%
 height = 24
+border-top-size=12
+border-left-size=200
+border-right-size=200
 
 enable-ipc = true
 
 
-
-modules-right = battery wlan date menu0
-modules-center = volume
+modules-right = volume battery wlan date menu0
+modules-center = pomodoro
 modules-left = i3
 
 ;background = #66090909
@@ -50,9 +52,18 @@ font-1 = FontAwesome:size=10;0
 [module/music]
 type = custom/script
 interval = 1
+padding = 2
 
 label = %output%
 exec = ~/polybar-spotify.sh
+
+[module/pomodoro]
+type = custom/script
+interval = 2
+padding = 2
+
+label = %output%
+exec = emacsclient -e '(my/org-pomodoro-text-time)'
 
 
 [module/xwindow]
@@ -248,6 +259,7 @@ format-padding = 1
 type = internal/volume
 
 format-volume = <bar-volume>
+format-volume-padding = 2
 
 label-volume = VOL
 label-volume-foreground = ${colors.foreground}
@@ -255,6 +267,7 @@ label-volume-background = ${xrdb:color2}
 
 label-muted =  sound muted
 label-muted-foreground = ${colors.gray}
+label-muted-padding = 1
 
 bar-volume-width = 10
 bar-volume-foreground-0 = ${xrdb:color1}
@@ -277,8 +290,8 @@ bar-volume-empty-foreground = ${colors.gray}
 [module/battery]
 type = internal/battery
 battery = BAT0
-adapter = AC
-full-at = 98
+adapter = ADP0
+full-at = 95
 
 format-full-background = ${xrdb:color2}
 format-charging-background = ${xrdb:color3}
@@ -290,7 +303,7 @@ format-charging-padding = 1
 format-discharging = <ramp-capacity> <label-discharging>
 format-discharging-padding = 1
 
-format-full =   <label-full>
+format-full =  <label-full>
 format-full-padding = 1
 
 ramp-capacity-0 = 

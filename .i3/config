@@ -140,7 +140,7 @@ bindsym Mod1+Shift+0 move container to workspace 10
 
 for_window [class="^.*"] border pixel 2
 gaps inner 10 
-gaps outer 4
+gaps outer 8
 
 set $borderwidth 1
 
@@ -208,8 +208,8 @@ exec i3-config-wizard
 
 
 # wall configuration
-exec --no-startup-id "killall polybar; wal -i $HOME/Pictures/Wallpapers -t; bash /home/tushaar/wal-set; polybar Bar"
-bindsym Mod1+c exec "wal -i $HOME/Pictures/Wallpapers -t; bash /home/tushaar/wal-set; killall polybar; polybar Bar"
+exec --no-startup-id "killall polybar; wpg -m -r; bash /home/tushaar/wal-set; polybar Bar"
+bindsym Mod1+c exec "wpg -m -r; bash /home/tushaar/wal-set; killall polybar; polybar Bar"
 
 # Media keys
 bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -D pulse sset Master 2%+
@@ -217,18 +217,26 @@ bindsym XF86AudioLowerVolume exec --no-startup-id amixer -D pulse sset Master 2%
 bindsym XF86AudioMute exec --no-startup-id amixer -D pulse sset Master toggle
 
 # Xautolock configuration
-exec --no-startup-id xautolock -time 10 -locker "sleep 5 && xset dpms force off && lock"
-exec --no-startup-id xss-lock -- "/usr/local/bin/lock" &
+exec --no-startup-id xautolock -time 15 -locker "systemctl suspend && lock"
+exec --no-startup-id xss-lock -- "/home/tushaar/bin/lock" &
 bindsym Mod1+x exec "lock"
 bindsym Mod1+z exec xautolock -disable && notify-send -h string:bgcolor:$background -h string:fgcolor:$foreground "xautolock" "Disabled" -i /usr/share/pixmaps/idle.xpm -t 5000
 bindsym Mod1+Shift+z exec xautolock -enable && notify-send -h string:bgcolor:$background -h string:fgcolor:$foreground "xautolock" "Enabled" -i /usr/share/pixmaps/idle.xpm -t 5000
 
 # Startup applications
 exec --no-startup-id compton
-exec --no-startup-id xflux -z 32092
 exec --no-startup-id dropbox start
 exec --no-startup-id xmodmap ~/.Xmodmap
-exec --no-startup-id dunst
+exec --no-startup-id redshift
+exec --no-startup-id /usr/lib/notification-daemon/notification-daemon
+exec --no-startup-id xrandr --output DP-1 --auto --left-of eDP-1
+
+
+# Multimonitor
+workspace 1 output DP-1
+workspace 2 output eDP-1
+bindsym Mod1+i move workspace to output left
+bindsym Mod1+o move workspace to output right
 
 
 # Miscellaneous keybindings

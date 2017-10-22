@@ -146,5 +146,7 @@ export GRADLE_OPS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,addr
 export CURSOR=Breeze
 alias e=$EDITOR 
 alias dead=~/Music/dead.sh
+alias fastboot=~/Android/Sdk/platform-tools/fastboot
+alias adb=~/Android/Sdk/platform-tools/adb
 source "/home/tushaar/.cache/wal/colors.sh"
-(wal -r -t &)
+(wpg -r -t &)
