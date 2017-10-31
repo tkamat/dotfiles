@@ -398,7 +398,8 @@ you should place your code here."
           org-gcal-client-id "1007167813898-af95nv19lap962tqogbpburbnsogmm2t.apps.googleusercontent.com"
           org-gcal-client-secret "fpKpegO_7Q6jUqcoaOFSOZOC"
           org-gcal-file-alist '(("platypusdiamond@gmail.com"
-          . "~/Dropbox/org/gcal.org") ("kpbt08aptfqmc4tu0udvjj79pc5ld4fp@import.calendar.google.com" . "~/Dropbox/org/schoology.org"))))
+          . "~/Dropbox/org/gcal.org") ("kd2drj3cpr7qj1jv39kk0i2aiiguf29b@import.calendar.google.com"
+          . "~/Dropbox/org/schoology.org"))))
   (add-hook 'org-agenda-redo-hook (lambda () (org-gcal-sync)))
 
   ;; functions

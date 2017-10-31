@@ -217,8 +217,8 @@ bindsym XF86AudioLowerVolume exec --no-startup-id amixer -D pulse sset Master 2%
 bindsym XF86AudioMute exec --no-startup-id amixer -D pulse sset Master toggle
 
 # Xautolock configuration
-exec --no-startup-id xautolock -time 15 -locker "systemctl suspend && lock"
-exec --no-startup-id xss-lock -- "/home/tushaar/bin/lock" &
+exec --no-startup-id xautolock -time 15 -locker "sleep 2 && xset dpms force off && lock"
+exec --no-startup-id xss-lock -- "/home/tushaar/bin/lock" && systemctl suspend
 bindsym Mod1+x exec "lock"
 bindsym Mod1+z exec xautolock -disable && notify-send -h string:bgcolor:$background -h string:fgcolor:$foreground "xautolock" "Disabled" -i /usr/share/pixmaps/idle.xpm -t 5000
 bindsym Mod1+Shift+z exec xautolock -enable && notify-send -h string:bgcolor:$background -h string:fgcolor:$foreground "xautolock" "Enabled" -i /usr/share/pixmaps/idle.xpm -t 5000
