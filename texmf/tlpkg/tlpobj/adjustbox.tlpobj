@@ -1,0 +1,37 @@
+name adjustbox
+category Package
+revision 26555
+shortdesc Graphics package-alike macros for "general" boxes
+longdesc The package provides several macros to adjust boxed content.
+longdesc One purpose is to supplement the standard graphics package,
+longdesc which defines the macros \resizebox, \scalebox and \rotatebox ,
+longdesc with the macros\trimbox and \clipbox. The main feature is the
+longdesc general \adjustbox macro which extends the "key=value"
+longdesc interface of \includegraphics from the graphics package and
+longdesc applies it to general text content. Additional provided box
+longdesc macros are \lapbox, \marginbox, \minsizebox, \maxsizebox and
+longdesc \phantombox. All macros use the collectbox package to read the
+longdesc content as a box and not as a macro argument. This allows for
+longdesc all forms of content including special material like verbatim
+longdesc content. A special feature of collectbox is used to provide
+longdesc matching environments with the identical names as the macros.
+containersize 9912
+containerchecksum 8f367a68ee3ce0d64e6b8b6861f628f80ea5dfed666fe0cd49a1fa8ea1ed6c3a6cfb32bfac4b095b056d6769fe426e013b138be6b03b0bc19c9240211841ba27
+doccontainersize 748464
+doccontainerchecksum 78e246f251262e56e3b2c9e5ae2061c7560f25cb50c4d7647a0d3d7293c0a116809350b81b456f713f625c646fad85c2e8e70f6b0278c85ac20742c1903a0402
+srccontainersize 40076
+srccontainerchecksum 85d49a28991507e95e5446dd76de817237ae5555fecec4b48852a1791837cfe1bb6e71ebb7d4c381f827ca606ff410623ebb310f6fb40115cb9e8e8544c0fc8d
+runfiles size=17
+ tex/latex/adjustbox/adjcalc.sty
+ tex/latex/adjustbox/adjustbox.sty
+ tex/latex/adjustbox/tc-dvips.def
+ tex/latex/adjustbox/tc-pdftex.def
+ tex/latex/adjustbox/tc-pgf.def
+ tex/latex/adjustbox/tc-xetex.def
+ tex/latex/adjustbox/trimclip.sty
+catalogue-also gincltex collectbox realboxes
+catalogue-ctan /macros/latex/contrib/adjustbox
+catalogue-date 2015-08-03 05:43:12 +0200
+catalogue-license lppl1.3
+catalogue-topics typesetting box-manip
+catalogue-version 1.0

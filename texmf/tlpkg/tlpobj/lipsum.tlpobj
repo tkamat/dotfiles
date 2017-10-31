@@ -1,0 +1,22 @@
+name lipsum
+category Package
+revision 34800
+shortdesc Easy access to the Lorem Ipsum dummy text
+longdesc This package gives you easy access to the Lorem Ipsum dummy
+longdesc text; an option is available to separate the paragraphs of the
+longdesc dummy text into TeX-paragraphs. All the paragraphs are taken
+longdesc with permission from http://lipsum.com/.
+containersize 24996
+containerchecksum c10c9355eb5dd31ae1de5f423328f8024cd4d1713d13bf22f1745f6c2eed9072399e3501c047f6ae6b4b6f83a977a5427d2aec249e68728593891be91aaaed13
+doccontainersize 425460
+doccontainerchecksum 22b0ab7a8bc531796453fbbd1ee1e7f284a3909010e3d6b3972e9aa8b6d589a6b91500d11c65671304564dd9cfac209dff2eb21b070c1266cefd069d7945bac3
+srccontainersize 28492
+srccontainerchecksum 8678218c23e21bb0a9c5035737b2b09ed067f1cfdb73389ccab3a68be5ffb8f34c1058e30c9dd405b33c754be7408210c83ef49554b0da0c0596ed93e79fbc97
+runfiles size=26
+ tex/latex/lipsum/lipsum.sty
+catalogue-also blindtext kantlipsum
+catalogue-ctan /macros/latex/contrib/lipsum
+catalogue-date 2016-06-24 19:18:15 +0200
+catalogue-license lppl
+catalogue-topics macro-supp dummy-gen
+catalogue-version 1.3

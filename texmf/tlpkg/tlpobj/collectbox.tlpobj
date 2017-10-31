@@ -1,0 +1,27 @@
+name collectbox
+category Package
+revision 26557
+shortdesc Collect and process macro arguments as boxes
+longdesc The package provides macros to collect and process a macro
+longdesc argument (i.e., something which looks like a macro argument) as
+longdesc a horizontal box rather than as a real macro argument. The
+longdesc "arguments" are stored as if they had been saved by \savebox or
+longdesc by the lrbox environment. Grouping tokens \bgroup and \egroup
+longdesc may be used, which allows the user to have the beginning and
+longdesc end of a group in different macro invocations, or to place them
+longdesc in the begin and end code of an environment. Arguments may
+longdesc contain verbatim material or other special use of characters.
+longdesc The macros were designed for use within other macros.
+containersize 2836
+containerchecksum 129515a741f364d14101d1aca18814b936473cf33949a7136ebb37ce6672385e32e11c47fe45c66fb384a8fc0fe236ed67fca105aa86b4c82e09cb1d629af45c
+doccontainersize 270912
+doccontainerchecksum 71fa1c7fcb8184d703106aa7cfdde07c73c3d310ef61170d88831ffa7708c13893f833bc9832337fddd990c918de70fe9283f5eebb0d3aefd2c89b1c41d241d0
+srccontainersize 8068
+srccontainerchecksum ee7ac995cb5a88496743d2e1c6f6418b6f4b06333c483dc74e8c01d17e30aa49c695dd8dee7a5b966390d7e7983c7e63f651c9fc0de3d8bf13156aa2fafa6bf0
+runfiles size=3
+ tex/latex/collectbox/collectbox.sty
+catalogue-ctan /macros/latex/contrib/collectbox
+catalogue-date 2015-08-03 05:43:12 +0200
+catalogue-license lppl1.3
+catalogue-topics boxing
+catalogue-version 0.4b

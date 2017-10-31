@@ -1,0 +1,28 @@
+name filehook
+category Package
+revision 24280
+shortdesc Hooks for input files
+longdesc The package provides several file hooks (AtBegin, AtEnd, ...)
+longdesc for files read by \input, \include and \InputIfFileExists.
+longdesc General hooks for all such files (e.g. all \include'd ones) and
+longdesc file specific hooks only used for named files are provided; two
+longdesc hooks are provided for the end of \included files -- one
+longdesc before, and one after the final \clearpage.
+containersize 4028
+containerchecksum 35770aef1ac83a61bd24a0d91012a4d368cdba2b8d746cd3030e5d7e92c317f134bda43cd5f3e9a4d59aabdd7c2ae00bc0b8346fc61cc21dc94527dc5b6470aa
+doccontainersize 258828
+doccontainerchecksum 795e3d840e4723dddede392829f75807a51ed350d6eec4247a6addf93b2669d3807f6881eb8a6a95fd31a31c6c90480706bd4302283a7c6290eb6230b4fff22b
+srccontainersize 12716
+srccontainerchecksum a03efa7d1de6a394df3e1206d1d297cdf08d5c2bbe39f8c96a52f802fb87419f934fce0da4f716949c9648504db8f36e5768f55c1974d617897e82c0624dcb93
+runfiles size=9
+ tex/latex/filehook/filehook-fink.sty
+ tex/latex/filehook/filehook-listings.sty
+ tex/latex/filehook/filehook-memoir.sty
+ tex/latex/filehook/filehook-scrlfile.sty
+ tex/latex/filehook/filehook.sty
+ tex/latex/filehook/pgf-filehook.sty
+catalogue-ctan /macros/latex/contrib/filehook
+catalogue-date 2015-08-03 05:43:12 +0200
+catalogue-license lppl1.3
+catalogue-topics macro-supp
+catalogue-version 0.5d

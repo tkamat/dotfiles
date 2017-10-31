@@ -1,0 +1,31 @@
+name standalone
+category Package
+revision 37875
+shortdesc Compile TeX pictures stand-alone or as part of a document
+longdesc A class and package is provided which allows TeX pictures or
+longdesc other TeX code to be compiled standalone or as part of a main
+longdesc document. Special support for pictures with beamer overlays is
+longdesc also provided. The package is used in the main document and
+longdesc skips extra preambles in sub-files. The class may be used to
+longdesc simplify the preamble in sub-files. By default the preview
+longdesc package is used to display the typeset code without margins.
+longdesc The behaviour in standalone mode may adjusted using a
+longdesc configuration file standalone.cfg to redefine the standalone
+longdesc environment.
+containersize 11424
+containerchecksum 09253b83385ec1ee340bfa2b60b893e82456cc0e02e49e0db540660f20531223797ceecdf49ed0c1b82a594b5226d01dd0ccdefcc8c2649e0a5d7493a907df61
+doccontainersize 266888
+doccontainerchecksum 84fae6be90d26df325f329c4f63b48c7338403de6b1d2bab03019fc0265caa1d92c12dcd41e312076fadfc489af86b4fbd623f7181673c59a014e018f8eae160
+srccontainersize 37628
+srccontainerchecksum 42a52a238d978a7e7b242b9f9448bb821df8f2cd7c88afd11226a722f029ede7ea69f85a65f154ee2d2e8fc0508e66b07b42f02f3515038db3b9d1a971c0cca2
+runfiles size=17
+ tex/latex/standalone/standalone.cfg
+ tex/latex/standalone/standalone.cls
+ tex/latex/standalone/standalone.sty
+ tex/plain/standalone/standalone.tex
+catalogue-also combine docmute includex newclude
+catalogue-ctan /macros/latex/contrib/standalone
+catalogue-date 2015-08-03 05:43:12 +0200
+catalogue-license lppl1.3
+catalogue-topics subdocs class
+catalogue-version 1.2

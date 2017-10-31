@@ -1,0 +1,77 @@
+isodate.sty
+===========
+
+Tune the output format of dates.
+
+This package provides ten output formats of the 
+commands \today, \printdate, \printdateTeX, and \daterange
+(partly language dependent): 
+ISO (yyyy-mm-dd),
+numeric (e.g. dd.\,mm.~yyyy),
+short (e.g. dd.\,mm.\,yy),
+TeX (yyyy/mm/dd),
+original (e.g. dd. mmm yyyy),
+short original (e.g. dd. mmm yy),
+as well as numerical formats with Roman numerals for the month.
+
+The commands \printdate and \printdateTeX print any date.
+The date is given as an argument using the actual date format for output: 
+\printdate{yyyy-mm-dd}, \printdate{dd.mm.yyyy}, or \printdate{dd/mm/yyyy},
+and \printdateTeX{yyyy/mm/dd}. 
+
+The command \daterange prints a date range and leaves out unnecessary 
+year or month entries. 
+E.g. 2000-05-03 to 2000-05-08 leads to `2000-05-03 to 08'.
+
+The idea for this package was taken from the akletter class. 
+
+
+Version 2.0 was totally rewritten so that some incompatiblities may occur.
+The old version is still available as isodateo.sty (`o' for old).
+
+
+Copyright 2000--2010 Harald Harders
+
+This program can be redistributed and/or modified under the terms
+of the LaTeX Project Public License Distributed from CTAN
+archives in directory macros/latex/base/lppl.txt; either
+version 1 of the License, or any later version.
+
+
+
+Installation:
+
+before installing: - be sure that the package substr.sty is installed on your
+                     system. If not download it from 
+                     CTAN:/macros/latex/contrib/substr/ and install it.
+
+automatic: - run "make".
+           - copy isodate.sty and *.idf to a place where LaTeX can find them
+             or run "make install".
+           - run texhash or the corresponding command of your distribution.
+
+by hand: - execute latex on isodate.ins.
+         - run texhash or the corresponding command of your distribution.
+	 You should not compile the documentation by yourself since it
+         uses a non-standard package (morefloats.sty). If you still want
+         to compile it by yourself, do the following:
+         - execute latex on isodate.dtx (2x).
+         - copy isodate.sty and *.idf to a place LaTeX can find them.
+         - run texhash or the corresponding command of your distribution.
+
+
+
+List of known errors:
+    - The \printdate and \printdateTeX commands are not very good in 
+      checking the argument for correct syntax.
+    - Isodate and draftcopy do not work together.
+
+To do:
+    - add other languages
+    - Format short given years to four digits and calculate reasonable
+      first and second digits.
+
+
+2010-01-03
+Harald Harders
+h.harders@tu-bs.de

@@ -1,0 +1,120 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/Debian) (preloaded format=latex 2017.1.7)  29 JAN 2017 21:53
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**flashcards.ins
+(./flashcards.ins
+LaTeX2e <2016/03/31> patch level 3
+Babel <3.9r> and hyphenation patterns for 3 language(s) loaded.
+(/usr/share/texlive/texmf-dist/tex/latex/base/docstrip.tex
+\blockLevel=\count79
+\emptyLines=\count80
+\processedLines=\count81
+\commentsRemoved=\count82
+\commentsPassed=\count83
+\codeLinesPassed=\count84
+\TotalprocessedLines=\count85
+\TotalcommentsRemoved=\count86
+\TotalcommentsPassed=\count87
+\TotalcodeLinesPassed=\count88
+\NumberOfFiles=\count89
+\inFile=\read1
+\inputcheck=\read2
+\off@0=\count90
+\off@1=\count91
+\off@2=\count92
+\off@3=\count93
+\off@4=\count94
+\off@5=\count95
+\off@6=\count96
+\off@7=\count97
+\off@8=\count98
+\off@9=\count99
+\off@10=\count100
+\off@11=\count101
+\off@12=\count102
+\off@13=\count103
+\off@14=\count104
+\off@15=\count105
+\@maxfiles=\count106
+\@maxoutfiles=\count107
+
+Utility: `docstrip' 2.5e <2014/09/29>
+English documentation    <2014/09/29>
+
+**********************************************************
+* This program converts documented macro-files into fast *
+* loadable files by stripping off (nearly) all comments! *
+**********************************************************
+
+********************************************************
+* No Configuration file found, using default settings. *
+********************************************************
+
+(./flashcards.ins
+
+Generating file(s) ./samplecards.tex 
+\openout0 = `./samplecards.tex'.
+
+
+Processing file flashcards.dtx (sample) -> samplecards.tex
+File flashcards.dtx ended by \endinput.
+Lines  processed: 769
+Comments removed: 352
+Comments  passed: 16
+Codelines passed: 381
+
+
+Generating file(s) ./flashcards.cls 
+\openout0 = `./flashcards.cls'.
+
+
+Processing file flashcards.dtx (flashcards) -> flashcards.cls
+File flashcards.dtx ended by \endinput.
+Lines  processed: 769
+Comments removed: 352
+Comments  passed: 16
+Codelines passed: 381
+
+
+Generating file(s) ./avery5371.cfg 
+\openout0 = `./avery5371.cfg'.
+
+
+Processing file flashcards.dtx (avery5371) -> avery5371.cfg
+File flashcards.dtx ended by \endinput.
+Lines  processed: 769
+Comments removed: 352
+Comments  passed: 16
+Codelines passed: 381
+
+
+Generating file(s) ./avery5388.cfg 
+\openout0 = `./avery5388.cfg'.
+
+
+Processing file flashcards.dtx (avery5388) -> avery5388.cfg
+File flashcards.dtx ended by \endinput.
+Lines  processed: 769
+Comments removed: 352
+Comments  passed: 16
+Codelines passed: 381
+
+)
+Overall statistics:
+Files  processed: 4
+Lines  processed: 3076
+Comments removed: 1408
+Comments  passed: 64
+Codelines passed: 1524
+ ) ) 
+Here is how much of TeX's memory you used:
+ 346 strings out of 494946
+ 3619 string characters out of 6181059
+ 53923 words of memory out of 5000000
+ 3730 multiletter control sequences out of 15000+600000
+ 3640 words of font info for 14 fonts, out of 8000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 18i,0n,18p,208b,136s stack positions out of 5000i,500n,10000p,200000b,80000s
+
+No pages of output.

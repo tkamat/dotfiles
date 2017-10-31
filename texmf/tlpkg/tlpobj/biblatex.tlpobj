@@ -1,0 +1,144 @@
+name biblatex
+category Package
+revision 42680
+shortdesc Sophisticated Bibliographies in LaTeX
+longdesc BibLaTeX is a complete reimplementation of the bibliographic
+longdesc facilities provided by LaTeX. Formatting of the bibliography is
+longdesc entirely controlled by LaTeX macros, and a working knowledge of
+longdesc LaTeX should be sufficient to design new bibliography and
+longdesc citation styles. BibLaTeX uses its own data backend program
+longdesc called "biber" to read and process the bibliographic data. With
+longdesc biber, BibLaTeX has many features rivalling or surpassing other
+longdesc bibliography systems. To mention a few: Full Unicode support
+longdesc Highly customisable sorting using the Unicode Collation
+longdesc Algorithm + CLDR tailoring Highly customisable bibliography
+longdesc labels Complex macro-based on-the-fly data modification without
+longdesc changing your data sources A tool mode for transforming
+longdesc bibliographic data sources Multiple bibliographies and lists of
+longdesc bibliographic information in the same document with different
+longdesc sorting Highly customisable data source inheritance rules
+longdesc Polyglossia and babel suppport for automatic language switching
+longdesc for bibliographic entries and citations Automatic bibliography
+longdesc data recoding (UTF-8 -> latin1, LaTeX macros -> UTF-8 etc)
+longdesc Remote data sources Highly sophisticated automatic name and
+longdesc name list disambiguation system Highly customisable data model
+longdesc so users can define their own bibliographic data types
+longdesc Validation of bibliographic data against a data model
+longdesc Subdivided and/or filtered bibligraphies, bibliographies per
+longdesc chapter, section etc. Apart from the features unique to
+longdesc BibLaTeX, the package also incorporates core features of the
+longdesc following packages: babelbib, bibtopic, bibunits, chapterbib,
+longdesc cite, inlinebib, mcite and mciteplus, mlbib, multibib,
+longdesc splitbib. Biber version 2.7 is required for BibLaTeX 3.7.
+containersize 182800
+containerchecksum aefbda74507639d71c13f9f2a3d614f42c59d0425f62dbf1f854155c7caa7715068674997c7235256808bb7a23fe60f413bc3832a9af3995ac322366592d4cff
+doccontainersize 6995564
+doccontainerchecksum 2b9537660620adae798df0bf0173afe2b1170471ef19165385442298410aa97c8f7d103f1500c27efc55461b57a6d74a8f47d5db05d6f0d492492017cb6b51df
+runfiles size=449
+ bibtex/bib/biblatex/biblatex/biblatex-examples.bib
+ bibtex/bst/biblatex/biblatex.bst
+ tex/latex/biblatex/bbx/alphabetic-verb.bbx
+ tex/latex/biblatex/bbx/alphabetic.bbx
+ tex/latex/biblatex/bbx/authortitle-comp.bbx
+ tex/latex/biblatex/bbx/authortitle-ibid.bbx
+ tex/latex/biblatex/bbx/authortitle-icomp.bbx
+ tex/latex/biblatex/bbx/authortitle-tcomp.bbx
+ tex/latex/biblatex/bbx/authortitle-terse.bbx
+ tex/latex/biblatex/bbx/authortitle-ticomp.bbx
+ tex/latex/biblatex/bbx/authortitle.bbx
+ tex/latex/biblatex/bbx/authoryear-comp.bbx
+ tex/latex/biblatex/bbx/authoryear-ibid.bbx
+ tex/latex/biblatex/bbx/authoryear-icomp.bbx
+ tex/latex/biblatex/bbx/authoryear.bbx
+ tex/latex/biblatex/bbx/debug.bbx
+ tex/latex/biblatex/bbx/draft.bbx
+ tex/latex/biblatex/bbx/numeric-comp.bbx
+ tex/latex/biblatex/bbx/numeric-verb.bbx
+ tex/latex/biblatex/bbx/numeric.bbx
+ tex/latex/biblatex/bbx/reading.bbx
+ tex/latex/biblatex/bbx/standard.bbx
+ tex/latex/biblatex/bbx/verbose-ibid.bbx
+ tex/latex/biblatex/bbx/verbose-inote.bbx
+ tex/latex/biblatex/bbx/verbose-note.bbx
+ tex/latex/biblatex/bbx/verbose-trad1.bbx
+ tex/latex/biblatex/bbx/verbose-trad2.bbx
+ tex/latex/biblatex/bbx/verbose-trad3.bbx
+ tex/latex/biblatex/bbx/verbose.bbx
+ tex/latex/biblatex/biblatex.cfg
+ tex/latex/biblatex/biblatex.def
+ tex/latex/biblatex/biblatex.sty
+ tex/latex/biblatex/blx-bibtex.def
+ tex/latex/biblatex/blx-compat.def
+ tex/latex/biblatex/blx-dm.def
+ tex/latex/biblatex/blx-mcite.def
+ tex/latex/biblatex/blx-natbib.def
+ tex/latex/biblatex/cbx/alphabetic-verb.cbx
+ tex/latex/biblatex/cbx/alphabetic.cbx
+ tex/latex/biblatex/cbx/authortitle-comp.cbx
+ tex/latex/biblatex/cbx/authortitle-ibid.cbx
+ tex/latex/biblatex/cbx/authortitle-icomp.cbx
+ tex/latex/biblatex/cbx/authortitle-tcomp.cbx
+ tex/latex/biblatex/cbx/authortitle-terse.cbx
+ tex/latex/biblatex/cbx/authortitle-ticomp.cbx
+ tex/latex/biblatex/cbx/authortitle.cbx
+ tex/latex/biblatex/cbx/authoryear-comp.cbx
+ tex/latex/biblatex/cbx/authoryear-ibid.cbx
+ tex/latex/biblatex/cbx/authoryear-icomp.cbx
+ tex/latex/biblatex/cbx/authoryear.cbx
+ tex/latex/biblatex/cbx/debug.cbx
+ tex/latex/biblatex/cbx/draft.cbx
+ tex/latex/biblatex/cbx/numeric-comp.cbx
+ tex/latex/biblatex/cbx/numeric-verb.cbx
+ tex/latex/biblatex/cbx/numeric.cbx
+ tex/latex/biblatex/cbx/reading.cbx
+ tex/latex/biblatex/cbx/verbose-ibid.cbx
+ tex/latex/biblatex/cbx/verbose-inote.cbx
+ tex/latex/biblatex/cbx/verbose-note.cbx
+ tex/latex/biblatex/cbx/verbose-trad1.cbx
+ tex/latex/biblatex/cbx/verbose-trad2.cbx
+ tex/latex/biblatex/cbx/verbose-trad3.cbx
+ tex/latex/biblatex/cbx/verbose.cbx
+ tex/latex/biblatex/lbx/UKenglish.lbx
+ tex/latex/biblatex/lbx/USenglish.lbx
+ tex/latex/biblatex/lbx/american.lbx
+ tex/latex/biblatex/lbx/australian.lbx
+ tex/latex/biblatex/lbx/austrian.lbx
+ tex/latex/biblatex/lbx/brazil.lbx
+ tex/latex/biblatex/lbx/brazilian.lbx
+ tex/latex/biblatex/lbx/british.lbx
+ tex/latex/biblatex/lbx/canadian.lbx
+ tex/latex/biblatex/lbx/catalan.lbx
+ tex/latex/biblatex/lbx/croatian.lbx
+ tex/latex/biblatex/lbx/czech.lbx
+ tex/latex/biblatex/lbx/danish.lbx
+ tex/latex/biblatex/lbx/dutch.lbx
+ tex/latex/biblatex/lbx/english.lbx
+ tex/latex/biblatex/lbx/estonian.lbx
+ tex/latex/biblatex/lbx/finnish.lbx
+ tex/latex/biblatex/lbx/french.lbx
+ tex/latex/biblatex/lbx/german.lbx
+ tex/latex/biblatex/lbx/greek.lbx
+ tex/latex/biblatex/lbx/icelandic.lbx
+ tex/latex/biblatex/lbx/italian.lbx
+ tex/latex/biblatex/lbx/naustrian.lbx
+ tex/latex/biblatex/lbx/newzealand.lbx
+ tex/latex/biblatex/lbx/ngerman.lbx
+ tex/latex/biblatex/lbx/norsk.lbx
+ tex/latex/biblatex/lbx/norwegian.lbx
+ tex/latex/biblatex/lbx/nswissgerman.lbx
+ tex/latex/biblatex/lbx/nynorsk.lbx
+ tex/latex/biblatex/lbx/polish.lbx
+ tex/latex/biblatex/lbx/portuges.lbx
+ tex/latex/biblatex/lbx/portuguese.lbx
+ tex/latex/biblatex/lbx/russian.lbx
+ tex/latex/biblatex/lbx/slovak.lbx
+ tex/latex/biblatex/lbx/slovene.lbx
+ tex/latex/biblatex/lbx/spanish.lbx
+ tex/latex/biblatex/lbx/swedish.lbx
+ tex/latex/biblatex/lbx/swissgerman.lbx
+catalogue-also translation-biblatex-de
+catalogue-ctan /macros/latex/contrib/biblatex
+catalogue-date 2016-12-06 08:05:45 +0100
+catalogue-license lppl1.3
+catalogue-topics biblio biblatex
+catalogue-version 3.7

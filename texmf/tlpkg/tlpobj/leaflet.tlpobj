@@ -1,0 +1,23 @@
+name leaflet
+category Package
+revision 43523
+shortdesc Create small handouts (flyers)
+longdesc A document class to create small hand-outs (flyers) that fit on
+longdesc a single sheet of paper which is then folded twice. Pages are
+longdesc rearranged by LaTeX so that they print correctly on a single
+longdesc sheet -- no external script is necessary. (Works with
+longdesc PostScript and PDF.) This is a complete reimplementation with
+longdesc permission of the original author Jurgen Schlegelmilch.
+containersize 5484
+containerchecksum 27c1125bb283f8507ad3628e5dc2e84454e8ef5ff730f91f36a044d1f315324f8a3887ef58124b166396c6512677737db0dc38536249648dd9fc3f630e51436b
+doccontainersize 339140
+doccontainerchecksum 013a4ef9bf00911318d3648acdbe8f3b4d5983692936d793e1d893f6c2696ccb23dd4726706209502a731e1fd7eecd6f0708e77a37c3091ae1125d59ed323354
+srccontainersize 13800
+srccontainerchecksum d2862ecd6b6e989197c407a893b52d0651cc16696b5f55ba6c00690185bae1e9a418b7316d08e1bd00df59af096ad3d3d9e6892e9859837f32e97bec81cc7574
+runfiles size=5
+ tex/latex/leaflet/leaflet.cls
+catalogue-ctan /macros/latex/contrib/leaflet
+catalogue-date 2017-03-17 18:23:39 +0100
+catalogue-license lppl
+catalogue-topics layout class
+catalogue-version 1.1b

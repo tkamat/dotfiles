@@ -1,0 +1,560 @@
+name 00texlive.installation
+category TLCore
+depend setting_available_architectures:
+depend opt_location:http://mirror.ctan.org/systems/texlive/tlnet
+depend setting_usertree:1
+
+name adjustbox
+category Package
+revision 26555
+shortdesc Graphics package-alike macros for "general" boxes
+longdesc The package provides several macros to adjust boxed content.
+longdesc One purpose is to supplement the standard graphics package,
+longdesc which defines the macros \resizebox, \scalebox and \rotatebox ,
+longdesc with the macros\trimbox and \clipbox. The main feature is the
+longdesc general \adjustbox macro which extends the "key=value"
+longdesc interface of \includegraphics from the graphics package and
+longdesc applies it to general text content. Additional provided box
+longdesc macros are \lapbox, \marginbox, \minsizebox, \maxsizebox and
+longdesc \phantombox. All macros use the collectbox package to read the
+longdesc content as a box and not as a macro argument. This allows for
+longdesc all forms of content including special material like verbatim
+longdesc content. A special feature of collectbox is used to provide
+longdesc matching environments with the identical names as the macros.
+containersize 9912
+containerchecksum 8f367a68ee3ce0d64e6b8b6861f628f80ea5dfed666fe0cd49a1fa8ea1ed6c3a6cfb32bfac4b095b056d6769fe426e013b138be6b03b0bc19c9240211841ba27
+doccontainersize 748464
+doccontainerchecksum 78e246f251262e56e3b2c9e5ae2061c7560f25cb50c4d7647a0d3d7293c0a116809350b81b456f713f625c646fad85c2e8e70f6b0278c85ac20742c1903a0402
+srccontainersize 40076
+srccontainerchecksum 85d49a28991507e95e5446dd76de817237ae5555fecec4b48852a1791837cfe1bb6e71ebb7d4c381f827ca606ff410623ebb310f6fb40115cb9e8e8544c0fc8d
+runfiles size=17
+ tex/latex/adjustbox/adjcalc.sty
+ tex/latex/adjustbox/adjustbox.sty
+ tex/latex/adjustbox/tc-dvips.def
+ tex/latex/adjustbox/tc-pdftex.def
+ tex/latex/adjustbox/tc-pgf.def
+ tex/latex/adjustbox/tc-xetex.def
+ tex/latex/adjustbox/trimclip.sty
+catalogue-also gincltex collectbox realboxes
+catalogue-ctan /macros/latex/contrib/adjustbox
+catalogue-date 2015-08-03 05:43:12 +0200
+catalogue-license lppl1.3
+catalogue-topics typesetting box-manip
+catalogue-version 1.0
+
+name biblatex
+category Package
+revision 42680
+shortdesc Sophisticated Bibliographies in LaTeX
+longdesc BibLaTeX is a complete reimplementation of the bibliographic
+longdesc facilities provided by LaTeX. Formatting of the bibliography is
+longdesc entirely controlled by LaTeX macros, and a working knowledge of
+longdesc LaTeX should be sufficient to design new bibliography and
+longdesc citation styles. BibLaTeX uses its own data backend program
+longdesc called "biber" to read and process the bibliographic data. With
+longdesc biber, BibLaTeX has many features rivalling or surpassing other
+longdesc bibliography systems. To mention a few: Full Unicode support
+longdesc Highly customisable sorting using the Unicode Collation
+longdesc Algorithm + CLDR tailoring Highly customisable bibliography
+longdesc labels Complex macro-based on-the-fly data modification without
+longdesc changing your data sources A tool mode for transforming
+longdesc bibliographic data sources Multiple bibliographies and lists of
+longdesc bibliographic information in the same document with different
+longdesc sorting Highly customisable data source inheritance rules
+longdesc Polyglossia and babel suppport for automatic language switching
+longdesc for bibliographic entries and citations Automatic bibliography
+longdesc data recoding (UTF-8 -> latin1, LaTeX macros -> UTF-8 etc)
+longdesc Remote data sources Highly sophisticated automatic name and
+longdesc name list disambiguation system Highly customisable data model
+longdesc so users can define their own bibliographic data types
+longdesc Validation of bibliographic data against a data model
+longdesc Subdivided and/or filtered bibligraphies, bibliographies per
+longdesc chapter, section etc. Apart from the features unique to
+longdesc BibLaTeX, the package also incorporates core features of the
+longdesc following packages: babelbib, bibtopic, bibunits, chapterbib,
+longdesc cite, inlinebib, mcite and mciteplus, mlbib, multibib,
+longdesc splitbib. Biber version 2.7 is required for BibLaTeX 3.7.
+containersize 182800
+containerchecksum aefbda74507639d71c13f9f2a3d614f42c59d0425f62dbf1f854155c7caa7715068674997c7235256808bb7a23fe60f413bc3832a9af3995ac322366592d4cff
+doccontainersize 6995564
+doccontainerchecksum 2b9537660620adae798df0bf0173afe2b1170471ef19165385442298410aa97c8f7d103f1500c27efc55461b57a6d74a8f47d5db05d6f0d492492017cb6b51df
+runfiles size=449
+ bibtex/bib/biblatex/biblatex/biblatex-examples.bib
+ bibtex/bst/biblatex/biblatex.bst
+ tex/latex/biblatex/bbx/alphabetic-verb.bbx
+ tex/latex/biblatex/bbx/alphabetic.bbx
+ tex/latex/biblatex/bbx/authortitle-comp.bbx
+ tex/latex/biblatex/bbx/authortitle-ibid.bbx
+ tex/latex/biblatex/bbx/authortitle-icomp.bbx
+ tex/latex/biblatex/bbx/authortitle-tcomp.bbx
+ tex/latex/biblatex/bbx/authortitle-terse.bbx
+ tex/latex/biblatex/bbx/authortitle-ticomp.bbx
+ tex/latex/biblatex/bbx/authortitle.bbx
+ tex/latex/biblatex/bbx/authoryear-comp.bbx
+ tex/latex/biblatex/bbx/authoryear-ibid.bbx
+ tex/latex/biblatex/bbx/authoryear-icomp.bbx
+ tex/latex/biblatex/bbx/authoryear.bbx
+ tex/latex/biblatex/bbx/debug.bbx
+ tex/latex/biblatex/bbx/draft.bbx
+ tex/latex/biblatex/bbx/numeric-comp.bbx
+ tex/latex/biblatex/bbx/numeric-verb.bbx
+ tex/latex/biblatex/bbx/numeric.bbx
+ tex/latex/biblatex/bbx/reading.bbx
+ tex/latex/biblatex/bbx/standard.bbx
+ tex/latex/biblatex/bbx/verbose-ibid.bbx
+ tex/latex/biblatex/bbx/verbose-inote.bbx
+ tex/latex/biblatex/bbx/verbose-note.bbx
+ tex/latex/biblatex/bbx/verbose-trad1.bbx
+ tex/latex/biblatex/bbx/verbose-trad2.bbx
+ tex/latex/biblatex/bbx/verbose-trad3.bbx
+ tex/latex/biblatex/bbx/verbose.bbx
+ tex/latex/biblatex/biblatex.cfg
+ tex/latex/biblatex/biblatex.def
+ tex/latex/biblatex/biblatex.sty
+ tex/latex/biblatex/blx-bibtex.def
+ tex/latex/biblatex/blx-compat.def
+ tex/latex/biblatex/blx-dm.def
+ tex/latex/biblatex/blx-mcite.def
+ tex/latex/biblatex/blx-natbib.def
+ tex/latex/biblatex/cbx/alphabetic-verb.cbx
+ tex/latex/biblatex/cbx/alphabetic.cbx
+ tex/latex/biblatex/cbx/authortitle-comp.cbx
+ tex/latex/biblatex/cbx/authortitle-ibid.cbx
+ tex/latex/biblatex/cbx/authortitle-icomp.cbx
+ tex/latex/biblatex/cbx/authortitle-tcomp.cbx
+ tex/latex/biblatex/cbx/authortitle-terse.cbx
+ tex/latex/biblatex/cbx/authortitle-ticomp.cbx
+ tex/latex/biblatex/cbx/authortitle.cbx
+ tex/latex/biblatex/cbx/authoryear-comp.cbx
+ tex/latex/biblatex/cbx/authoryear-ibid.cbx
+ tex/latex/biblatex/cbx/authoryear-icomp.cbx
+ tex/latex/biblatex/cbx/authoryear.cbx
+ tex/latex/biblatex/cbx/debug.cbx
+ tex/latex/biblatex/cbx/draft.cbx
+ tex/latex/biblatex/cbx/numeric-comp.cbx
+ tex/latex/biblatex/cbx/numeric-verb.cbx
+ tex/latex/biblatex/cbx/numeric.cbx
+ tex/latex/biblatex/cbx/reading.cbx
+ tex/latex/biblatex/cbx/verbose-ibid.cbx
+ tex/latex/biblatex/cbx/verbose-inote.cbx
+ tex/latex/biblatex/cbx/verbose-note.cbx
+ tex/latex/biblatex/cbx/verbose-trad1.cbx
+ tex/latex/biblatex/cbx/verbose-trad2.cbx
+ tex/latex/biblatex/cbx/verbose-trad3.cbx
+ tex/latex/biblatex/cbx/verbose.cbx
+ tex/latex/biblatex/lbx/UKenglish.lbx
+ tex/latex/biblatex/lbx/USenglish.lbx
+ tex/latex/biblatex/lbx/american.lbx
+ tex/latex/biblatex/lbx/australian.lbx
+ tex/latex/biblatex/lbx/austrian.lbx
+ tex/latex/biblatex/lbx/brazil.lbx
+ tex/latex/biblatex/lbx/brazilian.lbx
+ tex/latex/biblatex/lbx/british.lbx
+ tex/latex/biblatex/lbx/canadian.lbx
+ tex/latex/biblatex/lbx/catalan.lbx
+ tex/latex/biblatex/lbx/croatian.lbx
+ tex/latex/biblatex/lbx/czech.lbx
+ tex/latex/biblatex/lbx/danish.lbx
+ tex/latex/biblatex/lbx/dutch.lbx
+ tex/latex/biblatex/lbx/english.lbx
+ tex/latex/biblatex/lbx/estonian.lbx
+ tex/latex/biblatex/lbx/finnish.lbx
+ tex/latex/biblatex/lbx/french.lbx
+ tex/latex/biblatex/lbx/german.lbx
+ tex/latex/biblatex/lbx/greek.lbx
+ tex/latex/biblatex/lbx/icelandic.lbx
+ tex/latex/biblatex/lbx/italian.lbx
+ tex/latex/biblatex/lbx/naustrian.lbx
+ tex/latex/biblatex/lbx/newzealand.lbx
+ tex/latex/biblatex/lbx/ngerman.lbx
+ tex/latex/biblatex/lbx/norsk.lbx
+ tex/latex/biblatex/lbx/norwegian.lbx
+ tex/latex/biblatex/lbx/nswissgerman.lbx
+ tex/latex/biblatex/lbx/nynorsk.lbx
+ tex/latex/biblatex/lbx/polish.lbx
+ tex/latex/biblatex/lbx/portuges.lbx
+ tex/latex/biblatex/lbx/portuguese.lbx
+ tex/latex/biblatex/lbx/russian.lbx
+ tex/latex/biblatex/lbx/slovak.lbx
+ tex/latex/biblatex/lbx/slovene.lbx
+ tex/latex/biblatex/lbx/spanish.lbx
+ tex/latex/biblatex/lbx/swedish.lbx
+ tex/latex/biblatex/lbx/swissgerman.lbx
+catalogue-also translation-biblatex-de
+catalogue-ctan /macros/latex/contrib/biblatex
+catalogue-date 2016-12-06 08:05:45 +0100
+catalogue-license lppl1.3
+catalogue-topics biblio biblatex
+catalogue-version 3.7
+
+name collectbox
+category Package
+revision 26557
+shortdesc Collect and process macro arguments as boxes
+longdesc The package provides macros to collect and process a macro
+longdesc argument (i.e., something which looks like a macro argument) as
+longdesc a horizontal box rather than as a real macro argument. The
+longdesc "arguments" are stored as if they had been saved by \savebox or
+longdesc by the lrbox environment. Grouping tokens \bgroup and \egroup
+longdesc may be used, which allows the user to have the beginning and
+longdesc end of a group in different macro invocations, or to place them
+longdesc in the begin and end code of an environment. Arguments may
+longdesc contain verbatim material or other special use of characters.
+longdesc The macros were designed for use within other macros.
+containersize 2836
+containerchecksum 129515a741f364d14101d1aca18814b936473cf33949a7136ebb37ce6672385e32e11c47fe45c66fb384a8fc0fe236ed67fca105aa86b4c82e09cb1d629af45c
+doccontainersize 270912
+doccontainerchecksum 71fa1c7fcb8184d703106aa7cfdde07c73c3d310ef61170d88831ffa7708c13893f833bc9832337fddd990c918de70fe9283f5eebb0d3aefd2c89b1c41d241d0
+srccontainersize 8068
+srccontainerchecksum ee7ac995cb5a88496743d2e1c6f6418b6f4b06333c483dc74e8c01d17e30aa49c695dd8dee7a5b966390d7e7983c7e63f651c9fc0de3d8bf13156aa2fafa6bf0
+runfiles size=3
+ tex/latex/collectbox/collectbox.sty
+catalogue-ctan /macros/latex/contrib/collectbox
+catalogue-date 2015-08-03 05:43:12 +0200
+catalogue-license lppl1.3
+catalogue-topics boxing
+catalogue-version 0.4b
+
+name csquotes
+category Package
+revision 42841
+shortdesc Context sensitive quotation facilities
+longdesc This package provides advanced facilities for inline and
+longdesc display quotations. It is designed for a wide range of tasks
+longdesc ranging from the most simple applications to the more complex
+longdesc demands of formal quotations. The facilities include commands,
+longdesc environments, and user-definable 'smart quotes' which
+longdesc dynamically adjust to their context. Quotation marks are
+longdesc switched automatically if quotations are nested and they can be
+longdesc adjusted to the current language if the babel package is
+longdesc available. There are additional facilities designed to cope
+longdesc with the more specific demands of academic writing, especially
+longdesc in the humanities and the social sciences. All quote styles as
+longdesc well as the optional active quotes are freely configurable. The
+longdesc package is dependent on e-TeX, and requires the author's
+longdesc etoolbox package.
+containersize 17480
+containerchecksum 0eae3e2210e6f203bdd210e02269f07c6d337d13b5656caba3651efcd1f2d7ff263d665ac9332ae667839d256c55d79a7b671100bacbbad3a1c440f21597e166
+doccontainersize 313216
+doccontainerchecksum b1d0f571c175425ee5e4ae94917735be009652d4ad9282f4e76f60d712e0fdd617ee3dff1e4c7fc98597c33948a9c4a57ce44c5bf0688942de3d5ee414e93c7f
+runfiles size=23
+ tex/latex/csquotes/csq-compat.def
+ tex/latex/csquotes/csquotes.cfg
+ tex/latex/csquotes/csquotes.def
+ tex/latex/csquotes/csquotes.sty
+catalogue-ctan /macros/latex/contrib/csquotes
+catalogue-date 2016-12-28 12:50:22 +0100
+catalogue-license lppl1.3
+catalogue-topics quote-marks
+catalogue-version 5.2
+
+name currfile
+category Package
+revision 40725
+shortdesc Provide file name and path of input files
+longdesc The package provides macros holding file name information
+longdesc (directory, base name, extension, full name and full path) for
+longdesc files read by LaTeX \input and \include macros; it uses the
+longdesc file hooks provided by the author's filehook. In particular, it
+longdesc restores the parent file name after the trailing \clearpage of
+longdesc an \included file; as a result, the macros may be usefully
+longdesc employed in the page header and footer of the last printed page
+longdesc of such a file. The depth of inclusion is made available,
+longdesc together with the "parent" (including file) and "parents" (all
+longdesc including files to the root of the tree). The package
+longdesc supersedes FiNK.
+containersize 3704
+containerchecksum 90554a9561ccf79f6f52b1c09710bf15c4df666236329679382540ed10fb197004f23745f1d1f73dcce4a8f13733b19b75148ccc1cad6ce29a751683a1ca6398
+doccontainersize 170636
+doccontainerchecksum 57560d2ca7b3fb00e3b27684dc1ff7bae9f9eb243e21f000d424e205b1e5b1525988ef308ab729566f95c0ef4a47fcab827a4c98c6e17a07e44134c868b747d8
+srccontainersize 11424
+srccontainerchecksum c4e1d363fc3900d681f81ef56279de8a0e7cf5276f474a421f73a787a6e9e8e8c9669e11a2dcb67479659709f9d3bda755bee8dea7bc62f8feae077221442b22
+runfiles size=5
+ tex/latex/currfile/currfile-abspath.sty
+ tex/latex/currfile/currfile.sty
+catalogue-ctan /macros/latex/contrib/currfile
+catalogue-date 2016-04-23 21:11:00 +0200
+catalogue-license lppl1.3
+catalogue-topics doc-tool
+catalogue-version 0.7c
+
+name etoolbox
+category Package
+revision 42855
+shortdesc e-TeX tools for LaTeX
+longdesc The package is a toolbox of programming facilities geared
+longdesc primarily towards LaTeX class and package authors. It provides
+longdesc LaTeX frontends to some of the new primitives provided by e-TeX
+longdesc as well as some generic tools which are not strictly related to
+longdesc e-TeX but match the profile of this package. Note that the
+longdesc initial versions of this package were released under the name
+longdesc elatex. The package provides functions that seem to offer
+longdesc alternative ways of implementing some LaTeX kernel commands;
+longdesc nevertheless, the package will not modify any part of the LaTeX
+longdesc kernel.
+containersize 8136
+containerchecksum f9472a2d890cd1351b997ca32adefe890d6003ceeb883ee2a49798a0d3deada933a20fffecbe1d214c5261f25dac745abfd297dda9d2f545cdf5281c0a809da6
+doccontainersize 233604
+doccontainerchecksum 26e5b35a28b9a66ee72d98bfdfd77138c3cc2acd8f38155eab3cb3bc9591a8e214be2e92da03c58469bab9f09554b23a887da6ff27271257001b8c1b5a634712
+runfiles size=12
+ tex/latex/etoolbox/etoolbox.def
+ tex/latex/etoolbox/etoolbox.sty
+catalogue-ctan /macros/latex/contrib/etoolbox
+catalogue-date 2017-01-02 23:48:17 +0100
+catalogue-license lppl1.3
+catalogue-topics macro-supp
+catalogue-version 2.4
+
+name filehook
+category Package
+revision 24280
+shortdesc Hooks for input files
+longdesc The package provides several file hooks (AtBegin, AtEnd, ...)
+longdesc for files read by \input, \include and \InputIfFileExists.
+longdesc General hooks for all such files (e.g. all \include'd ones) and
+longdesc file specific hooks only used for named files are provided; two
+longdesc hooks are provided for the end of \included files -- one
+longdesc before, and one after the final \clearpage.
+containersize 4028
+containerchecksum 35770aef1ac83a61bd24a0d91012a4d368cdba2b8d746cd3030e5d7e92c317f134bda43cd5f3e9a4d59aabdd7c2ae00bc0b8346fc61cc21dc94527dc5b6470aa
+doccontainersize 258828
+doccontainerchecksum 795e3d840e4723dddede392829f75807a51ed350d6eec4247a6addf93b2669d3807f6881eb8a6a95fd31a31c6c90480706bd4302283a7c6290eb6230b4fff22b
+srccontainersize 12716
+srccontainerchecksum a03efa7d1de6a394df3e1206d1d297cdf08d5c2bbe39f8c96a52f802fb87419f934fce0da4f716949c9648504db8f36e5768f55c1974d617897e82c0624dcb93
+runfiles size=9
+ tex/latex/filehook/filehook-fink.sty
+ tex/latex/filehook/filehook-listings.sty
+ tex/latex/filehook/filehook-memoir.sty
+ tex/latex/filehook/filehook-scrlfile.sty
+ tex/latex/filehook/filehook.sty
+ tex/latex/filehook/pgf-filehook.sty
+catalogue-ctan /macros/latex/contrib/filehook
+catalogue-date 2015-08-03 05:43:12 +0200
+catalogue-license lppl1.3
+catalogue-topics macro-supp
+catalogue-version 0.5d
+
+name leaflet
+category Package
+revision 43523
+shortdesc Create small handouts (flyers)
+longdesc A document class to create small hand-outs (flyers) that fit on
+longdesc a single sheet of paper which is then folded twice. Pages are
+longdesc rearranged by LaTeX so that they print correctly on a single
+longdesc sheet -- no external script is necessary. (Works with
+longdesc PostScript and PDF.) This is a complete reimplementation with
+longdesc permission of the original author Jurgen Schlegelmilch.
+containersize 5484
+containerchecksum 27c1125bb283f8507ad3628e5dc2e84454e8ef5ff730f91f36a044d1f315324f8a3887ef58124b166396c6512677737db0dc38536249648dd9fc3f630e51436b
+doccontainersize 339140
+doccontainerchecksum 013a4ef9bf00911318d3648acdbe8f3b4d5983692936d793e1d893f6c2696ccb23dd4726706209502a731e1fd7eecd6f0708e77a37c3091ae1125d59ed323354
+srccontainersize 13800
+srccontainerchecksum d2862ecd6b6e989197c407a893b52d0651cc16696b5f55ba6c00690185bae1e9a418b7316d08e1bd00df59af096ad3d3d9e6892e9859837f32e97bec81cc7574
+runfiles size=5
+ tex/latex/leaflet/leaflet.cls
+catalogue-ctan /macros/latex/contrib/leaflet
+catalogue-date 2017-03-17 18:23:39 +0100
+catalogue-license lppl
+catalogue-topics layout class
+catalogue-version 1.1b
+
+name lipsum
+category Package
+revision 34800
+shortdesc Easy access to the Lorem Ipsum dummy text
+longdesc This package gives you easy access to the Lorem Ipsum dummy
+longdesc text; an option is available to separate the paragraphs of the
+longdesc dummy text into TeX-paragraphs. All the paragraphs are taken
+longdesc with permission from http://lipsum.com/.
+containersize 24996
+containerchecksum c10c9355eb5dd31ae1de5f423328f8024cd4d1713d13bf22f1745f6c2eed9072399e3501c047f6ae6b4b6f83a977a5427d2aec249e68728593891be91aaaed13
+doccontainersize 425460
+doccontainerchecksum 22b0ab7a8bc531796453fbbd1ee1e7f284a3909010e3d6b3972e9aa8b6d589a6b91500d11c65671304564dd9cfac209dff2eb21b070c1266cefd069d7945bac3
+srccontainersize 28492
+srccontainerchecksum 8678218c23e21bb0a9c5035737b2b09ed067f1cfdb73389ccab3a68be5ffb8f34c1058e30c9dd405b33c754be7408210c83ef49554b0da0c0596ed93e79fbc97
+runfiles size=26
+ tex/latex/lipsum/lipsum.sty
+catalogue-also blindtext kantlipsum
+catalogue-ctan /macros/latex/contrib/lipsum
+catalogue-date 2016-06-24 19:18:15 +0200
+catalogue-license lppl
+catalogue-topics macro-supp dummy-gen
+catalogue-version 1.3
+
+name logreq
+category Package
+revision 19640
+shortdesc Support for automation of the LaTeX workflow
+longdesc The package helps to automate a typical LaTeX workflow that
+longdesc involves running LaTeX several times, running tools such as
+longdesc BibTeX or makeindex, and so on. It will log requests like
+longdesc "please rerun LaTeX" or "please run BibTeX on file X" to an
+longdesc external XML file which lists all open tasks in a machine-
+longdesc readable format. Compiler scripts and integrated LaTeX editing
+longdesc environments may parse this file to determine the next steps in
+longdesc the workflow in a way that is more efficient than parsing the
+longdesc main log file. In sum, the package will do two things: enable
+longdesc package authors to use LaTeX commands to issue requests,
+longdesc collect all requests from all packages and write them to an
+longdesc external XML file at the end of the document.
+containersize 3200
+containerchecksum 58088d0c286fe1b53f54c03850bf5097a0dc467e21b4014ac74fcef71ba820245348b471d2ca5737cdb2964e685d2f79706f09aa8dd892c1b72c83cd8553b0e8
+doccontainersize 3792
+doccontainerchecksum 1c054f08f2662d9a3256b06da86799c9c44fb2d49b31132317e3f79f2e9817d18a3634902d20228cba323c059d3d0f893a7a77ac8c217f8ca3727316ad10709f
+runfiles size=3
+ tex/latex/logreq/logreq.def
+ tex/latex/logreq/logreq.sty
+catalogue-ctan /macros/latex/contrib/logreq
+catalogue-date 2016-06-24 19:18:15 +0200
+catalogue-license lppl1.3
+catalogue-topics compilation
+catalogue-version 1.0
+
+name sauerj
+category Package
+revision 15878
+shortdesc A bundle of utilities by Jonathan Sauer
+longdesc The bundle consists of: a tool for collecting text for later re-
+longdesc use, a tool for typesetting the "meta-information" within a
+longdesc text, a tool for use in constructing macros with multiple
+longdesc optional parameters, a package for multiple column parallel
+longdesc texts, a tool for processing key-value structured lists, and
+longdesc macros for typesetting a number as a German-language string.
+containersize 5004
+containerchecksum 6b4d5de46807711cf8fa81850e3ce198a7cbbd44e70f6542bbecbfc5e0f2361ee0039bcd481697a44fc6b0f709edc5817e8b09590d0aebc25c3ead4edfac55a8
+doccontainersize 543060
+doccontainerchecksum 7a04c5f1f387c27c0c88805ba821a079abcb3c222f9aab6f6c6f68db871dae49299cf89af38017e28a46eb3428687e8fcb7aa40e0d459003a3ec37ad1f448385
+srccontainersize 29484
+srccontainerchecksum 975754951efcc47393e5a68f85b6cfce0552836d9027697771cae3def94b20655a96ddf364c4e26335337ce993e6d1345de148af833165cb09fe4d7aa303ad8f
+runfiles size=8
+ tex/latex/sauerj/collect.sty
+ tex/latex/sauerj/metainfo.sty
+ tex/latex/sauerj/optparams.sty
+ tex/latex/sauerj/parcolumns.sty
+ tex/latex/sauerj/processkv.sty
+ tex/latex/sauerj/zahl2string.sty
+catalogue-ctan /macros/latex/contrib/sauerj
+catalogue-date 2015-08-03 05:43:12 +0200
+catalogue-license lppl
+catalogue-topics collection
+
+name siunitx
+category Package
+revision 44946
+shortdesc A comprehensive (SI) units package
+longdesc Typesetting values with units requires care to ensure that the
+longdesc combined mathematical meaning of the value plus unit
+longdesc combination is clear. In particular, the SI units system lays
+longdesc down a consistent set of units with rules on how they are to be
+longdesc used. However, different countries and publishers have
+longdesc differing conventions on the exact appearance of numbers (and
+longdesc units). A number of LaTeX packages have been developed to
+longdesc provide consistent application of the various rules: SIunits,
+longdesc sistyle, unitsdef and units are the leading examples. The
+longdesc numprint package provides a large number of number-related
+longdesc functions, while dcolumn and rccol provide tools for
+longdesc typesetting tabular numbers. The siunitx package takes the best
+longdesc from the existing packages, and adds new features and a
+longdesc consistent interface. A number of new ideas have been
+longdesc incorporated, to fill gaps in the existing provision. The
+longdesc package also provides backward-compatibility with SIunits,
+longdesc sistyle, unitsdef and units. The aim is to have one package to
+longdesc handle all of the possible unit-related needs of LaTeX users.
+longdesc The package relies on LaTeX 3 support from the l3kernel and
+longdesc l3packages bundles.
+containersize 35104
+containerchecksum bf3055bae3ded05d5b0b672ce2961550d1b9056ba90f1dbc17a6f143f004502d0368f12c0d257623598bbb2379f81c174cc6c6bdcf0033c1bd28358f3fdac120
+doccontainersize 611764
+doccontainerchecksum 3fbba972dffe4a3cb8e8ea03c042559421c4656b3562bec423a8cbef0abd9a8a64e3e6ef4131163112c28ac5e6ea22604fa4cb7b5563aaa5e4ed21ae5faa7649
+srccontainersize 104212
+srccontainerchecksum f234fbb7e5da00e8c3d6f68692f04cff6b74713a5692e820db6069feb7633ebeadd8eca69c8b3b97912541677ac336993f3f0beaad6551097f2189220e2c7d3e
+runfiles size=80
+ tex/latex/siunitx/siunitx-abbreviations.cfg
+ tex/latex/siunitx/siunitx-binary.cfg
+ tex/latex/siunitx/siunitx-version-1.cfg
+ tex/latex/siunitx/siunitx.sty
+catalogue-ctan /macros/latex/contrib/siunitx
+catalogue-date 2017-08-03 05:05:15 +0200
+catalogue-license lppl1.3c
+catalogue-topics units scientific-docs
+catalogue-version 2.7j
+
+name standalone
+category Package
+revision 37875
+shortdesc Compile TeX pictures stand-alone or as part of a document
+longdesc A class and package is provided which allows TeX pictures or
+longdesc other TeX code to be compiled standalone or as part of a main
+longdesc document. Special support for pictures with beamer overlays is
+longdesc also provided. The package is used in the main document and
+longdesc skips extra preambles in sub-files. The class may be used to
+longdesc simplify the preamble in sub-files. By default the preview
+longdesc package is used to display the typeset code without margins.
+longdesc The behaviour in standalone mode may adjusted using a
+longdesc configuration file standalone.cfg to redefine the standalone
+longdesc environment.
+containersize 11424
+containerchecksum 09253b83385ec1ee340bfa2b60b893e82456cc0e02e49e0db540660f20531223797ceecdf49ed0c1b82a594b5226d01dd0ccdefcc8c2649e0a5d7493a907df61
+doccontainersize 266888
+doccontainerchecksum 84fae6be90d26df325f329c4f63b48c7338403de6b1d2bab03019fc0265caa1d92c12dcd41e312076fadfc489af86b4fbd623f7181673c59a014e018f8eae160
+srccontainersize 37628
+srccontainerchecksum 42a52a238d978a7e7b242b9f9448bb821df8f2cd7c88afd11226a722f029ede7ea69f85a65f154ee2d2e8fc0508e66b07b42f02f3515038db3b9d1a971c0cca2
+runfiles size=17
+ tex/latex/standalone/standalone.cfg
+ tex/latex/standalone/standalone.cls
+ tex/latex/standalone/standalone.sty
+ tex/plain/standalone/standalone.tex
+catalogue-also combine docmute includex newclude
+catalogue-ctan /macros/latex/contrib/standalone
+catalogue-date 2015-08-03 05:43:12 +0200
+catalogue-license lppl1.3
+catalogue-topics subdocs class
+catalogue-version 1.2
+
+name svn-prov
+category Package
+revision 18017
+shortdesc Subversion variants of \Provides... macros
+longdesc The package introduces Subversion variants of the standard
+longdesc LaTeX macros \ProvidesPackage, \ProvidesClass and \ProvidesFile
+longdesc where the file name and date is extracted from Subversion Id
+longdesc keywords. The file name may also be given explicitly as an
+longdesc optional argument.
+containersize 2380
+containerchecksum a1957d9679ea875e5e7fb80a0a0df4511128f1b1d64c32d18b44c5220e244734f04bcd4a29ad2907b8af5053ccd5a50e96bcd578619762d7a5b1f9fe30eeaba0
+doccontainersize 242156
+doccontainerchecksum 94df242c80388ab032b316526d1bef75ca95c99e279f338787172f47958f201785ae7e3f3cef2e2b9522cb967cfd938c10cd50edb62db6921ff4a3a3dabebf3a
+srccontainersize 10000
+srccontainerchecksum c60b94b9b7314aec81a00399017e7c99f4f437853370fd62649d2a648fa97efb1d838902d87f86e85920a4ff58bfb9ea9841f0fc9bb1f91d22369b7af25feb29
+runfiles size=2
+ tex/latex/svn-prov/svn-prov.sty
+catalogue-ctan /macros/latex/contrib/svn-prov
+catalogue-date 2015-08-03 05:43:12 +0200
+catalogue-license lppl
+catalogue-topics version-control doc-mgmt
+catalogue-version 3.1862
+
+name xstring
+category Package
+revision 31900
+shortdesc String manipulation for (La)TeX
+longdesc The package provides macros for manipulating strings -- testing
+longdesc a string's contents, extracting substrings, substitution of
+longdesc substrings and providing numbers such as string length,
+longdesc position of, or number of recurrences of, a substring. The
+longdesc package works equally in Plain TeX and LaTeX (though e-TeX is
+longdesc always required). The strings to be processed may contain
+longdesc (expandable) macros.
+containersize 11848
+containerchecksum 1def725f1f2f833985a821f274c40c09e2fc5eb226cccfc2a97a57b58e731c4dcd9f32e1b3ee57c5bb6399880568c1549d093b96834e8cc84401137f5bc1f0ce
+doccontainersize 481072
+doccontainerchecksum 4d213d2fb30ffed679a3abd25b65cfc1559f0ab5ae54f4ba3ca49013da493ad583b2e07fc0604e14896c2e92e3b4d0066420f951650aa414d6750cbcd439b21c
+runfiles size=15
+ tex/generic/xstring/xstring.sty
+ tex/generic/xstring/xstring.tex
+catalogue-ctan /macros/generic/xstring
+catalogue-date 2016-06-24 19:18:15 +0200
+catalogue-license lppl
+catalogue-topics string
+catalogue-version 1.7c
+

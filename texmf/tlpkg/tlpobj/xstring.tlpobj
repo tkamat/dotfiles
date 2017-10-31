@@ -1,0 +1,23 @@
+name xstring
+category Package
+revision 31900
+shortdesc String manipulation for (La)TeX
+longdesc The package provides macros for manipulating strings -- testing
+longdesc a string's contents, extracting substrings, substitution of
+longdesc substrings and providing numbers such as string length,
+longdesc position of, or number of recurrences of, a substring. The
+longdesc package works equally in Plain TeX and LaTeX (though e-TeX is
+longdesc always required). The strings to be processed may contain
+longdesc (expandable) macros.
+containersize 11848
+containerchecksum 1def725f1f2f833985a821f274c40c09e2fc5eb226cccfc2a97a57b58e731c4dcd9f32e1b3ee57c5bb6399880568c1549d093b96834e8cc84401137f5bc1f0ce
+doccontainersize 481072
+doccontainerchecksum 4d213d2fb30ffed679a3abd25b65cfc1559f0ab5ae54f4ba3ca49013da493ad583b2e07fc0604e14896c2e92e3b4d0066420f951650aa414d6750cbcd439b21c
+runfiles size=15
+ tex/generic/xstring/xstring.sty
+ tex/generic/xstring/xstring.tex
+catalogue-ctan /macros/generic/xstring
+catalogue-date 2016-06-24 19:18:15 +0200
+catalogue-license lppl
+catalogue-topics string
+catalogue-version 1.7c
