@@ -1,0 +1,12 @@
+[submodule "el-go"]
+	path = el-go
+	url = git://github.com/eschulte/el-go.git
+[submodule "expand-region.el"]
+	path = expand-region.el
+	url = https://github.com/magnars/expand-region.el.git
+[submodule "moe-theme.el"]
+	path = moe-theme.el
+	url = https://github.com/kuanyui/moe-theme.el.git
+[submodule "pdf-tools"]
+	path = pdf-tools
+	url = https://github.com/politza/pdf-tools.git
