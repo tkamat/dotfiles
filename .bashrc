@@ -116,7 +116,7 @@ if ! shopt -oq posix; then
   fi
 fi
 
-export EDITOR='emacsclient -a emacs'
+export EDITOR='xiwi emacs'
 
 function gimmie() { 
 	cd $( dirname $( locate $1 | head -n 1 )) 
@@ -133,4 +133,5 @@ function swap() {
 
 export -f swap
 
-alias e=$EDITOR 
+alias e="xiwi emacs"
+nohup sh ~/.dropbox-dist/dropboxd &>/dev/null/ &
