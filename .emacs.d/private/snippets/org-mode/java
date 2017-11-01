@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+#name : java
+#key : java
+#contributor : Tushaar Kamat
+# --
+
+#+HEADERS: :classname $1
+#+begin_src java :results output :exports both
+public class $1 {
+    public static void main(String[] args) {
+        $0
+    }
+}
+#+end_src

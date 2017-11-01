@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: horizontal
+# key: rule
+# --
+\rule{\textwidth}{0.5pt}

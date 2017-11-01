@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# name: mla-paper
+# key: mla
+# --
+\documentclass[12pt]{article}
+
+\usepackage{ifpdf}
+\usepackage{mla}
+\usepackage{microtype}
+\usepackage[english]{isodate}
+\cleanlookdateon
+
+\begin{document}
+\begin{mla}{Tushaar}{Kamat}{${1:Teacher}}{${2:Class}}{\today}{${3:Title}}
+
+
+
+\end{mla}
+\end{document}

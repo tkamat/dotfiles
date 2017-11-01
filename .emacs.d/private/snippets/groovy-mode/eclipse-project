@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# name: eclipse project
+# key: eclipse-project
+# --
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'eclipse'
+
+mainClassName = '$1'
+
+jar {
+  manifest {
+    attributes 'Main-Class' : '$1'
+  }
+}
+
+run {
+  standardInput = System.in
+}

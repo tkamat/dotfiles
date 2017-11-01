@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: parcolumns
+# key: parcol
+# --
+\begin{parcolumns}[rulebetween=true]{2}
+\colchunk[1]{
+$1
+}
+\colchunk[2]{
+$2
+}
+\end{parcolumns}

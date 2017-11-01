@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# name: beamer
+# key: beamer
+# --
+\documentclass[fleqn, t]{beamer}
+
+\usetheme[block=fill,numbering=none,sectionpage=none,subsectionpage=progressbar]{metropolis}
+
+\title{$1}
+\subtitle{$2}
+\institution{Nease High School}
+\author{Tushaar Kamat}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\end{document}

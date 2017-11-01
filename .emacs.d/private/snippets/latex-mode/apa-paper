@@ -1,0 +1,27 @@
+# -*- mode: snippet -*-
+# name: apa format
+# key: apa
+# --
+\documentclass[12pt]{apa6}
+
+\usepackage[style=apa,backend=biber]{biblatex}
+\usepackage{microtype}
+\usepackage[onlytext]{MinionPro}
+\usepackage{eulervm}
+
+\DeclareLanguageMapping{english}{english-apa}
+
+\addbibresource{$1}
+
+\author{Tushaar Kamat}
+\date{\today}
+\title{$2}
+\abstract{$3}
+
+\begin{document}
+\maketitle
+  
+
+\printbibliography
+
+\end{document}

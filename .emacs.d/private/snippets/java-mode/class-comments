@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: class-comments
+# key: class-comments
+# --
+/**
+ * $1
+ *
+ * @author Tushaar Kamat
+ * @version `(format-time-string "%m/%d/%Y")`$0
+ */
