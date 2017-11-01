@@ -92,7 +92,8 @@ values."
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(fill-column-indicator
+                                    )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -327,6 +328,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   )
 
 (defun dotspacemacs/user-config ()
+  (server-start)
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
 layers configuration.
