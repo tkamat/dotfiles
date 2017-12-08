@@ -76,7 +76,6 @@ values."
    dotspacemacs-additional-packages '(thesaurus
                                       gradle-mode
                                       groovy-mode
-                                      (el-go :location "~/.emacs.d/el-go")
                                       writegood-mode
                                       xresources-theme
                                       dired-ranger
@@ -93,7 +92,8 @@ values."
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '(fill-column-indicator
-                                    )
+		   exec-path-from-shell
+		   )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -169,6 +169,7 @@ values."
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
                                :size 16
+                               :height 110
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -284,7 +285,7 @@ values."
    ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
    ;; derivatives. If set to `relative', also turns on relative line numbers.
    ;; (default nil)
-   dotspacemacs-line-numbers 'nil
+   dotspacemacs-line-numbers nil
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'evil
@@ -301,7 +302,7 @@ values."
    dotspacemacs-highlight-delimiters 'all
    ;; If non nil, advise quit functions to keep server open when quitting.
    ;; (default nil)
-   dotspacemacs-persistent-server t
+   dotspacemacs-persistent-server nil
    ;; List of search tool executable names. Spacemacs uses the first installed
    ;; tool of the list. Supported tools are `ag', `pt', `ack' and `grep'.
    ;; (default '("ag" "pt" "ack" "grep"))
@@ -328,7 +329,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   )
 
 (defun dotspacemacs/user-config ()
-  (server-start)
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
 layers configuration.
@@ -341,6 +341,7 @@ you should place your code here."
   (advice-add 'org-agenda-quit :before 'org-save-all-org-buffers)
   (advice-add 'org-agenda-todo :after 'org-save-all-org-buffers)
   (advice-add 'org-agenda-redo :after 'org-save-all-org-buffers)
+  (advice-add 'org-gcal-sync :before 'org-gcal-refresh-token)
 
   ;; agenda files
   (setq org-agenda-files (list "~/Dropbox/org/test.org.txt" "~/Dropbox/org/gcal.org" "~/Dropbox/org/schoology.org"))
@@ -407,6 +408,7 @@ you should place your code here."
   (add-hook 'org-agenda-redo-hook (lambda () (org-gcal-sync)))
 
   ;; functions
+
   (defun my/org-agenda-gcal ()
     (interactive)
     (browse-url "https://calendar.google.com/calendar/render#main_7%7Cmonth")) 
@@ -451,7 +453,7 @@ you should place your code here."
   (latex-preview-pane-enable)
   (setq langtool-default-language "en-US")
   (define-key company-mode-map (kbd "M-SPC") 'company-complete)
-  (setq thesaurus-bhl-api-key "c8a8969932f1c69d2f464578b9761c48")
+  (setq thesaurus-bhl-api-key "ce6c9369f52c6664a7f6c3840145839e")
   (global-prettify-symbols-mode)
 
 
@@ -497,6 +499,8 @@ you should place your code here."
             )))
  (add-hook 'clojure-mode-hook 'my-add-pretty-lambda)
 
+ (setq exec-path-from-shell-arguments '("-c"))
+
   ;; location
   (setq calendar-location-name "Jacksonville, FL")
   (setq calendar-latitude 29.9)
@@ -516,6 +520,7 @@ you should place your code here."
       (end-of-line)
       (insert ";")))
   (setq tab-always-indent 'complete)
+  
 
 
   ;; email config
@@ -551,8 +556,14 @@ you should place your code here."
   (defun my/testing ()
     "Test function"
     (message "hi!"))
+  (defun my/play-midi ()
+    (interactive)
+    (async-shell-command (concat "fluidsynth -ni -C0 -R1 -l -a alsa ~/drive/Nease\\ IB/Music/midi/FluidR3_GM.sf2 " "\"" (file-name-sans-extension buffer-file-name) ".midi" "\""))
+    )
+  (add-hook 'LilyPond-mode-hook (lambda () (local-set-key [3 16] (quote my/play-midi))))
 
   ;; my-keys mode
+  (require 'helm-bookmark)
   (defvar my-keys-minor-mode-map
     (let ((map (make-sparse-keymap)))
       (define-key map (kbd "C-k") 'evil-scroll-up)
@@ -697,7 +708,7 @@ static char *gnus-pointer[] = {
        (tags "REFILE" nil)
        (todo "DONE"
              ((org-agenda-overriding-header "Tasks to Archive")
-              (org-agenda-skip-function
+             (org-agenda-skip-function
                (quote bh/skip-non-archivable-tasks))
               (org-tags-match-list-sublevels nil))
              nil))))))
