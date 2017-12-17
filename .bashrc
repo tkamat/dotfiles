@@ -140,6 +140,6 @@ eval insync-headless start
 cmd="sh ~/.dropbox-dist/dropboxd"
 eval "${cmd}" &>/dev/null &disown
 eval synclient FingerLow=1 FingerHigh=5
-alias df="xiwi ~/drive/df_linux/df & "
+alias df="~/drive/df_linux/soundsense/soundSense.sh&  ~/drive/df_linux/dfhack "
 alias soundsense="xiwi ~/drive/df_linux/soundsense/soundSense.sh & "
 alias midi="fluidsynth -ni -C0 -R1 -l -a alsa ~/drive/Nease\ IB/Music/midi/FluidR3_GM.sf2 "
