@@ -286,7 +286,7 @@ values."
    ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
    ;; derivatives. If set to `relative', also turns on relative line numbers.
    ;; (default nil)
-   dotspacemacs-line-numbers nil
+   dotspacemacs-line-numbers 'relative
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'evil
@@ -485,6 +485,7 @@ you should place your code here."
 
   ;; miscellaneous
  (add-hook 'emacs-lisp-mode-hook 'smartparens-strict-mode)
+ (add-hook 'clojure-mode-hook 'smartparens-strict-mode)
  (add-hook 'smartparens-strict-mode-hook 'evil-smartparens-mode)
  (ranger-override-dired-mode t)
  (spacemacs/set-leader-keys "fx" 'ranger)
@@ -551,8 +552,9 @@ you should place your code here."
 
 
   ;; keybindings
-
+  (evil-leader/set-key-for-mode 'emacs-lisp-mode "ep" 'eval-and-replace)
   (evil-leader/set-key-for-mode 'latex-mode "pm" 'latex-preview-pane-mode)
+  (define-key evil-visual-state-map (kbd "mc") 'mc/edit-lines)
   (define-key evil-normal-state-map (kbd "'") 'evil-goto-mark)
   (defun my/testing ()
     "Test function"
@@ -562,6 +564,15 @@ you should place your code here."
     (async-shell-command (concat "fluidsynth -ni -C0 -R1 -l -a alsa ~/drive/Nease\\ IB/Music/midi/FluidR3_GM.sf2 " "\"" (file-name-sans-extension buffer-file-name) ".midi" "\""))
     )
   (add-hook 'LilyPond-mode-hook (lambda () (local-set-key [3 16] (quote my/play-midi))))
+  (defun eval-and-replace ()
+    "Replace the preceding sexp with its value."
+    (interactive)
+    (backward-kill-sexp)
+    (condition-case nil
+        (prin1 (eval (read (current-kill 0)))
+               (current-buffer))
+      (error (message "Invalid expression")
+             (insert (current-kill 0)))))
 
   ;; my-keys mode
   (require 'helm-bookmark)
@@ -573,6 +584,7 @@ you should place your code here."
       (define-key map (kbd "C-;") 'insert-semicolon-at-the-end-of-this-line)
       (define-key map (kbd "C-SPC") 'er/expand-region)
       (define-key map (kbd "M-[") 'yas-expand)
+      (define-key map (kbd "C-x p") 'eval-and-replace)
       map)
     "my-keys-minor-mode keymap.")
   (define-minor-mode my-keys-minor-mode
@@ -645,9 +657,12 @@ static char *note[] = {
 \"######....\",
 \"#######..#\" };")))
  '(evil-escape-key-sequence "jk")
+ '(evil-move-beyond-eol t)
+ '(evil-move-cursor-back t)
  '(evil-want-Y-yank-to-eol nil)
  '(fci-rule-color "#383838")
  '(global-auto-revert-mode t)
+ '(global-evil-mc-mode t)
  '(global-vi-tilde-fringe-mode nil)
  '(gnus-logo-colors (quote ("#4c8383" "#bababa")) t)
  '(gnus-mode-line-image-cache
@@ -709,7 +724,7 @@ static char *gnus-pointer[] = {
        (tags "REFILE" nil)
        (todo "DONE"
              ((org-agenda-overriding-header "Tasks to Archive")
-             (org-agenda-skip-function
+              (org-agenda-skip-function
                (quote bh/skip-non-archivable-tasks))
               (org-tags-match-list-sublevels nil))
              nil))))))
@@ -738,4 +753,4 @@ static char *gnus-pointer[] = {
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((((class color) (min-colors 89)) (:foreground "#ffffff" :background "#263238")))))

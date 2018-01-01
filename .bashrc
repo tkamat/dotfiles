@@ -116,7 +116,7 @@ if ! shopt -oq posix; then
   fi
 fi
 
-export EDITOR='xiwi emacs'
+export EDITOR='xiwi emacs25'
 
 function gimmie() { 
 	cd $( dirname $( locate $1 | head -n 1 )) 
@@ -133,7 +133,7 @@ function swap() {
 
 export -f swap
 
-alias e="xiwi emacs"
+alias e="xiwi emacs25"
 alias studio="xiwi studio"
 alias idea="xiwi idea"
 eval insync-headless start
