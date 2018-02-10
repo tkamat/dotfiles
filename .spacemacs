@@ -31,6 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     csv
      clojure
      python
      php
@@ -38,11 +39,6 @@ values."
      yaml
      html
      (c-c++ :variables c-c++-enable-clang-support t)
-     ;; ----------------------------------------------------------------
-     ;; Example of useful layers you may want to use right away.
-     ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
-     ;; <M-m f e R> (Emacs style) to install them.
-     ;; ----------------------------------------------------------------
      helm
      auto-completion
      (auto-completion :variables
@@ -94,6 +90,7 @@ values."
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '(fill-column-indicator
 		   exec-path-from-shell
+       org-projectile
 		   )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -251,7 +248,7 @@ values."
    ;; right; if there is insufficient space it displays it at the bottom.
    ;; (default 'bottom)
    dotspacemacs-which-key-position 'bottom
-   ;; If non nil a progress bar is displayed when spacemacs is loading. This
+;; If non nil a progress bar is displayed when spacemacs is loading. This
    ;; may increase the boot time on some systems and emacs builds, set it to
    ;; nil to boost the loading time. (default t)
    dotspacemacs-loading-progress-bar t
@@ -337,6 +334,13 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
+  ;; clojure config
+  (require 'seq-25)
+  (setq cider-cljs-lein-repl
+        "(do (require 'figwheel-sidecar.repl-api)
+         (figwheel-sidecar.repl-api/start-figwheel!)
+         (figwheel-sidecar.repl-api/cljs-repl))")
+
   ;; org-mode config
   (setq org-export-with-section-numbers nil)
   (advice-add 'org-agenda-quit :before 'org-save-all-org-buffers)
@@ -345,29 +349,29 @@ you should place your code here."
   (advice-add 'org-gcal-sync :before 'org-gcal-refresh-token)
 
   ;; agenda files
-  (setq org-agenda-files (list "~/Dropbox/org/test.org.txt" "~/Dropbox/org/gcal.org" "~/Dropbox/org/schoology.org"))
+  (setq org-agenda-files (list "~/Dropbox/org/todo.org.txt" "~/Dropbox/org/gcal.org" "~/Dropbox/org/schoology.org"))
   (focus-autosave-mode)
   ;; todo settings
   (setq org-todo-keywords
-        (quote ((sequence "TODO(t)" "ONGOING(o)" "|" "DONE(d)")
-                (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))))
+        (quote ((sequence "TODO(t)" "ONGOING(o)" "FUTURE(f)" "|" "DONE(d)")
+                (sequence "WAITING(w@/!)" "|" "CANCELLED(c@/!)"))))
   (setq org-todo-keyword-faces
         (quote (("TODO" :foreground "red" :weight bold)
-                ("ONGOING" :foreground "blue" :weight bold)
+                ("ONGOING" :foreground "light blue" :weight bold)
+                ("FUTURE" :foreground "purple" :weight bold)
                 ("DONE" :foreground "forest green" :weight bold)
                 ("WAITING" :foreground "orange" :weight bold)
-                ("HOLD" :foreground "magenta" :weight bold)
                 ("CANCELLED" :foreground "forest green" :weight bold))))
   (setq org-use-fast-todo-selection t)
-  (setq org-default-notes-file "~/Dropbox/org/test.org.txt")
+  (setq org-default-notes-file "~/Dropbox/org/todo.org.txt")
   ;; capture settings
   (setq org-capture-templates
-        (quote (("t" "todo" entry (file+headline "~/Dropbox/org/test.org.txt" "Refile")
+        (quote (("t" "todo" entry (file+headline "~/Dropbox/org/todo.org.txt" "Refile")
                  "** TODO")
                 ("e" "Event" entry (file  "~/Dropbox/org/gcal.org" )
                  "* %?\n\n%^T\n\n")
                 )))
-  ;; refiling settings 
+  ;; refiling settings
   (setq org-refile-targets '((nil :maxlevel . 9)
                              (org-agenda-files :maxlevel . 9)))
   (setq org-outline-path-complete-in-steps nil)         ; Refile in a single go
@@ -428,10 +432,6 @@ you should place your code here."
   (evil-leader/set-key-for-mode 'org-agenda-mode "r" 'org-gcal-sync)
   (evil-leader/set-key-for-mode 'latex-mode "w" 'thesaurus-choose-synonym-and-replace)
 
-  ;;server
-
-
-
   ;;java config
 
   ;;required packages
@@ -440,16 +440,18 @@ you should place your code here."
   (require 'gradle-mode)
   (require 'company)
   (require 'company-emacs-eclim)
+
   ;;eclim settings
   (add-hook 'java-mode-hook '(lambda() (gradle-mode 1)))
   (evil-leader/set-key-for-mode 'java-mode "hj" 'eclim-java-doc-comment)
   (company-emacs-eclim-setup)
+
   ;;global modes
   (global-company-mode t)
   (global-eclim-mode t)
   (require 'langtool)
   (setq browse-url-browser-function 'browse-url-generic
-      browse-url-generic-program "chromium-browser")
+      browse-url-generic-program "firefox")
   (add-to-list 'auto-mode-alist '("\\.txt$" . org-mode))
   (latex-preview-pane-enable)
   (setq langtool-default-language "en-US")
@@ -522,8 +524,6 @@ you should place your code here."
       (end-of-line)
       (insert ";")))
   (setq tab-always-indent 'complete)
-  
-
 
   ;; email config
   (setq mu4e-maildir (expand-file-name "~/Maildir"))
@@ -539,6 +539,8 @@ you should place your code here."
   (setq
    user-mail-address "platypusdiamond@gmail.com"
    user-full-name  "Tushaar Kamat")
+  (require 'smtpmail)
+
   (setq message-send-mail-function 'smtpmail-send-it
         starttls-use-gnutls t
         smtpmail-starttls-credentials
@@ -549,7 +551,8 @@ you should place your code here."
         smtpmail-smtp-server "smtp.gmail.com"
         smtpmail-smtp-service 587
         smtpmail-debug-info t)
-
+  (setq mu4e-update-interval 6000)
+  (require 'org-mu4e)
 
   ;; keybindings
   (evil-leader/set-key-for-mode 'emacs-lisp-mode "ep" 'eval-and-replace)
@@ -664,30 +667,6 @@ static char *note[] = {
  '(global-auto-revert-mode t)
  '(global-evil-mc-mode t)
  '(global-vi-tilde-fringe-mode nil)
- '(gnus-logo-colors (quote ("#4c8383" "#bababa")) t)
- '(gnus-mode-line-image-cache
-   (quote
-    (image :type xpm :ascent center :data "/* XPM */
-static char *gnus-pointer[] = {
-/* width height num_colors chars_per_pixel */
-\"    18    13        2            1\",
-/* colors */
-\". c #1ba1a1\",
-\"# c None s None\",
-/* pixels */
-\"##################\",
-\"######..##..######\",
-\"#####........#####\",
-\"#.##.##..##...####\",
-\"#...####.###...##.\",
-\"#..###.######.....\",
-\"#####.########...#\",
-\"###########.######\",
-\"####.###.#..######\",
-\"######..###.######\",
-\"###....####.######\",
-\"###..######.######\",
-\"###########.######\" };")) t)
  '(haskell-font-lock-symbols t)
  '(haskell-font-lock-symbols-alist
    (quote
@@ -720,7 +699,7 @@ static char *gnus-pointer[] = {
    (quote
     ((" " "My Agenda"
       ((agenda "" nil)
-       (todo "ONGOING" nil)
+       (todo "ONGOING|FUTURE" nil)
        (tags "REFILE" nil)
        (todo "DONE"
              ((org-agenda-overriding-header "Tasks to Archive")
@@ -740,14 +719,10 @@ static char *gnus-pointer[] = {
      ("MELPA" . "melpa.milkbox.net/#/"))))
  '(package-selected-packages
    (quote
-    (disaster company-c-headers cmake-mode clang-format yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode xresources-theme-theme xresources-theme dired-ranger mmt markdown-mode magit diminish autothemer packed auto-complete avy auctex eclim magit-popup highlight smartparens evil flyspell-correct git-commit with-editor yasnippet helm helm-core async company flycheck request alert log4e projectile f hydra dash s hlinum moe-theme-theme winum unfill sudoku solarized-theme madhat2r-theme fuzzy Ard-Dark-theme moe-theme Arc-dark-theme intero hlint-refactor hindent helm-hoogle flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode haskell-snippets yaml-mode evil-smartparens evil-mu4e mu4e-maildirs-extension mu4e-alert ht org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org thesaurus tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs ranger rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
- '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
- '(pos-tip-background-color "#414E63")
- '(pos-tip-foreground-color "#BEC8DB")
+    (csv-mode sequences disaster company-c-headers cmake-mode clang-format yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode xresources-theme-theme xresources-theme dired-ranger mmt markdown-mode magit diminish autothemer packed auto-complete avy auctex eclim magit-popup highlight smartparens evil flyspell-correct git-commit with-editor yasnippet helm helm-core async company flycheck request alert log4e projectile f hydra dash s hlinum moe-theme-theme winum unfill sudoku solarized-theme madhat2r-theme fuzzy Ard-Dark-theme moe-theme Arc-dark-theme intero hlint-refactor hindent helm-hoogle flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode haskell-snippets yaml-mode evil-smartparens evil-mu4e mu4e-maildirs-extension mu4e-alert ht org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org thesaurus tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs ranger rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
  '(send-mail-function (quote mailclient-send-it))
  '(tab-always-indent t)
- '(thesaurus-bhl-api-key "c8a8969932f1c69d2f464578b9761c48" t)
- '(writegood-weasel-words nil))
+ '(thesaurus-bhl-api-key "c8a8969932f1c69d2f464578b9761c48" t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
