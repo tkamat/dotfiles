@@ -34,7 +34,6 @@ values."
      csv
      clojure
      python
-     php
      haskell
      yaml
      html
@@ -53,10 +52,13 @@ values."
      (mu4e  :variables
             mu4e-installation-path "/usr/share/emacs/site-lisp/mu4e")
      markdown
-     org
+     (org :variables
+          org-enable-reveal-js-support t
+          org-enable-bootstrap-support t)
      (shell :variables
             shell-default-height 30
-            shell-default-position 'bottom)
+            shell-default-position 'bottom
+            shell-default-shell 'eshell)
      spell-checking
      syntax-checking
      version-control
@@ -73,17 +75,22 @@ values."
    dotspacemacs-additional-packages '(thesaurus
                                       gradle-mode
                                       groovy-mode
+                                      dired
+                                      ranger
+                                      gnuplot
+                                      gnuplot-mode
                                       writegood-mode
                                       xresources-theme
-                                      dired-ranger
+                                      org-ref
+                                      rainbow-mode
                                       golden-ratio
                                       langtool
                                       latex-preview-pane
                                       focus-autosave-mode
+                                      drupal-mode
                                       org-gcal
                                       evil-smartparens
                                       litable
-                                      ranger
                                       pandoc-mode)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -160,14 +167,14 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(material
+                         material-light
                         )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 16
-                               :height 110
+                               ;;:size 16
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -335,6 +342,7 @@ explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
   ;; clojure config
+  (add-hook 'prog-mode-hook 'rainbow-mode)
   (require 'seq-25)
   (setq cider-cljs-lein-repl
         "(do (require 'figwheel-sidecar.repl-api)
@@ -342,6 +350,25 @@ you should place your code here."
          (figwheel-sidecar.repl-api/cljs-repl))")
 
   ;; org-mode config
+  (add-hook 'org-mode-hook (lambda () (linum-mode nil)))
+
+  ;; org-babel
+  (require 'ob-gnuplot)
+  (setq org-latex-listings 'minted
+        org-latex-packages-alist '(("" "minted"))
+        org-latex-pdf-process
+        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
+
+  ;;org-ref
+  (require 'org-ref)
+  (require 'doi-utils)
+  (require 'org-ref-pdf)
+  (require 'org-ref-url-utils)
+  (require 'org-ref-isbn)
+
+  ;; reveal-js
   (setq org-export-with-section-numbers nil)
   (advice-add 'org-agenda-quit :before 'org-save-all-org-buffers)
   (advice-add 'org-agenda-todo :after 'org-save-all-org-buffers)
@@ -424,6 +451,7 @@ you should place your code here."
       "No active pomodoro"))
 
   ;; keybindings
+  (evil-leader/set-key "fx" 'ranger)
   (evil-leader/set-key-for-mode 'org-mode "k" 'org-gcal-delete-at-point)
   (evil-leader/set-key-for-mode 'org-mode "g" 'org-gcal-sync)
   (evil-leader/set-key-for-mode 'org-mode "t'" 'org-table-edit-field)
@@ -489,125 +517,166 @@ you should place your code here."
  (add-hook 'emacs-lisp-mode-hook 'smartparens-strict-mode)
  (add-hook 'clojure-mode-hook 'smartparens-strict-mode)
  (add-hook 'smartparens-strict-mode-hook 'evil-smartparens-mode)
- (ranger-override-dired-mode t)
- (spacemacs/set-leader-keys "fx" 'ranger)
- (spacemacs/set-leader-keys "ag" 'go-play)
+ ;; (add-to-list 'load-path "~/.emacs.d/gnugo-3.0.2/")
+ ;; (load "gnugo.el")
+ ;; (load "gnugo-big-xpms.el")
+ ;; (require 'gnugo)
+ (add-to-list 'load-path "~/.emacs.d/el-go/")
+ (add-to-list 'load-path "~/.emacs.d/el-go/back-ends/")
+ (load "gnugo.el")
+ (load "gtp.el")
+ (load "gtp-pipe.el")
+ (require 'gnugo)
+ (require 'gtp)
+ (require 'gtp-pipe)
+ (require 'go)
 
+ (spacemacs/set-leader-keys "ag" 'go-play)
 
  (defun my-add-pretty-lambda ()
    "make some word or string show as pretty Unicode symbols"
    (setq prettify-symbols-alist
-         '(
-           ("lambda" . 955) ; λ
-            ("map" . 8614)   ; ↦
-            )))
+         '(("map" . 8614)   ; ↦
+            ("fn" . 955)
+            ("#" . 955)
+            ("defn" . 402))))
  (add-hook 'clojure-mode-hook 'my-add-pretty-lambda)
+
+ (defun clojure-goto-tests ()
+   (interactive)
+   "Switches from a clojure file to its corresponding test file."
+   (let* ((current-file-name (file-name-nondirectory (file-name-sans-extension buffer-file-name)))
+          (namespace-name (car (last (split-string (file-name-directory buffer-file-name) "/" t))))
+          (new-file-name (if (string-match "._test" current-file-name)
+                             (concat "../../src/"
+                                     namespace-name "/"
+                                     (string-remove-suffix "_test" current-file-name) ".clj")
+                           (concat "../../test/" namespace-name "/"
+                                   current-file-name "_test.clj"))))
+     (find-file new-file-name)))
+ (evil-leader/set-key-for-mode 'clojure-mode "gt" 'clojure-goto-tests)
 
  (setq exec-path-from-shell-arguments '("-c"))
 
-  ;; location
-  (setq calendar-location-name "Jacksonville, FL")
-  (setq calendar-latitude 29.9)
-  (setq calendar-longitude -81.3)
-  ;; maximize buffer function
-  (defun toggle-maximize-buffer () "Maximize buffer"
-         (interactive)
-         (if (= 1 (length (window-list)))
-             (jump-to-register '_)
-           (progn
-             (window-configuration-to-register '_)
-             (delete-other-windows))))
-  ;; insert semicolon function
-  (defun insert-semicolon-at-the-end-of-this-line ()
-    (interactive)
-    (save-excursion
-      (end-of-line)
-      (insert ";")))
-  (setq tab-always-indent 'complete)
+ ;; location
+ (setq calendar-location-name "Jacksonville, FL")
+ (setq calendar-latitude 29.9)
+ (setq calendar-longitude -81.3)
+ ;; maximize buffer function
+ (defun toggle-maximize-buffer () "Maximize buffer"
+        (interactive)
+        (if (= 1 (length (window-list)))
+            (jump-to-register '_)
+          (progn
+            (window-configuration-to-register '_)
+            (delete-other-windows))))
+ ;; insert semicolon function
+ (defun insert-semicolon-at-the-end-of-this-line ()
+   (interactive)
+   (save-excursion
+     (end-of-line)
+     (insert ";")))
+ (setq tab-always-indent 'complete)
 
-  ;; email config
-  (setq mu4e-maildir (expand-file-name "~/Maildir"))
-  (setq mu4e-drafts-folder "/[Gmail].Drafts")
-  (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
-  (setq mu4e-trash-folder  "/[Gmail].Trash")
-  (setq mu4e-sent-messages-behavior 'delete)
-  (setq mu4e-maildir-shortcuts
-        '(("/INBOX"             . ?i)
-          ("/[Gmail].Sent Mail" . ?s)
-          ("/[Gmail].Trash"     . ?t)))
-  (setq mu4e-get-mail-command "offlineimap")
-  (setq
-   user-mail-address "platypusdiamond@gmail.com"
-   user-full-name  "Tushaar Kamat")
-  (require 'smtpmail)
+ ;;evil multiple cursors
+ (evil-mc-mode t)
+ (global-set-key (kbd "C-S-<mouse-1>") 'evil-mc-toggle-cursor-on-click)
 
-  (setq message-send-mail-function 'smtpmail-send-it
-        starttls-use-gnutls t
-        smtpmail-starttls-credentials
-        '(("smtp.gmail.com" 587 nil nil))
-        smtpmail-auth-credentials
-        (expand-file-name "~/.authinfo.gpg")
-        smtpmail-default-smtp-server "smtp.gmail.com"
-        smtpmail-smtp-server "smtp.gmail.com"
-        smtpmail-smtp-service 587
-        smtpmail-debug-info t)
-  (setq mu4e-update-interval 6000)
-  (require 'org-mu4e)
+ ;; email config
+ (setq mu4e-maildir (expand-file-name "~/Maildir"))
+ (setq mu4e-drafts-folder "/[Gmail].Drafts")
+ (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
+ (setq mu4e-trash-folder  "/[Gmail].Trash")
+ (setq mu4e-sent-messages-behavior 'delete)
+ (setq mu4e-maildir-shortcuts
+       '(("/INBOX"             . ?i)
+         ("/[Gmail].Sent Mail" . ?s)
+         ("/[Gmail].Trash"     . ?t)))
+ (setq mu4e-get-mail-command "offlineimap")
+ (setq
+  user-mail-address "platypusdiamond@gmail.com"
+  user-full-name  "Tushaar Kamat")
+ (require 'smtpmail)
 
-  ;; keybindings
-  (evil-leader/set-key-for-mode 'emacs-lisp-mode "ep" 'eval-and-replace)
-  (evil-leader/set-key-for-mode 'latex-mode "pm" 'latex-preview-pane-mode)
-  (define-key evil-visual-state-map (kbd "mc") 'mc/edit-lines)
-  (define-key evil-normal-state-map (kbd "'") 'evil-goto-mark)
-  (defun my/testing ()
-    "Test function"
-    (message "hi!"))
-  (defun my/play-midi ()
-    (interactive)
-    (async-shell-command (concat "fluidsynth -ni -C0 -R1 -l -a alsa ~/drive/Nease\\ IB/Music/midi/FluidR3_GM.sf2 " "\"" (file-name-sans-extension buffer-file-name) ".midi" "\""))
-    )
-  (add-hook 'LilyPond-mode-hook (lambda () (local-set-key [3 16] (quote my/play-midi))))
-  (defun eval-and-replace ()
-    "Replace the preceding sexp with its value."
-    (interactive)
-    (backward-kill-sexp)
-    (condition-case nil
-        (prin1 (eval (read (current-kill 0)))
-               (current-buffer))
-      (error (message "Invalid expression")
-             (insert (current-kill 0)))))
+ (setq message-send-mail-function 'smtpmail-send-it
+       starttls-use-gnutls t
+       smtpmail-starttls-credentials
+       '(("smtp.gmail.com" 587 nil nil))
+       smtpmail-auth-credentials
+       (expand-file-name "~/.authinfo.gpg")
+       smtpmail-default-smtp-server "smtp.gmail.com"
+       smtpmail-smtp-server "smtp.gmail.com"
+       smtpmail-smtp-service 587
+       smtpmail-debug-info t)
+ (setq mu4e-update-interval 6000)
+ (require 'org-mu4e)
 
-  ;; my-keys mode
-  (require 'helm-bookmark)
-  (defvar my-keys-minor-mode-map
-    (let ((map (make-sparse-keymap)))
-      (define-key map (kbd "C-k") 'evil-scroll-up)
-      (define-key map (kbd "C-j") 'evil-scroll-down)
-      (define-key map (kbd "C-'") 'flyspell-auto-correct-previous-word)
-      (define-key map (kbd "C-;") 'insert-semicolon-at-the-end-of-this-line)
-      (define-key map (kbd "C-SPC") 'er/expand-region)
-      (define-key map (kbd "M-[") 'yas-expand)
-      (define-key map (kbd "C-x p") 'eval-and-replace)
-      map)
-    "my-keys-minor-mode keymap.")
-  (define-minor-mode my-keys-minor-mode
-    "A minor mode so that my key settings override annoying major modes."
-    :init-value t
-    :lighter " my-keys")
+ ;; keybindings
+ (setq ranger-override-dired t)
+ (evil-leader/set-key-for-mode 'emacs-lisp-mode "ep" 'eval-and-replace)
+ (evil-leader/set-key-for-mode 'latex-mode "pm" 'latex-preview-pane-mode)
+ (define-key evil-visual-state-map (kbd "mc") 'mc/edit-lines)
+ (define-key evil-normal-state-map (kbd "'") 'evil-goto-mark)
+ (defun my/testing ()
+   "Test function"
+   (message "hi!"))
+ (defun my/play-midi ()
+   (interactive)
+   (async-shell-command (concat "fluidsynth -ni -C0 -R1 -l -a alsa ~/drive/Nease\\ IB/Music/midi/FluidR3_GM.sf2 " "\"" (file-name-sans-extension buffer-file-name) ".midi" "\""))
+   )
+ (add-hook 'LilyPond-mode-hook (lambda () (local-set-key [3 16] (quote my/play-midi))))
+ (defun eval-and-replace ()
+   "Replace the preceding sexp with its value."
+   (interactive)
+   (backward-kill-sexp)
+   (condition-case nil
+       (prin1 (eval (read (current-kill 0)))
+              (current-buffer))
+     (error (message "Invalid expression")
+            (insert (current-kill 0)))))
+ ;; It is crucial you first activate yasnippet's global mode.
+ (yas/global-mode 1)
 
-    (my-keys-minor-mode 1)
-    (add-hook 'after-load-functions 'my-keys-have-priority)
-    (defun my-keys-have-priority (_file)
-      "Try to ensure that my keybindings retain priority over other minor modes.
+ ;; This illustrates how to redefine yas-expand to S-TAB.
+ (define-key yas-minor-mode-map [backtab]     'yas-expand)
+
+ ;; Strangely, just redefining one of the variations below won't work.
+ ;; All rebinds seem to be needed.
+ (define-key yas-minor-mode-map [(tab)]        nil)
+ (define-key yas-minor-mode-map (kbd "TAB")    nil)
+ (define-key yas-minor-mode-map (kbd "<tab>")  nil)
+
+ ;; my-keys mode
+ (require 'helm-bookmark)
+ (defvar my-keys-minor-mode-map
+   (let ((map (make-sparse-keymap)))
+     (define-key map (kbd "C-k") 'evil-scroll-up)
+     (define-key map (kbd "C-j") 'evil-scroll-down)
+     (define-key map (kbd "C-'") 'flyspell-auto-correct-previous-word)
+     (define-key map (kbd "C-;") 'insert-semicolon-at-the-end-of-this-line)
+     (define-key map (kbd "C-SPC") 'er/expand-region)
+     (define-key map (kbd "M-[") 'yas-expand)
+     (define-key map (kbd "C-x p") 'eval-and-replace)
+     map)
+   "my-keys-minor-mode keymap.")
+ (define-minor-mode my-keys-minor-mode
+   "A minor mode so that my key settings override annoying major modes."
+   :init-value t
+   :lighter " my-keys")
+
+ (my-keys-minor-mode 1)
+ (add-hook 'after-load-functions 'my-keys-have-priority)
+ (defun my-keys-have-priority (_file)
+   "Try to ensure that my keybindings retain priority over other minor modes.
 
 Called via the `after-load-functions' special hook."
-      (unless (eq (caar minor-mode-map-alist) 'my-keys-minor-mode)
-        (let ((mykeys (assq 'my-keys-minor-mode minor-mode-map-alist)))
-          (assq-delete-all 'my-keys-minor-mode minor-mode-map-alist)
-          (add-to-list 'minor-mode-map-alist mykeys))))
+   (unless (eq (caar minor-mode-map-alist) 'my-keys-minor-mode)
+     (let ((mykeys (assq 'my-keys-minor-mode minor-mode-map-alist)))
+       (assq-delete-all 'my-keys-minor-mode minor-mode-map-alist)
+       (add-to-list 'minor-mode-map-alist mykeys))))
 
 
-  )
+ )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -616,6 +685,7 @@ Called via the `after-load-functions' special hook."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(LaTeX-command "latex -shell-escape")
  '(TeX-view-program-selection
    (quote
     (((output-dvi has-no-display-manager)
@@ -707,7 +777,12 @@ static char *note[] = {
                (quote bh/skip-non-archivable-tasks))
               (org-tags-match-list-sublevels nil))
              nil))))))
- '(org-babel-load-languages (quote ((shell . t) (emacs-lisp . t) (java . t))))
+ '(org-babel-load-languages
+   (quote
+    ((shell . t)
+     (emacs-lisp . t)
+     (awk . t)
+     (clojure . t))))
  '(org-habit-graph-column 40)
  '(org-refile-use-outline-path t)
  '(org-src-tab-acts-natively t)
@@ -719,13 +794,14 @@ static char *note[] = {
      ("MELPA" . "melpa.milkbox.net/#/"))))
  '(package-selected-packages
    (quote
-    (csv-mode sequences disaster company-c-headers cmake-mode clang-format yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode xresources-theme-theme xresources-theme dired-ranger mmt markdown-mode magit diminish autothemer packed auto-complete avy auctex eclim magit-popup highlight smartparens evil flyspell-correct git-commit with-editor yasnippet helm helm-core async company flycheck request alert log4e projectile f hydra dash s hlinum moe-theme-theme winum unfill sudoku solarized-theme madhat2r-theme fuzzy Ard-Dark-theme moe-theme Arc-dark-theme intero hlint-refactor hindent helm-hoogle flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode haskell-snippets yaml-mode evil-smartparens evil-mu4e mu4e-maildirs-extension mu4e-alert ht org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org thesaurus tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs ranger rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
+    (auctex-latexmk gnuplot-mode ob-clojure-literate rainbow-mode php-mode dired-hacks-utils ox-twbs org-ref pdf-tools key-chord ivy helm-bibtex biblio parsebib biblio-core tablist ox-reveal csv-mode sequences disaster company-c-headers cmake-mode clang-format yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic drupal-mode xresources-theme-theme xresources-theme mmt markdown-mode magit diminish autothemer packed auto-complete avy auctex eclim magit-popup highlight smartparens evil flyspell-correct git-commit with-editor yasnippet helm helm-core async company flycheck request alert log4e projectile f hydra dash s hlinum moe-theme-theme winum unfill sudoku solarized-theme madhat2r-theme fuzzy Ard-Dark-theme moe-theme Arc-dark-theme intero hlint-refactor hindent helm-hoogle flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode haskell-snippets yaml-mode evil-smartparens evil-mu4e mu4e-maildirs-extension mu4e-alert ht org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org thesaurus tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs ranger rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
+ '(pdf-latex-command "pdflatex -shell-escape")
  '(send-mail-function (quote mailclient-send-it))
  '(tab-always-indent t)
- '(thesaurus-bhl-api-key "c8a8969932f1c69d2f464578b9761c48" t))
+ '(thesaurus-bhl-api-key "c8a8969932f1c69d2f464578b9761c48"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((((class color) (min-colors 89)) (:foreground "#ffffff" :background "#263238")))))
+ '(default ((t (:family "Source Code Pro" :foundry "ADBE" :slant normal :weight normal :height 111 :width normal)))))

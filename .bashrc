@@ -133,7 +133,7 @@ function swap() {
 
 export -f swap
 
-alias e="emacsclient -a 'xiwi emacs25'"
+alias e='emacsclient -a "xiwi emacs25"'
 alias studio="xiwi studio"
 alias idea="xiwi idea"
 eval insync-headless start
