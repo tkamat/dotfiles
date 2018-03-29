@@ -13,7 +13,7 @@ red = #c795ae
 blue = #5294E2
 yellow = #c7ae95
 green = #aec795
-fg = ${xrdb:color7}
+fg = ${xrdb:color15}
 bg = ${xrdb:color0}
 
 
@@ -30,8 +30,8 @@ border-right-size=200
 enable-ipc = true
 
 
-modules-right = volume battery wlan date menu0
-modules-center = pomodoro
+modules-right = battery wlan date menu0
+modules-center = volume 
 modules-left = i3
 
 ;background = #66090909
@@ -64,6 +64,14 @@ padding = 2
 
 label = %output%
 exec = emacsclient -e '(my/org-pomodoro-text-time)'
+
+[module/insync]
+type = custom/script
+interval = 2
+padding = 2
+
+label = %output%
+exec = insync get_status
 
 
 [module/xwindow]
@@ -251,7 +259,7 @@ type = internal/date
 date-alt =   %A,  %d %B %Y 
 date =   %l:%M 
 interval = 5
-format-background = ${xrdb:color11}
+format-background = ${xrdb:color8}
 format-padding = 1
 
 

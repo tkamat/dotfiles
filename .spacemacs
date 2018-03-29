@@ -31,6 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     clojure
      python
      php
      haskell
@@ -59,7 +60,8 @@ values."
      org
      (shell :variables
             shell-default-height 30
-            shell-default-position 'bottom)
+            shell-default-position 'bottom
+            shell-default-shell 'eshell)
      spell-checking
      syntax-checking
      version-control
@@ -77,8 +79,11 @@ values."
    dotspacemacs-additional-packages '(thesaurus
                                       gradle-mode
                                       groovy-mode
+                                      yasnippet-snippets
+                                      openwith
                                       (el-go :location "~/.emacs.d/el-go")
                                       writegood-mode
+                                      frames-only-mode
                                       xresources-theme
                                       dired-ranger
                                       golden-ratio
@@ -93,7 +98,7 @@ values."
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(org-projectile)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -334,23 +339,33 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-
   ;; org-mode config
   (setq org-export-with-section-numbers nil)
+  (advice-add 'org-agenda-quit :before 'org-save-all-org-buffers)
+  (advice-add 'org-agenda-todo :after 'org-save-all-org-buffers)
+  (advice-add 'org-agenda-redo :after 'org-save-all-org-buffers)
+
+  ;;org-babel
+  (require 'ob-gnuplot)
+  (setq org-latex-listings 'minted
+        org-latex-packages-alist '(("" "minted"))
+        org-latex-pdf-process
+        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
   ;; agenda files
-  (setq org-agenda-files (list "~/Dropbox/org/test.org.txt" "~/Dropbox/org/gcal.org" "~/Dropbox/org/schoology.org"))
+  (setq org-agenda-files (list "~/Dropbox/org/todo.org.txt" "~/Dropbox/org/gcal.org" "~/Dropbox/org/schoology.org"))
   (focus-autosave-mode)
   ;; todo settings
   (setq org-todo-keywords
-        (quote ((sequence "TODO(t)" "ONGOING(o)" "|" "DONE(d)")
+        (quote ((sequence "TODO(t)" "ONGOING(o)" "FUTURE(f)" "|" "DONE(d)")
                 (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))))
   (setq org-todo-keyword-faces
         (quote (("TODO" :foreground "red" :weight bold)
                 ("ONGOING" :foreground "blue" :weight bold)
+                ("FUTURE" :foreground "purple" :weight bold)
                 ("DONE" :foreground "forest green" :weight bold)
                 ("WAITING" :foreground "orange" :weight bold)
-                ("HOLD" :foreground "magenta" :weight bold)
                 ("CANCELLED" :foreground "forest green" :weight bold))))
   (setq org-use-fast-todo-selection t)
   (setq org-default-notes-file "~/Dropbox/org/test.org.txt")
@@ -361,7 +376,7 @@ you should place your code here."
                 ("e" "Event" entry (file  "~/Dropbox/org/gcal.org" )
                  "* %?\n\n%^T\n\n")
                 )))
-  ;; refiling settings 
+  ;; refiling settings
   (setq org-refile-targets '((nil :maxlevel . 9)
                              (org-agenda-files :maxlevel . 9)))
   (setq org-outline-path-complete-in-steps nil)         ; Refile in a single go
@@ -411,6 +426,10 @@ you should place your code here."
     (if (org-pomodoro-active-p)
         (format "Pomodoro: %d minutes - %s" (/ org-pomodoro-countdown 60) org-clock-heading)
       "No active pomodoro"))
+
+  (require 'openwith)
+  (openwith-mode t)
+  (setq openwith-associations '(("\\.pdf\\'" "zathura" (file))))
 
   ;; keybindings
   (evil-leader/set-key-for-mode 'org-mode "k" 'org-gcal-delete-at-point)
@@ -485,11 +504,12 @@ you should place your code here."
 
   ;; miscellaneous
  (add-hook 'emacs-lisp-mode-hook 'smartparens-strict-mode)
+ (add-hook 'clojure-mode-hook 'smartparens-strict-mode) 
  (add-hook 'smartparens-strict-mode-hook 'evil-smartparens-mode)
  (ranger-override-dired-mode t)
  (spacemacs/set-leader-keys "fx" 'ranger)
  (spacemacs/set-leader-keys "ag" 'go-play)
-
+ (setq yas-triggers-in-field nil)
 
  (defun my-add-pretty-lambda ()
    "make some word or string show as pretty Unicode symbols"
@@ -499,6 +519,38 @@ you should place your code here."
             ("map" . 8614)   ; ↦
             )))
  (add-hook 'clojure-mode-hook 'my-add-pretty-lambda)
+
+ (setq evil-move-beyond-eol t)
+
+ ;; clojure-config
+ (require 'seq-25)
+ (setq cider-cljs-lein-repl
+       "(do (require 'figwheel-sidecar.repl-api)
+         (figwheel-sidecar.repl-api/start-figwheel!)
+         (figwheel-sidecar.repl-api/cljs-repl))")
+ (defun clojure-goto-tests ()
+   (interactive)
+   "Switches from a clojure file to its corresponding test file."
+   (let* ((current-file-name (file-name-nondirectory (file-name-sans-extension buffer-file-name)))
+          (namespace-name (car (last (split-string (file-name-directory buffer-file-name) "/" t))))
+          (new-file-name (if (string-match "._test" current-file-name)
+                             (concat "../../src/"
+                                     namespace-name "/"
+                                     (string-remove-suffix "_test" current-file-name) ".clj")
+                           (concat "../../test/" namespace-name "/"
+                                   current-file-name "_test.clj"))))
+     (find-file new-file-name)))
+ (evil-leader/set-key-for-mode 'clojure-mode "gt" 'clojure-goto-tests)
+
+ (defun my-add-pretty-lambda ()
+   "make some word or string show as pretty Unicode symbols"
+   (setq prettify-symbols-alist
+         '(("map" . 8614)   ; ↦
+           ("fn" . 955)
+           ("defn" . 402))))
+ (add-hook 'clojure-mode-hook 'my-add-pretty-lambda)
+
+
 
   ;; location
   (setq calendar-location-name "Jacksonville, FL")
@@ -548,13 +600,27 @@ you should place your code here."
 
 
   ;; keybindings
-
+  (frames-only-mode t)
+  (defun open-urxvt ()
+    "Opens urxvt"
+    (interactive)
+    (progn (start-process "urxvt" nil "urxvt")))
+  (spacemacs/set-leader-keys "$" 'open-urxvt)
   (evil-leader/set-key-for-mode 'latex-mode "pm" 'latex-preview-pane-mode)
   (define-key evil-normal-state-map (kbd "'") 'evil-goto-mark)
   (setq x-super-keysym 'meta)
   (defun my/testing ()
     "Test function"
     (message "hi!"))
+
+  (setq eshell-destroy-buffer-when-process-dies t)
+  (with-eval-after-load 'em-term
+    (nconc eshell-visual-commands
+           '("abook" "alsamixer" "cmus" "fzf" "htop" "mpsyt" "mpv" "mutt" "ncdu" "newsbeuter" "pinentry-curses" "ranger" "watch" "wifi-menu"))
+    (setq eshell-visual-subcommands
+          '(("git" "log" "l" "lol" "diff" "d" "dc" "show")
+            ("sudo" "wifi-menu")
+            ("sudo" "vi"))))
 
   ;; my-keys mode
   (defvar my-keys-minor-mode-map
@@ -593,6 +659,7 @@ Called via the `after-load-functions' special hook."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(LaTeX-command "latex --shell-escape")
  '(TeX-view-program-selection
    (quote
     (((output-dvi has-no-display-manager)
@@ -606,6 +673,7 @@ Called via the `after-load-functions' special hook."
    [default bold shadow italic underline bold bold-italic bold])
  '(ansi-color-names-vector
    ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
+ '(cider-default-repl-command "lein")
  '(custom-safe-themes
    (quote
     ("12fca95bcf0f3526233a6100c8967356b243b92f103944587997c9cc9fe8e72e" "afa30b4eaa7b1ca516511e7179869ac66badc65bde73e53e7ea91a736c93cb9b" "f5b08a72c679389e480edc2f6f194bb0dc8a69ab8de8db7800f20f44faa63fb6" default)))
@@ -638,7 +706,7 @@ static char *note[] = {
 \"#######..#\" };")))
  '(evil-escape-key-sequence "jk")
  '(evil-want-Y-yank-to-eol nil)
- '(fci-rule-color "#383838")
+ '(fci-rule-color "#383838" t)
  '(global-auto-revert-mode t)
  '(global-vi-tilde-fringe-mode nil)
  '(gnus-logo-colors (quote ("#4c8383" "#bababa")) t)
@@ -688,6 +756,7 @@ static char *gnus-pointer[] = {
      ("::" . "∷")
      ("." "∘" haskell-font-lock-dot-is-not-composition)
      ("forall" . "∀"))))
+ '(helm-external-programs-associations (quote (("pdf" . "zathura"))))
  '(mc/always-run-for-all t)
  '(nrepl-message-colors
    (quote
@@ -697,7 +766,7 @@ static char *gnus-pointer[] = {
    (quote
     ((" " "My Agenda"
       ((agenda "" nil)
-       (todo "ONGOING" nil)
+       (todo "ONGOING|FUTURE" nil)
        (tags "REFILE" nil)
        (todo "DONE"
              ((org-agenda-overriding-header "Tasks to Archive")
@@ -705,7 +774,14 @@ static char *gnus-pointer[] = {
                (quote bh/skip-non-archivable-tasks))
               (org-tags-match-list-sublevels nil))
              nil))))))
- '(org-babel-load-languages (quote ((shell . t) (emacs-lisp . t) (java . t))))
+ '(org-babel-load-languages
+   (quote
+    ((shell . t)
+     (emacs-lisp . t)
+     (java . t)
+     (clojure . t)
+     (gnuplot . t))))
+ '(org-confirm-babel-evaluate nil)
  '(org-habit-graph-column 40)
  '(org-refile-use-outline-path t)
  '(org-src-tab-acts-natively t)
@@ -717,7 +793,7 @@ static char *gnus-pointer[] = {
      ("MELPA" . "melpa.milkbox.net/#/"))))
  '(package-selected-packages
    (quote
-    (disaster company-c-headers cmake-mode clang-format yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode xresources-theme-theme xresources-theme dired-ranger mmt markdown-mode magit diminish autothemer packed auto-complete avy auctex eclim magit-popup highlight smartparens evil flyspell-correct git-commit with-editor yasnippet helm helm-core async company flycheck request alert log4e projectile f hydra dash s hlinum moe-theme-theme winum unfill sudoku solarized-theme madhat2r-theme fuzzy Ard-Dark-theme moe-theme Arc-dark-theme intero hlint-refactor hindent helm-hoogle flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode haskell-snippets yaml-mode evil-smartparens evil-mu4e mu4e-maildirs-extension mu4e-alert ht org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org thesaurus tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs ranger rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md gandalf-theme flyspell-correct-helm flycheck-pos-tip flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
+    (yasnippet-snippets gitignore-mode white-sand-theme rebecca-theme org-mime exotica-theme powerline org-category-capture ghub let-alist bind-key iedit goto-chg undo-tree epl deferred dash-functional frames-only-mode clojure-snippets clj-refactor inflections edn cider paredit seq peg cider-eval-sexp-fu queue clojure-mode openwith disaster company-c-headers cmake-mode clang-format yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode xresources-theme-theme xresources-theme dired-ranger mmt markdown-mode magit diminish autothemer packed auto-complete avy auctex eclim magit-popup highlight smartparens evil flyspell-correct git-commit with-editor yasnippet helm helm-core async company request alert log4e projectile f hydra dash s moe-theme-theme winum unfill sudoku solarized-theme madhat2r-theme fuzzy Ard-Dark-theme moe-theme Arc-dark-theme intero hlint-refactor hindent helm-hoogle company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode haskell-snippets yaml-mode evil-smartparens evil-mu4e mu4e-maildirs-extension mu4e-alert ht org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org thesaurus tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs ranger rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md gandalf-theme flyspell-correct-helm flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#414E63")
  '(pos-tip-foreground-color "#BEC8DB")

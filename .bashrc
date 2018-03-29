@@ -137,16 +137,24 @@ function deadarchive() {
 	cat *.m3u | while read i; do wget $i;done
 }
 
+export XDG_CURRENT_DESKTOP=GNOME
+export XDG_CURRENT=GNOME
 export -f deadarchive
-TERMINAL=gnome-terminal
 alias cast='mkchromecast --encoder-backend ffmpeg -c wav &'
 export PATH=$HOME/bin:$PATH
 export PATH=$PATH:~/bin/gradle/gradle-3.5/bin
 export GRADLE_OPS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"
 export CURSOR=Breeze
-alias e=$EDITOR 
+alias e=$EDITOR
 alias dead=~/Music/dead.sh
 alias fastboot=~/Android/Sdk/platform-tools/fastboot
 alias adb=~/Android/Sdk/platform-tools/adb
 source "/home/tushaar/.cache/wal/colors.sh"
 (wpg -r -t &)
+alias df="~/drive/df_linux/soundsense/soundSense.sh& ~/drive/df_linux/DwarfTherapist& ~/drive/df_linux/dfhack"
+TERMINAL="urxvt"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+export W3MIMGDISPLAY_ENV="/usr/lib/w3m/w3mimgdisplay"

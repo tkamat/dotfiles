@@ -410,12 +410,36 @@ catalogue-license lppl1.3
 catalogue-topics compilation
 catalogue-version 1.0
 
+name minted
+category Package
+revision 44855
+shortdesc Highlighted source code for LaTeX
+longdesc The package that facilitates expressive syntax highlighting in
+longdesc LaTeX using the powerful Pygments library. The package also
+longdesc provides options to customize the highlighted source code
+longdesc output using fancyvrb.
+containersize 9464
+containerchecksum 6bfff77120a70214f492f34b31bc7354f75173e742b0d40b76116e78f18d471946175e7cae1d51d0f2b948bf566c8e44c755f1d98a338b8a0b1b0cfb6b77f462
+doccontainersize 803628
+doccontainerchecksum 013bab6a7abfff35d5316ec335ddb13e8c91e918ef78d9e49bc393be3cc6e71f22c740ff862045a5d20bbfc1a508bbc272f0dbc668db3ffc657dafb0ddfbc45c
+srccontainersize 44372
+srccontainerchecksum 3ae1e00adeff4ff117be3c35120d0c94569f62c7e4b6c8640236fbd52a9ceb20fce24b87faf0d5cc2b9295fd5a3689cda5eb01dc2c3897e8a2f228326ae6cdb6
+runfiles size=15
+ tex/latex/minted/minted.sty
+ tex/latex/minted/minted1.sty
+catalogue-also texments verbments
+catalogue-ctan /macros/latex/contrib/minted
+catalogue-date 2017-07-19 21:24:20 +0200
+catalogue-license lppl1.3
+catalogue-topics listing
+catalogue-version 2.5
+
 name sauerj
 category Package
 revision 15878
 shortdesc A bundle of utilities by Jonathan Sauer
-longdesc The bundle consists of: a tool for collecting text for later re-
-longdesc use, a tool for typesetting the "meta-information" within a
+longdesc The bundle consists of: a tool for collecting text for later
+longdesc re- use, a tool for typesetting the "meta-information" within a
 longdesc text, a tool for use in constructing macros with multiple
 longdesc optional parameters, a package for multiple column parallel
 longdesc texts, a tool for processing key-value structured lists, and
