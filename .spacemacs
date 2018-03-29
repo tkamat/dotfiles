@@ -35,6 +35,9 @@ values."
      clojure
      python
      haskell
+     (ranger :variables
+             ranger-override-dired t
+             ranger-show-preview t)
      yaml
      html
      (c-c++ :variables c-c++-enable-clang-support t)
@@ -52,6 +55,7 @@ values."
      (mu4e  :variables
             mu4e-installation-path "/usr/share/emacs/site-lisp/mu4e")
      markdown
+     bibtex
      (org :variables
           org-enable-reveal-js-support t
           org-enable-bootstrap-support t)
@@ -61,6 +65,7 @@ values."
             shell-default-shell 'eshell)
      spell-checking
      syntax-checking
+     themes-megapack
      version-control
      java
      (haskell :variables
@@ -76,12 +81,12 @@ values."
                                       gradle-mode
                                       groovy-mode
                                       dired
-                                      ranger
                                       gnuplot
                                       gnuplot-mode
                                       writegood-mode
                                       xresources-theme
                                       org-ref
+                                      ox-twbs
                                       rainbow-mode
                                       golden-ratio
                                       langtool
@@ -349,8 +354,51 @@ you should place your code here."
          (figwheel-sidecar.repl-api/start-figwheel!)
          (figwheel-sidecar.repl-api/cljs-repl))")
 
+
+ (defun my-add-pretty-lambda ()
+   "make some word or string show as pretty Unicode symbols"
+   (setq prettify-symbols-alist
+         '(("map" . 8614)   ; ↦
+            ("fn" . 955)
+            ("defn" . 402))))
+ (add-hook 'clojure-mode-hook 'my-add-pretty-lambda)
+
+ (defun clojure-goto-tests ()
+   (interactive)
+   "Switches from a clojure file to its corresponding test file."
+   (let* ((current-file-name (file-name-nondirectory (file-name-sans-extension buffer-file-name)))
+          (namespace-name (car (last (split-string (file-name-directory buffer-file-name) "/" t))))
+          (new-file-name (if (string-match "._test" current-file-name)
+                             (concat "../../src/"
+                                     namespace-name "/"
+                                     (string-remove-suffix "_test" current-file-name) ".clj")
+                           (concat "../../test/" namespace-name "/"
+                                   current-file-name "_test.clj"))))
+     (find-file new-file-name)))
+ (evil-leader/set-key-for-mode 'clojure-mode "gt" 'clojure-goto-tests)
+
+ (defun load-buffer-on-save ()
+   (add-hook 'after-save-hook
+             '(lambda ()
+                (if (and (boundp 'cider-mode)
+                         cider-mode
+                         tdd-mode
+                         (not (string-match "\\.cljs\\'" buffer-file-name)))
+                    (cider-load-buffer)))))
+
+  (define-minor-mode tdd-mode
+    "Run all tests whenever a file is saved."
+    t nil nil
+    :global t
+    (if tdd-mode
+        (add-hook 'cider-mode-hook 'load-buffer-on-save)
+      (remove-hook 'cider-mode-hook 'load-buffer-on-save)))
+
   ;; org-mode config
+  (setq org-image-actual-width nil)
   (add-hook 'org-mode-hook (lambda () (linum-mode nil)))
+  (require 'ox-twbs)
+  (spacemacs/set-leader-keys "aof" (lambda () (interactive) (find-file "~/Dropbox/org/todo.org.txt")))
 
   ;; org-babel
   (require 'ob-gnuplot)
@@ -451,7 +499,6 @@ you should place your code here."
       "No active pomodoro"))
 
   ;; keybindings
-  (evil-leader/set-key "fx" 'ranger)
   (evil-leader/set-key-for-mode 'org-mode "k" 'org-gcal-delete-at-point)
   (evil-leader/set-key-for-mode 'org-mode "g" 'org-gcal-sync)
   (evil-leader/set-key-for-mode 'org-mode "t'" 'org-table-edit-field)
@@ -463,23 +510,16 @@ you should place your code here."
   ;;java config
 
   ;;required packages
-  (require 'eclim)
-  (require 'eclimd)
   (require 'gradle-mode)
   (require 'company)
-  (require 'company-emacs-eclim)
 
   ;;eclim settings
-  (add-hook 'java-mode-hook '(lambda() (gradle-mode 1)))
-  (evil-leader/set-key-for-mode 'java-mode "hj" 'eclim-java-doc-comment)
-  (company-emacs-eclim-setup)
 
   ;;global modes
   (global-company-mode t)
-  (global-eclim-mode t)
   (require 'langtool)
   (setq browse-url-browser-function 'browse-url-generic
-      browse-url-generic-program "firefox")
+      browse-url-generic-program "croutonurlhandler")
   (add-to-list 'auto-mode-alist '("\\.txt$" . org-mode))
   (latex-preview-pane-enable)
   (setq langtool-default-language "en-US")
@@ -530,46 +570,14 @@ you should place your code here."
  (require 'gtp)
  (require 'gtp-pipe)
  (require 'go)
-
  (spacemacs/set-leader-keys "ag" 'go-play)
-
- (defun my-add-pretty-lambda ()
-   "make some word or string show as pretty Unicode symbols"
-   (setq prettify-symbols-alist
-         '(("map" . 8614)   ; ↦
-            ("fn" . 955)
-            ("#" . 955)
-            ("defn" . 402))))
- (add-hook 'clojure-mode-hook 'my-add-pretty-lambda)
-
- (defun clojure-goto-tests ()
-   (interactive)
-   "Switches from a clojure file to its corresponding test file."
-   (let* ((current-file-name (file-name-nondirectory (file-name-sans-extension buffer-file-name)))
-          (namespace-name (car (last (split-string (file-name-directory buffer-file-name) "/" t))))
-          (new-file-name (if (string-match "._test" current-file-name)
-                             (concat "../../src/"
-                                     namespace-name "/"
-                                     (string-remove-suffix "_test" current-file-name) ".clj")
-                           (concat "../../test/" namespace-name "/"
-                                   current-file-name "_test.clj"))))
-     (find-file new-file-name)))
- (evil-leader/set-key-for-mode 'clojure-mode "gt" 'clojure-goto-tests)
-
  (setq exec-path-from-shell-arguments '("-c"))
 
  ;; location
  (setq calendar-location-name "Jacksonville, FL")
  (setq calendar-latitude 29.9)
  (setq calendar-longitude -81.3)
- ;; maximize buffer function
- (defun toggle-maximize-buffer () "Maximize buffer"
-        (interactive)
-        (if (= 1 (length (window-list)))
-            (jump-to-register '_)
-          (progn
-            (window-configuration-to-register '_)
-            (delete-other-windows))))
+
  ;; insert semicolon function
  (defun insert-semicolon-at-the-end-of-this-line ()
    (interactive)
@@ -579,7 +587,7 @@ you should place your code here."
  (setq tab-always-indent 'complete)
 
  ;;evil multiple cursors
- (evil-mc-mode t)
+ (global-evil-mc-mode t)
  (global-set-key (kbd "C-S-<mouse-1>") 'evil-mc-toggle-cursor-on-click)
 
  ;; email config
@@ -608,23 +616,39 @@ you should place your code here."
        smtpmail-smtp-server "smtp.gmail.com"
        smtpmail-smtp-service 587
        smtpmail-debug-info t)
- (setq mu4e-update-interval 6000)
+ (setq mu4e-update-interval 600)
  (require 'org-mu4e)
+ (setq mu4e-view-prefer-html t)
+ ;; (setq mu4e-html2text-command "html2text -utf8 -nobs -width 72")
+ (mu4e t)
+ (defun my-render-html-message ()
+   (let ((dom (libxml-parse-html-region (point-min) (point-max))))
+     (erase-buffer)
+     (shr-insert-document dom)
+     (goto-char (point-min))))
+ (require 'mu4e-contrib)
 
- ;; keybindings
- (setq ranger-override-dired t)
+ (setq mu4e-html2text-command 'mu4e-shr2text)
+ (setq shr-color-visible-luminance-min 80)
+ (setq shr-color-visible-distance-min 5)
+
+ ;; evil keybindings
  (evil-leader/set-key-for-mode 'emacs-lisp-mode "ep" 'eval-and-replace)
  (evil-leader/set-key-for-mode 'latex-mode "pm" 'latex-preview-pane-mode)
  (define-key evil-visual-state-map (kbd "mc") 'mc/edit-lines)
  (define-key evil-normal-state-map (kbd "'") 'evil-goto-mark)
- (defun my/testing ()
-   "Test function"
-   (message "hi!"))
- (defun my/play-midi ()
-   (interactive)
-   (async-shell-command (concat "fluidsynth -ni -C0 -R1 -l -a alsa ~/drive/Nease\\ IB/Music/midi/FluidR3_GM.sf2 " "\"" (file-name-sans-extension buffer-file-name) ".midi" "\""))
-   )
- (add-hook 'LilyPond-mode-hook (lambda () (local-set-key [3 16] (quote my/play-midi))))
+
+ ;;bibtex
+ (evil-leader/set-key-for-mode 'bibtex-mode "," 'bibtex-clean-entry)
+ (evil-leader/set-key-for-mode 'bibtex-mode "f" 'bibtex-make-field)
+ (evil-leader/set-key-for-mode 'bibtex-mode "d" 'biblio-lookup)
+
+ ;;lilypond
+ (setq load-path (append (list (expand-file-name "~/site-lisp")) load-path))
+ (autoload 'LilyPond-mode "lilypond-mode" "LilyPond Editing Mode" t)
+ (add-to-list 'auto-mode-alist '("\\.ly$" . LilyPond-mode))
+ (add-to-list 'auto-mode-alist '("\\.ily$" . LilyPond-mode))
+
  (defun eval-and-replace ()
    "Replace the preceding sexp with its value."
    (interactive)
@@ -634,17 +658,8 @@ you should place your code here."
               (current-buffer))
      (error (message "Invalid expression")
             (insert (current-kill 0)))))
- ;; It is crucial you first activate yasnippet's global mode.
- (yas/global-mode 1)
 
- ;; This illustrates how to redefine yas-expand to S-TAB.
- (define-key yas-minor-mode-map [backtab]     'yas-expand)
-
- ;; Strangely, just redefining one of the variations below won't work.
- ;; All rebinds seem to be needed.
- (define-key yas-minor-mode-map [(tab)]        nil)
- (define-key yas-minor-mode-map (kbd "TAB")    nil)
- (define-key yas-minor-mode-map (kbd "<tab>")  nil)
+ (setq yas-triggers-in-field nil)
 
  ;; my-keys mode
  (require 'helm-bookmark)
@@ -673,10 +688,7 @@ Called via the `after-load-functions' special hook."
    (unless (eq (caar minor-mode-map-alist) 'my-keys-minor-mode)
      (let ((mykeys (assq 'my-keys-minor-mode minor-mode-map-alist)))
        (assq-delete-all 'my-keys-minor-mode minor-mode-map-alist)
-       (add-to-list 'minor-mode-map-alist mykeys))))
-
-
- )
+       (add-to-list 'minor-mode-map-alist mykeys)))))
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -686,6 +698,7 @@ Called via the `after-load-functions' special hook."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(LaTeX-command "latex -shell-escape")
+ '(LilyPond-pdf-command "zathura")
  '(TeX-view-program-selection
    (quote
     (((output-dvi has-no-display-manager)
@@ -699,15 +712,184 @@ Called via the `after-load-functions' special hook."
    [default bold shadow italic underline bold bold-italic bold])
  '(ansi-color-names-vector
    ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
+ '(beacon-color "#cc6666")
+ '(bibtex-BibTeX-entry-alist
+   (quote
+    (("Article" "Article in Journal"
+      (("author")
+       ("title" "Title of the article (BibTeX converts it to lowercase)"))
+      (("journal")
+       ("year"))
+      (("volume" "Volume of the journal")
+       ("number" "Number of the journal (only allowed if entry contains volume)")
+       ("pages" "Pages in the journal")
+       ("month")
+       ("note")))
+     ("InProceedings" "Article in Conference Proceedings"
+      (("author")
+       ("title" "Title of the article in proceedings (BibTeX converts it to lowercase)"))
+      (("booktitle" "Name of the conference proceedings")
+       ("year"))
+      (("editor")
+       ("volume" "Volume of the conference proceedings in the series")
+       ("number" "Number of the conference proceedings in a small series (overwritten by volume)")
+       ("series" "Series in which the conference proceedings appeared")
+       ("pages" "Pages in the conference proceedings")
+       ("month")
+       ("address")
+       ("organization" "Sponsoring organization of the conference")
+       ("publisher" "Publishing company, its location")
+       ("note")))
+     ("InCollection" "Article in a Collection"
+      (("author")
+       ("title" "Title of the article in book (BibTeX converts it to lowercase)")
+       ("booktitle" "Name of the book"))
+      (("publisher")
+       ("year"))
+      (("editor")
+       ("volume" "Volume of the book in the series")
+       ("number" "Number of the book in a small series (overwritten by volume)")
+       ("series" "Series in which the book appeared")
+       ("type" "Word to use instead of \"chapter\"")
+       ("chapter" "Chapter in the book")
+       ("pages" "Pages in the book")
+       ("edition" "Edition of the book as a capitalized English word")
+       ("month")
+       ("address")
+       ("note")))
+     ("InBook" "Chapter or Pages in a Book"
+      (("author" nil nil 0)
+       ("editor" nil nil 0)
+       ("title" "Title of the book")
+       ("chapter" "Chapter in the book"))
+      (("publisher")
+       ("year"))
+      (("volume" "Volume of the book in the series")
+       ("number" "Number of the book in a small series (overwritten by volume)")
+       ("series" "Series in which the book appeared")
+       ("type" "Word to use instead of \"chapter\"")
+       ("address")
+       ("edition" "Edition of the book as a capitalized English word")
+       ("month")
+       ("pages" "Pages in the book")
+       ("note")))
+     ("Proceedings" "Conference Proceedings"
+      (("title" "Title of the conference proceedings")
+       ("year"))
+      nil
+      (("booktitle" "Title of the proceedings for cross references")
+       ("editor")
+       ("volume" "Volume of the conference proceedings in the series")
+       ("number" "Number of the conference proceedings in a small series (overwritten by volume)")
+       ("series" "Series in which the conference proceedings appeared")
+       ("address")
+       ("month")
+       ("organization" "Sponsoring organization of the conference")
+       ("publisher" "Publishing company, its location")
+       ("note")))
+     ("Book" "Book"
+      (("author" nil nil 0)
+       ("editor" nil nil 0)
+       ("title" "Title of the book"))
+      (("publisher")
+       ("year"))
+      (("volume" "Volume of the book in the series")
+       ("number" "Number of the book in a small series (overwritten by volume)")
+       ("series" "Series in which the book appeared")
+       ("address")
+       ("edition" "Edition of the book as a capitalized English word")
+       ("month")
+       ("note")))
+     ("Booklet" "Booklet (Bound, but no Publisher)"
+      (("title" "Title of the booklet (BibTeX converts it to lowercase)"))
+      nil
+      (("author")
+       ("howpublished" "The way in which the booklet was published")
+       ("address")
+       ("month")
+       ("year")
+       ("note")))
+     ("PhdThesis" "PhD. Thesis"
+      (("author")
+       ("title" "Title of the PhD. thesis")
+       ("school" "School where the PhD. thesis was written")
+       ("year"))
+      nil
+      (("type" "Type of the PhD. thesis")
+       ("address" "Address of the school (if not part of field \"school\") or country")
+       ("month")
+       ("note")))
+     ("MastersThesis" "Master's Thesis"
+      (("author")
+       ("title" "Title of the master's thesis (BibTeX converts it to lowercase)")
+       ("school" "School where the master's thesis was written")
+       ("year"))
+      nil
+      (("type" "Type of the master's thesis (if other than \"Master's thesis\")")
+       ("address" "Address of the school (if not part of field \"school\") or country")
+       ("month")
+       ("note")))
+     ("TechReport" "Technical Report"
+      (("author")
+       ("title" "Title of the technical report (BibTeX converts it to lowercase)")
+       ("institution" "Sponsoring institution of the report")
+       ("year"))
+      nil
+      (("type" "Type of the report (if other than \"technical report\")")
+       ("number" "Number of the technical report")
+       ("address")
+       ("month")
+       ("note")))
+     ("Manual" "Technical Manual"
+      (("title" "Title of the manual"))
+      nil
+      (("author")
+       ("organization" "Publishing organization of the manual")
+       ("address")
+       ("edition" "Edition of the manual as a capitalized English word")
+       ("month")
+       ("year")
+       ("note")))
+     ("Unpublished" "Unpublished"
+      (("author")
+       ("title" "Title of the unpublished work (BibTeX converts it to lowercase)")
+       ("note"))
+      nil
+      (("month")
+       ("year")))
+     ("Misc" "Miscellaneous" nil nil
+      (("author")
+       ("title" "Title of the work (BibTeX converts it to lowercase)")
+       ("howpublished" "The way in which the work was published")
+       ("month")
+       ("year")
+       ("note")))
+     ("Online" "Online entry"
+      (("author")
+       ("year")
+       ("title")
+       ("url")
+       ("urldate"))
+      nil nil)
+     ("Website" "A website"
+      (("year")
+       ("title")
+       ("url")
+       ("urldate"))
+      nil
+      (("author"))))))
+ '(bibtex-entry-format
+   (quote
+    (opts-or-alts required-fields numerical-fields realign)))
+ '(cider-auto-test-mode t)
+ '(company-quickhelp-color-background "#4F4F4F")
+ '(company-quickhelp-color-foreground "#DCDCCC")
+ '(custom-enabled-themes (quote (sanityinc-tomorrow-night)))
  '(custom-safe-themes
    (quote
-    ("12fca95bcf0f3526233a6100c8967356b243b92f103944587997c9cc9fe8e72e" "afa30b4eaa7b1ca516511e7179869ac66badc65bde73e53e7ea91a736c93cb9b" "f5b08a72c679389e480edc2f6f194bb0dc8a69ab8de8db7800f20f44faa63fb6" default)))
+    ("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "12fca95bcf0f3526233a6100c8967356b243b92f103944587997c9cc9fe8e72e" "afa30b4eaa7b1ca516511e7179869ac66badc65bde73e53e7ea91a736c93cb9b" "f5b08a72c679389e480edc2f6f194bb0dc8a69ab8de8db7800f20f44faa63fb6" default)))
  '(diary-entry-marker (quote font-lock-variable-name-face))
  '(doc-view-continuous t)
- '(eclim-executable (quote ~/eclipse/eclim))
- '(eclimd-autostart t)
- '(eclimd-executable "~/eclipse/eclimd")
- '(eclimd-wait-for-process nil)
  '(emms-mode-line-icon-image-cache
    (quote
     (image :type xpm :ascent center :data "/* XPM */
@@ -734,6 +916,8 @@ static char *note[] = {
  '(evil-move-cursor-back t)
  '(evil-want-Y-yank-to-eol nil)
  '(fci-rule-color "#383838")
+ '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
+ '(frame-background-mode (quote dark))
  '(global-auto-revert-mode t)
  '(global-evil-mc-mode t)
  '(global-vi-tilde-fringe-mode nil)
@@ -760,6 +944,7 @@ static char *note[] = {
      ("::" . "∷")
      ("." "∘" haskell-font-lock-dot-is-not-composition)
      ("forall" . "∀"))))
+ '(hl-sexp-background-color "#1c1f26")
  '(mc/always-run-for-all t)
  '(nrepl-message-colors
    (quote
@@ -783,6 +968,7 @@ static char *note[] = {
      (emacs-lisp . t)
      (awk . t)
      (clojure . t))))
+ '(org-confirm-babel-evaluate nil)
  '(org-habit-graph-column 40)
  '(org-refile-use-outline-path t)
  '(org-src-tab-acts-natively t)
@@ -794,11 +980,35 @@ static char *note[] = {
      ("MELPA" . "melpa.milkbox.net/#/"))))
  '(package-selected-packages
    (quote
-    (auctex-latexmk gnuplot-mode ob-clojure-literate rainbow-mode php-mode dired-hacks-utils ox-twbs org-ref pdf-tools key-chord ivy helm-bibtex biblio parsebib biblio-core tablist ox-reveal csv-mode sequences disaster company-c-headers cmake-mode clang-format yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic drupal-mode xresources-theme-theme xresources-theme mmt markdown-mode magit diminish autothemer packed auto-complete avy auctex eclim magit-popup highlight smartparens evil flyspell-correct git-commit with-editor yasnippet helm helm-core async company flycheck request alert log4e projectile f hydra dash s hlinum moe-theme-theme winum unfill sudoku solarized-theme madhat2r-theme fuzzy Ard-Dark-theme moe-theme Arc-dark-theme intero hlint-refactor hindent helm-hoogle flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode haskell-snippets yaml-mode evil-smartparens evil-mu4e mu4e-maildirs-extension mu4e-alert ht org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org thesaurus tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs ranger rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
+    (white-sand-theme rebecca-theme gandalf-theme flatui-theme flatland-theme exotica-theme spotify helm-spotify-plus multi org-mime auctex-latexmk gnuplot-mode ob-clojure-literate rainbow-mode php-mode dired-hacks-utils ox-twbs org-ref pdf-tools key-chord ivy helm-bibtex biblio parsebib biblio-core tablist ox-reveal csv-mode sequences disaster company-c-headers cmake-mode clang-format yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic drupal-mode xresources-theme-theme xresources-theme mmt markdown-mode magit diminish autothemer packed auto-complete avy auctex eclim magit-popup highlight smartparens evil flyspell-correct git-commit with-editor yasnippet helm helm-core async company flycheck request alert log4e projectile f hydra dash s hlinum moe-theme-theme winum unfill sudoku solarized-theme madhat2r-theme fuzzy Ard-Dark-theme moe-theme Arc-dark-theme intero hlint-refactor hindent helm-hoogle flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode haskell-snippets yaml-mode evil-smartparens evil-mu4e mu4e-maildirs-extension mu4e-alert ht org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org thesaurus tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
  '(pdf-latex-command "pdflatex -shell-escape")
+ '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(send-mail-function (quote mailclient-send-it))
  '(tab-always-indent t)
- '(thesaurus-bhl-api-key "c8a8969932f1c69d2f464578b9761c48"))
+ '(tdd-mode t)
+ '(thesaurus-bhl-api-key "c8a8969932f1c69d2f464578b9761c48" t)
+ '(vc-annotate-background "#2B2B2B")
+ '(vc-annotate-color-map
+   (quote
+    ((20 . "#BC8383")
+     (40 . "#CC9393")
+     (60 . "#DFAF8F")
+     (80 . "#D0BF8F")
+     (100 . "#E0CF9F")
+     (120 . "#F0DFAF")
+     (140 . "#5F7F5F")
+     (160 . "#7F9F7F")
+     (180 . "#8FB28F")
+     (200 . "#9FC59F")
+     (220 . "#AFD8AF")
+     (240 . "#BFEBBF")
+     (260 . "#93E0E3")
+     (280 . "#6CA0A3")
+     (300 . "#7CB8BB")
+     (320 . "#8CD0D3")
+     (340 . "#94BFF3")
+     (360 . "#DC8CC3"))))
+ '(vc-annotate-very-old-color "#DC8CC3"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
