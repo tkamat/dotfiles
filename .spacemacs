@@ -62,7 +62,7 @@ values."
      (shell :variables
             shell-default-height 30
             shell-default-position 'bottom
-            shell-default-shell 'eshell)
+            shell-default-shell 'ansi-term)
      spell-checking
      syntax-checking
      themes-megapack
@@ -77,14 +77,12 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(thesaurus
-                                      gradle-mode
+   dotspacemacs-additional-packages '(gradle-mode
                                       groovy-mode
                                       dired
                                       gnuplot
                                       gnuplot-mode
                                       writegood-mode
-                                      xresources-theme
                                       org-ref
                                       ox-twbs
                                       rainbow-mode
@@ -130,16 +128,34 @@ values."
    ;; (default t)
    dotspacemacs-elpa-https t
    ;; Maximum allowed time in seconds to contact an ELPA repository.
+   ;; (default 5)
    dotspacemacs-elpa-timeout 5
-   ;; If non nil then spacemacs will check for updates at startup
+
+   ;; Set `gc-cons-threshold' and `gc-cons-percentage' when startup finishes.
+   ;; This is an advanced option and should not be changed unless you suspect
+   ;; performance issues due to garbage collection operations.
+   ;; (default '(100000000 0.1))
+   dotspacemacs-gc-cons '(100000000 0.1)
+
+   ;; If non-nil then Spacelpa repository is the primary source to install
+   ;; a locked version of packages. If nil then Spacemacs will install the
+   ;; latest version of packages from MELPA. (default nil)
+   dotspacemacs-use-spacelpa nil
+
+   ;; If non-nil then verify the signature for downloaded Spacelpa archives.
+   ;; (default nil)
+   dotspacemacs-verify-spacelpa-archives nil
+
+   ;; If non-nil then spacemacs will check for updates at startup
    ;; when the current branch is not `develop'. Note that checking for
    ;; new versions works via git commands, thus it calls GitHub services
    ;; whenever you start Emacs. (default nil)
    dotspacemacs-check-for-update nil
    ;; If non-nil, a form that evaluates to a package directory. For example, to
    ;; use different package directories for different Emacs versions, set this
-   ;; to `emacs-version'.
-   dotspacemacs-elpa-subdirectory nil
+   ;; to `emacs-version'. (default 'emacs-version)
+   dotspacemacs-elpa-subdirectory 'emacs-version
+
    ;; One of `vim', `emacs' or `hybrid'.
    ;; `hybrid' is like `vim' except that `insert state' is replaced by the
    ;; `hybrid state' with `emacs' key bindings. The value can also be a list
@@ -164,17 +180,33 @@ values."
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
    dotspacemacs-startup-lists '((recents . 5)
                                 (projects . 7))
-   ;; True if the home buffer should respond to resize events.
+
+   ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
    ;; Default major mode of the scratch buffer (default `text-mode')
    dotspacemacs-scratch-mode 'text-mode
+
+   ;; Initial message in the scratch buffer, such as "Welcome to Spacemacs!"
+   ;; (default nil)
+   dotspacemacs-initial-scratch-message nil
+
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(material
-                         material-light
-                        )
-   ;; If non nil the cursor color matches the state color in GUI Emacs.
+                         material-light)
+
+   ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
+   ;; `all-the-icons', `custom', `vim-powerline' and `vanilla'. The first three
+   ;; are spaceline themes. `vanilla' is default Emacs mode-line. `custom' is a
+   ;; user defined themes, refer to the DOCUMENTATION.org for more info on how
+   ;; to create your own spaceline theme. Value can be a symbol or list with\
+   ;; additional properties.
+   ;; (default '(spacemacs :separator wave :separator-scale 1.5))
+   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
+
+   ;; If non-nil the cursor color matches the state color in GUI Emacs.
+   ;; (default t)
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
@@ -424,7 +456,7 @@ you should place your code here."
   (advice-add 'org-gcal-sync :before 'org-gcal-refresh-token)
 
   ;; agenda files
-  (setq org-agenda-files (list "~/Dropbox/org/todo.org.txt" "~/Dropbox/org/gcal.org" "~/Dropbox/org/schoology.org"))
+  (setq org-agenda-files (list "~/Dropbox/org/todo.org.txt" "~/Dropbox/org/gcal.org"))
   (focus-autosave-mode)
   ;; todo settings
   (setq org-todo-keywords
@@ -483,8 +515,7 @@ you should place your code here."
           org-gcal-client-id "1007167813898-af95nv19lap962tqogbpburbnsogmm2t.apps.googleusercontent.com"
           org-gcal-client-secret "fpKpegO_7Q6jUqcoaOFSOZOC"
           org-gcal-file-alist '(("platypusdiamond@gmail.com"
-          . "~/Dropbox/org/gcal.org") ("kd2drj3cpr7qj1jv39kk0i2aiiguf29b@import.calendar.google.com"
-          . "~/Dropbox/org/schoology.org"))))
+          . "~/Dropbox/org/gcal.org"))))
   (add-hook 'org-agenda-redo-hook (lambda () (org-gcal-sync)))
 
   ;; functions
@@ -507,7 +538,11 @@ you should place your code here."
   (evil-leader/set-key-for-mode 'org-agenda-mode "r" 'org-gcal-sync)
   (evil-leader/set-key-for-mode 'latex-mode "w" 'thesaurus-choose-synonym-and-replace)
 
-  ;;java config
+  ;; java config
+  (add-hook 'java-mode-hook
+            (lambda () (add-hook 'post-self-insert-hook
+                             (lambda () (when (= (char-before) ?\;)
+                                      (save-buffer))) nil t)))
 
   ;;required packages
   (require 'gradle-mode)
@@ -884,7 +919,6 @@ Called via the `after-load-functions' special hook."
  '(cider-auto-test-mode t)
  '(company-quickhelp-color-background "#4F4F4F")
  '(company-quickhelp-color-foreground "#DCDCCC")
- '(custom-enabled-themes (quote (sanityinc-tomorrow-night)))
  '(custom-safe-themes
    (quote
     ("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "12fca95bcf0f3526233a6100c8967356b243b92f103944587997c9cc9fe8e72e" "afa30b4eaa7b1ca516511e7179869ac66badc65bde73e53e7ea91a736c93cb9b" "f5b08a72c679389e480edc2f6f194bb0dc8a69ab8de8db7800f20f44faa63fb6" default)))
@@ -980,7 +1014,7 @@ static char *note[] = {
      ("MELPA" . "melpa.milkbox.net/#/"))))
  '(package-selected-packages
    (quote
-    (white-sand-theme rebecca-theme gandalf-theme flatui-theme flatland-theme exotica-theme spotify helm-spotify-plus multi org-mime auctex-latexmk gnuplot-mode ob-clojure-literate rainbow-mode php-mode dired-hacks-utils ox-twbs org-ref pdf-tools key-chord ivy helm-bibtex biblio parsebib biblio-core tablist ox-reveal csv-mode sequences disaster company-c-headers cmake-mode clang-format yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic drupal-mode xresources-theme-theme xresources-theme mmt markdown-mode magit diminish autothemer packed auto-complete avy auctex eclim magit-popup highlight smartparens evil flyspell-correct git-commit with-editor yasnippet helm helm-core async company flycheck request alert log4e projectile f hydra dash s hlinum moe-theme-theme winum unfill sudoku solarized-theme madhat2r-theme fuzzy Ard-Dark-theme moe-theme Arc-dark-theme intero hlint-refactor hindent helm-hoogle flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode haskell-snippets yaml-mode evil-smartparens evil-mu4e mu4e-maildirs-extension mu4e-alert ht org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org thesaurus tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
+    (white-sand-theme rebecca-theme gandalf-theme flatui-theme flatland-theme exotica-theme spotify helm-spotify-plus multi org-mime auctex-latexmk gnuplot-mode ob-clojure-literate rainbow-mode php-mode dired-hacks-utils ox-twbs org-ref pdf-tools key-chord ivy helm-bibtex biblio parsebib biblio-core tablist ox-reveal csv-mode sequences disaster company-c-headers cmake-mode clang-format yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic drupal-mode mmt markdown-mode magit diminish autothemer packed auto-complete avy auctex eclim magit-popup highlight smartparens evil flyspell-correct git-commit with-editor yasnippet helm helm-core async company flycheck request alert log4e projectile f hydra dash s hlinum winum unfill sudoku solarized-theme madhat2r-theme fuzzy Ard-Dark-theme Arc-dark-theme intero hlint-refactor hindent helm-hoogle flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode haskell-snippets yaml-mode evil-smartparens evil-mu4e mu4e-maildirs-extension mu4e-alert ht org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org thesaurus tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
  '(pdf-latex-command "pdflatex -shell-escape")
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(send-mail-function (quote mailclient-send-it))
@@ -1015,3 +1049,333 @@ static char *note[] = {
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Source Code Pro" :foundry "ADBE" :slant normal :weight normal :height 111 :width normal)))))
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(LaTeX-command "latex -shell-escape")
+ '(LilyPond-pdf-command "zathura")
+ '(TeX-view-program-selection
+   (quote
+    (((output-dvi has-no-display-manager)
+      "dvi2tty")
+     ((output-dvi style-pstricks)
+      "dvips and gv")
+     (output-dvi "xdvi")
+     (output-pdf "Zathura")
+     (output-html "xdg-open"))))
+ '(ansi-color-faces-vector
+   [default bold shadow italic underline bold bold-italic bold])
+ '(ansi-color-names-vector
+   ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
+ '(beacon-color "#cc6666")
+ '(bibtex-BibTeX-entry-alist
+   (quote
+    (("Article" "Article in Journal"
+      (("author")
+       ("title" "Title of the article (BibTeX converts it to lowercase)"))
+      (("journal")
+       ("year"))
+      (("volume" "Volume of the journal")
+       ("number" "Number of the journal (only allowed if entry contains volume)")
+       ("pages" "Pages in the journal")
+       ("month")
+       ("note")))
+     ("InProceedings" "Article in Conference Proceedings"
+      (("author")
+       ("title" "Title of the article in proceedings (BibTeX converts it to lowercase)"))
+      (("booktitle" "Name of the conference proceedings")
+       ("year"))
+      (("editor")
+       ("volume" "Volume of the conference proceedings in the series")
+       ("number" "Number of the conference proceedings in a small series (overwritten by volume)")
+       ("series" "Series in which the conference proceedings appeared")
+       ("pages" "Pages in the conference proceedings")
+       ("month")
+       ("address")
+       ("organization" "Sponsoring organization of the conference")
+       ("publisher" "Publishing company, its location")
+       ("note")))
+     ("InCollection" "Article in a Collection"
+      (("author")
+       ("title" "Title of the article in book (BibTeX converts it to lowercase)")
+       ("booktitle" "Name of the book"))
+      (("publisher")
+       ("year"))
+      (("editor")
+       ("volume" "Volume of the book in the series")
+       ("number" "Number of the book in a small series (overwritten by volume)")
+       ("series" "Series in which the book appeared")
+       ("type" "Word to use instead of \"chapter\"")
+       ("chapter" "Chapter in the book")
+       ("pages" "Pages in the book")
+       ("edition" "Edition of the book as a capitalized English word")
+       ("month")
+       ("address")
+       ("note")))
+     ("InBook" "Chapter or Pages in a Book"
+      (("author" nil nil 0)
+       ("editor" nil nil 0)
+       ("title" "Title of the book")
+       ("chapter" "Chapter in the book"))
+      (("publisher")
+       ("year"))
+      (("volume" "Volume of the book in the series")
+       ("number" "Number of the book in a small series (overwritten by volume)")
+       ("series" "Series in which the book appeared")
+       ("type" "Word to use instead of \"chapter\"")
+       ("address")
+       ("edition" "Edition of the book as a capitalized English word")
+       ("month")
+       ("pages" "Pages in the book")
+       ("note")))
+     ("Proceedings" "Conference Proceedings"
+      (("title" "Title of the conference proceedings")
+       ("year"))
+      nil
+      (("booktitle" "Title of the proceedings for cross references")
+       ("editor")
+       ("volume" "Volume of the conference proceedings in the series")
+       ("number" "Number of the conference proceedings in a small series (overwritten by volume)")
+       ("series" "Series in which the conference proceedings appeared")
+       ("address")
+       ("month")
+       ("organization" "Sponsoring organization of the conference")
+       ("publisher" "Publishing company, its location")
+       ("note")))
+     ("Book" "Book"
+      (("author" nil nil 0)
+       ("editor" nil nil 0)
+       ("title" "Title of the book"))
+      (("publisher")
+       ("year"))
+      (("volume" "Volume of the book in the series")
+       ("number" "Number of the book in a small series (overwritten by volume)")
+       ("series" "Series in which the book appeared")
+       ("address")
+       ("edition" "Edition of the book as a capitalized English word")
+       ("month")
+       ("note")))
+     ("Booklet" "Booklet (Bound, but no Publisher)"
+      (("title" "Title of the booklet (BibTeX converts it to lowercase)"))
+      nil
+      (("author")
+       ("howpublished" "The way in which the booklet was published")
+       ("address")
+       ("month")
+       ("year")
+       ("note")))
+     ("PhdThesis" "PhD. Thesis"
+      (("author")
+       ("title" "Title of the PhD. thesis")
+       ("school" "School where the PhD. thesis was written")
+       ("year"))
+      nil
+      (("type" "Type of the PhD. thesis")
+       ("address" "Address of the school (if not part of field \"school\") or country")
+       ("month")
+       ("note")))
+     ("MastersThesis" "Master's Thesis"
+      (("author")
+       ("title" "Title of the master's thesis (BibTeX converts it to lowercase)")
+       ("school" "School where the master's thesis was written")
+       ("year"))
+      nil
+      (("type" "Type of the master's thesis (if other than \"Master's thesis\")")
+       ("address" "Address of the school (if not part of field \"school\") or country")
+       ("month")
+       ("note")))
+     ("TechReport" "Technical Report"
+      (("author")
+       ("title" "Title of the technical report (BibTeX converts it to lowercase)")
+       ("institution" "Sponsoring institution of the report")
+       ("year"))
+      nil
+      (("type" "Type of the report (if other than \"technical report\")")
+       ("number" "Number of the technical report")
+       ("address")
+       ("month")
+       ("note")))
+     ("Manual" "Technical Manual"
+      (("title" "Title of the manual"))
+      nil
+      (("author")
+       ("organization" "Publishing organization of the manual")
+       ("address")
+       ("edition" "Edition of the manual as a capitalized English word")
+       ("month")
+       ("year")
+       ("note")))
+     ("Unpublished" "Unpublished"
+      (("author")
+       ("title" "Title of the unpublished work (BibTeX converts it to lowercase)")
+       ("note"))
+      nil
+      (("month")
+       ("year")))
+     ("Misc" "Miscellaneous" nil nil
+      (("author")
+       ("title" "Title of the work (BibTeX converts it to lowercase)")
+       ("howpublished" "The way in which the work was published")
+       ("month")
+       ("year")
+       ("note")))
+     ("Online" "Online entry"
+      (("author")
+       ("year")
+       ("title")
+       ("url")
+       ("urldate"))
+      nil nil)
+     ("Website" "A website"
+      (("year")
+       ("title")
+       ("url")
+       ("urldate"))
+      nil
+      (("author"))))))
+ '(bibtex-entry-format
+   (quote
+    (opts-or-alts required-fields numerical-fields realign)))
+ '(cider-auto-test-mode t)
+ '(cider-clojure-cli-command "clojure")
+ '(cider-default-repl-command "lein")
+ '(company-quickhelp-color-background "#4F4F4F")
+ '(company-quickhelp-color-foreground "#DCDCCC")
+ '(custom-safe-themes
+   (quote
+    ("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "12fca95bcf0f3526233a6100c8967356b243b92f103944587997c9cc9fe8e72e" "afa30b4eaa7b1ca516511e7179869ac66badc65bde73e53e7ea91a736c93cb9b" "f5b08a72c679389e480edc2f6f194bb0dc8a69ab8de8db7800f20f44faa63fb6" default)))
+ '(diary-entry-marker (quote font-lock-variable-name-face))
+ '(doc-view-continuous t)
+ '(emms-mode-line-icon-image-cache
+   (quote
+    (image :type xpm :ascent center :data "/* XPM */
+static char *note[] = {
+/* width height num_colors chars_per_pixel */
+\"    10   11        2            1\",
+/* colors */
+\". c #1ba1a1\",
+\"# c None s None\",
+/* pixels */
+\"###...####\",
+\"###.#...##\",
+\"###.###...\",
+\"###.#####.\",
+\"###.#####.\",
+\"#...#####.\",
+\"....#####.\",
+\"#..######.\",
+\"#######...\",
+\"######....\",
+\"#######..#\" };")))
+ '(evil-escape-key-sequence "jk")
+ '(evil-move-beyond-eol t)
+ '(evil-move-cursor-back t)
+ '(evil-want-Y-yank-to-eol nil)
+ '(fci-rule-color "#383838")
+ '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
+ '(frame-background-mode (quote dark))
+ '(global-auto-revert-mode t)
+ '(global-evil-mc-mode t)
+ '(global-vi-tilde-fringe-mode nil)
+ '(haskell-font-lock-symbols t)
+ '(haskell-font-lock-symbols-alist
+   (quote
+    (("\\" . "λ")
+     ("not" . "¬")
+     ("->" . "→")
+     ("<-" . "←")
+     ("=>" . "⇒")
+     ("==" . "≡")
+     ("/=" . "≢")
+     (">=" . "≥")
+     ("<=" . "≤")
+     ("!!" . "‼")
+     ("&&" . "∩")
+     ("||" . "∪")
+     ("sqrt" . "√")
+     ("undefined" . "⊥")
+     ("pi" . "π")
+     ("~>" . "⇝")
+     ("-<" . "↢")
+     ("::" . "∷")
+     ("." "∘" haskell-font-lock-dot-is-not-composition)
+     ("forall" . "∀"))))
+ '(hl-sexp-background-color "#1c1f26")
+ '(mc/always-run-for-all t)
+ '(nrepl-message-colors
+   (quote
+    ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
+ '(org-agenda-compact-blocks nil)
+ '(org-agenda-custom-commands
+   (quote
+    ((" " "My Agenda"
+      ((agenda "" nil)
+       (todo "ONGOING|FUTURE" nil)
+       (tags "REFILE" nil)
+       (todo "DONE"
+             ((org-agenda-overriding-header "Tasks to Archive")
+              (org-agenda-skip-function
+               (quote bh/skip-non-archivable-tasks))
+              (org-tags-match-list-sublevels nil))
+             nil))))))
+ '(org-babel-load-languages
+   (quote
+    ((shell . t)
+     (emacs-lisp . t)
+     (awk . t)
+     (clojure . t))))
+ '(org-confirm-babel-evaluate nil)
+ '(org-habit-graph-column 40)
+ '(org-refile-use-outline-path t)
+ '(org-src-tab-acts-natively t)
+ '(package-archives
+   (quote
+    (("melpa" . "https://melpa.org/packages/")
+     ("org" . "http://orgmode.org/elpa/")
+     ("gnu" . "https://elpa.gnu.org/packages/")
+     ("MELPA" . "melpa.milkbox.net/#/"))))
+ '(package-selected-packages
+   (quote
+    (yasnippet-snippets symon string-inflection spaceline-all-the-icons all-the-icons memoize powerline sayid realgud test-simple loc-changes load-relative ranger pippel pipenv password-generator overseer request-deferred org-brain nameless mvn gntp meghanada maven-test-mode linum-relative importmagic epc ctable concurrent deferred impatient-mode simple-httpd dash-functional parent-mode helm-xref helm-rtags helm-purpose window-purpose imenu-list helm-mu pcache google-c-style gitignore-mode fringe-helper git-gutter+ git-gutter flycheck-rtags flx evil-org ghub let-alist evil-lion iedit evil-cleverparens anzu ensime sbt-mode scala-mode editorconfig dante lcr counsel-projectile counsel swiper company-rtags rtags pos-tip clojure-snippets clojure-cheatsheet clj-refactor inflections edn paredit peg cider-eval-sexp-fu cider seq spinner queue pkg-info clojure-mode epl centered-cursor-mode browse-at-remote popup font-lock+ goto-chg undo-tree bind-map bind-key white-sand-theme rebecca-theme gandalf-theme flatui-theme flatland-theme exotica-theme spotify helm-spotify-plus multi org-mime auctex-latexmk gnuplot-mode ob-clojure-literate rainbow-mode php-mode dired-hacks-utils ox-twbs org-ref pdf-tools key-chord ivy helm-bibtex biblio parsebib biblio-core tablist ox-reveal csv-mode sequences disaster company-c-headers cmake-mode clang-format yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic drupal-mode mmt markdown-mode magit diminish autothemer packed auto-complete avy auctex eclim magit-popup highlight smartparens evil flyspell-correct git-commit with-editor yasnippet helm helm-core async company flycheck request alert log4e projectile f hydra dash s hlinum winum unfill sudoku solarized-theme madhat2r-theme fuzzy Ard-Dark-theme Arc-dark-theme intero hlint-refactor hindent helm-hoogle flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode haskell-snippets yaml-mode evil-smartparens evil-mu4e mu4e-maildirs-extension mu4e-alert ht org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org thesaurus tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
+ '(pdf-latex-command "pdflatex -shell-escape")
+ '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
+ '(send-mail-function (quote mailclient-send-it))
+ '(tab-always-indent t)
+ '(tdd-mode t)
+ '(thesaurus-bhl-api-key "c8a8969932f1c69d2f464578b9761c48" t)
+ '(vc-annotate-background "#2B2B2B")
+ '(vc-annotate-color-map
+   (quote
+    ((20 . "#BC8383")
+     (40 . "#CC9393")
+     (60 . "#DFAF8F")
+     (80 . "#D0BF8F")
+     (100 . "#E0CF9F")
+     (120 . "#F0DFAF")
+     (140 . "#5F7F5F")
+     (160 . "#7F9F7F")
+     (180 . "#8FB28F")
+     (200 . "#9FC59F")
+     (220 . "#AFD8AF")
+     (240 . "#BFEBBF")
+     (260 . "#93E0E3")
+     (280 . "#6CA0A3")
+     (300 . "#7CB8BB")
+     (320 . "#8CD0D3")
+     (340 . "#94BFF3")
+     (360 . "#DC8CC3"))))
+ '(vc-annotate-very-old-color "#DC8CC3"))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Source Code Pro" :foundry "ADBE" :slant normal :weight normal :height 111 :width normal)))))
+)

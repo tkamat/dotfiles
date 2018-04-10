@@ -1,0 +1,27 @@
+[general]
+accounts = Gmail
+maxsyncaccounts = 1
+pythonfile = ~/.offlineimap.py
+
+[Account Gmail]
+localrepository = Local
+remoterepository = Remote
+
+[Repository Local]
+type = Maildir
+localfolders = ~/Maildir
+
+[Repository Remote]
+type = Gmail
+remoteuser = platypusdiamond@gmail.com
+remotehost = imap.gmail.com
+realdelete = no
+folderfilter = lambda foldername: foldername not in ['[Gmail]/Spam', '[Gmail]/All Mail', '[Gmail]/Starred', '[Gmail]/Important']
+holdconnectionopen = true
+keepalive = 60
+sslcacertfile = /etc/ssl/certs/ca-certificates.crt
+auth_mechanisms = XOAUTH2
+oauth2_client_id = 466816305412-git58vl9338c2vjkk457pqatrvmt38pr.apps.googleusercontent.com
+oauth2_client_secret = AbQ4nqeg1AhjmwoDR0w4FYpz
+oauth2_request_url = https://accounts.google.com/o/oauth2/token
+oauth2_refresh_token = 1/PNEYP-kaMDuFlAhpqnAgAGjaV9koX-QZ2B9l7sVSsks
