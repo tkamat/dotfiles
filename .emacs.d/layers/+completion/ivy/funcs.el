@@ -1,6 +1,6 @@
 ;;; funcs.el --- Ivy Layer functions File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -72,7 +72,7 @@
         "Grep in the current directory for STRING."
         (if (< (length string) 3)
             (counsel-more-chars 3)
-          (let* ((default-directory counsel--git-grep-dir)
+          (let* ((default-directory (ivy-state-directory ivy-last))
                  (args (if (string-match-p " -- " string)
                            (let ((split (split-string string " -- ")))
                              (prog1 (pop split)
@@ -112,8 +112,7 @@
             (line-number-at-pos))
           spacemacs--gne-line-func
           (lambda (c)
-            (let ((counsel--git-grep-dir default-directory))
-              (counsel-git-grep-action c)))
+            (counsel-git-grep-action c))
           next-error-function 'spacemacs/gne-next)))
 
 (defvar spacemacs--counsel-map
@@ -142,22 +141,21 @@ that directory."
                       (when (and (assoc-string tool spacemacs--counsel-commands)
                                  (executable-find tool))
                         (throw 'tool tool)))
-                    (throw 'tool "grep"))))
-      (setq counsel--git-grep-dir
-            (or initial-directory
-                (read-directory-name "Start from directory: ")))
+                    (throw 'tool "grep")))
+            (default-directory
+              (or initial-directory (read-directory-name "Start from directory: "))))
       (ivy-read
        (concat ivy-count-format
                (format "%s from [%s]: "
                        tool
-                       (if (< (length counsel--git-grep-dir)
+                       (if (< (length default-directory)
                               spacemacs--counsel-search-max-path-length)
-                           counsel--git-grep-dir
+                           default-directory
                          (concat
-                          "..." (substring counsel--git-grep-dir
-                                           (- (length counsel--git-grep-dir)
+                          "..." (substring default-directory
+                                           (- (length default-directory)
                                               spacemacs--counsel-search-max-path-length)
-                                           (length counsel--git-grep-dir))))))
+                                           (length default-directory))))))
        (spacemacs//make-counsel-search-function tool)
        :initial-input (rxt-quote-pcre initial-input)
        :dynamic-collection t
@@ -172,6 +170,7 @@ that directory."
 ;; Define search functions for each tool
 (cl-loop
    for (tools tool-name) in '((dotspacemacs-search-tools "auto")
+                              ((list "rg") "rg")
                               ((list "ag") "ag")
                               ((list "pt") "pt")
                               ((list "ack") "ack")
@@ -214,7 +213,24 @@ that directory."
                        "a tool selected from `dotspacemacs-search-tools'."
                      tool-name))
          (interactive)
-         (spacemacs/counsel-search ,tools t (projectile-project-root))))))
+         (spacemacs/counsel-search ,tools t (projectile-project-root)))
+       (defun ,(intern (format "spacemacs/search-dir-%s" tool-name)) ()
+         ,(format
+           "Use `spacemacs/counsel-search' to search in the current
+ directory with %s." (if (string= tool-name "auto")
+                        "a tool selected from `dotspacemacs-search-tools'."
+                      tool-name))
+         (interactive)
+         (spacemacs/counsel-search ,tools nil default-directory))
+       (defun ,(intern (format "spacemacs/search-dir-%s-region-or-symbol" tool-name)) ()
+         ,(format
+           "Use `spacemacs/counsel-search' to search for
+ the selected region or the symbol around point in the current
+ directory with %s." (if (string= tool-name "auto")
+                        "a tool selected from `dotspacemacs-search-tools'."
+                      tool-name))
+         (interactive)
+         (spacemacs/counsel-search ,tools t default-directory)))))
 
 (defun spacemacs/counsel-git-grep-region-or-symbol ()
   "Use `counsel-git-grep' to search for the selected region or
@@ -235,7 +251,7 @@ that directory."
 (defun spacemacs//counsel-occur ()
   "Generate a custom occur buffer for `counsel-git-grep'."
   (ivy-occur-grep-mode)
-  (setq default-directory counsel--git-grep-dir)
+  (setq default-directory (ivy-state-directory ivy-last))
   (let ((cands ivy--old-cands))
     ;; Need precise number of header lines for `wgrep' to work.
     (insert (format "-*- mode:grep; default-directory: %S -*-\n\n\n"
@@ -252,7 +268,7 @@ that directory."
   (ignore-errors
     (call-interactively 'counsel-up-directory)))
 
-(when (configuration-layer/package-usedp 'counsel)
+(when (configuration-layer/package-used-p 'counsel)
   (with-eval-after-load 'counsel
     (defun spacemacs/describe-mode ()
       "Dummy wrapper to prevent an key binding error from helm.
@@ -276,13 +292,50 @@ To prevent this error we just wrap `describe-mode' to defeat the
       (let ((file-name (match-string-no-properties 1 x))
             (line-number (match-string-no-properties 2 x)))
         (funcall func
-                 (expand-file-name file-name counsel--git-grep-dir))
+                 (expand-file-name file-name (ivy-state-directory ivy-last)))
         (goto-char (point-min))
         (forward-line (1- (string-to-number line-number)))
         (re-search-forward (ivy--regex ivy-text t) (line-end-position) t)
         (unless (eq ivy-exit 'done)
           (swiper--cleanup)
           (swiper--add-overlays (ivy--regex ivy-text)))))))
+
+;; org
+
+;; see https://github.com/abo-abo/swiper/issues/177
+(defun spacemacs//counsel-org-ctrl-c-ctrl-c-org-tag ()
+  "Hook for `org-ctrl-c-ctrl-c-hook' to use `counsel-org-tag'."
+  (if (save-excursion (beginning-of-line) (looking-at "[ \t]*$"))
+      (or (run-hook-with-args-until-success 'org-ctrl-c-ctrl-c-final-hook)
+          (user-error "C-c C-c can do nothing useful at this location"))
+    (let* ((context (org-element-context))
+           (type (org-element-type context)))
+      (case type
+        ;; When at a link, act according to the parent instead.
+        (link (setq context (org-element-property :parent context))
+              (setq type (org-element-type context)))
+        ;; Unsupported object types: refer to the first supported
+        ;; element or object containing it.
+        ((bold code entity export-snippet inline-babel-call inline-src-block
+               italic latex-fragment line-break macro strike-through subscript
+               superscript underline verbatim)
+         (setq context
+               (org-element-lineage
+                context '(radio-target paragraph verse-block table-cell)))))
+      ;; For convenience: at the first line of a paragraph on the
+      ;; same line as an item, apply function on that item instead.
+      (when (eq type 'paragraph)
+        (let ((parent (org-element-property :parent context)))
+          (when (and (eq (org-element-type parent) 'item)
+                     (= (line-beginning-position)
+                        (org-element-property :begin parent)))
+            (setq context parent type 'item))))
+
+      ;; Act according to type of element or object at point.
+      (case type
+        ((headline inlinetask)
+         (save-excursion (goto-char (org-element-property :begin context))
+                         (call-interactively 'counsel-org-tag)) t)))))
 
 ;; Ivy
 
@@ -389,14 +442,8 @@ around point as the initial input."
   "Run `swiper-all' with the selected region or the symbol
 around point as the initial input."
   (interactive)
-  (ivy-read "Swiper: " (swiper--multi-candidates
-                        (cl-remove-if-not
-                         #'buffer-file-name
-                         (buffer-list)))
-            :initial-input (if (region-active-p)
-                               (buffer-substring-no-properties
-                                (region-beginning) (region-end))
-                             (thing-at-point 'symbol t))
-            :action 'swiper-multi-action-2
-            :unwind #'swiper--cleanup
-            :caller 'swiper-multi))
+  (let ((input (if (region-active-p)
+                   (buffer-substring-no-properties
+                    (region-beginning) (region-end))
+                 (thing-at-point 'symbol t))))
+    (swiper-all input)))

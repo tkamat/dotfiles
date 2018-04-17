@@ -31,10 +31,12 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     javascript
      clojure
      python
      php
      haskell
+     nlinum
      yaml
      html
      (c-c++ :variables c-c++-enable-clang-support t)
@@ -57,7 +59,10 @@ values."
      (mu4e  :variables
             mu4e-installation-path "/usr/share/emacs/site-lisp/mu4e")
      markdown
-     org
+     ranger
+     (org :variables
+          org-enable-reveal-js-support t
+          org-enable-bootstrap-support t)
      (shell :variables
             shell-default-height 30
             shell-default-position 'bottom
@@ -76,15 +81,15 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(thesaurus
-                                      gradle-mode
+   dotspacemacs-additional-packages '(gradle-mode
                                       groovy-mode
+                                      centered-window-mode
                                       yasnippet-snippets
                                       openwith
                                       (el-go :location "~/.emacs.d/el-go")
                                       writegood-mode
                                       frames-only-mode
-                                      xresources-theme
+                                      (my-xresources-theme :location local)
                                       dired-ranger
                                       golden-ratio
                                       langtool
@@ -166,8 +171,8 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(xresources
-                        )
+   dotspacemacs-themes '(my-xresources)
+   dotspacemacs-mode-line-theme 'spacemacs
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -344,8 +349,10 @@ you should place your code here."
   (advice-add 'org-agenda-quit :before 'org-save-all-org-buffers)
   (advice-add 'org-agenda-todo :after 'org-save-all-org-buffers)
   (advice-add 'org-agenda-redo :after 'org-save-all-org-buffers)
+  (spacemacs/set-leader-keys "aof" (lambda () (interactive)
+                                     (find-file "~/Dropbox/org/todo.org.txt")))
 
-  ;;org-babel
+  ;; org-babel
   (require 'ob-gnuplot)
   (setq org-latex-listings 'minted
         org-latex-packages-alist '(("" "minted"))
@@ -354,7 +361,7 @@ you should place your code here."
           "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
   ;; agenda files
-  (setq org-agenda-files (list "~/Dropbox/org/todo.org.txt" "~/Dropbox/org/gcal.org" "~/Dropbox/org/schoology.org"))
+  (setq org-agenda-files (list "~/Dropbox/org/todo.org.txt" "~/Dropbox/org/gcal.org"))
   (focus-autosave-mode)
   ;; todo settings
   (setq org-todo-keywords
@@ -368,14 +375,13 @@ you should place your code here."
                 ("WAITING" :foreground "orange" :weight bold)
                 ("CANCELLED" :foreground "forest green" :weight bold))))
   (setq org-use-fast-todo-selection t)
-  (setq org-default-notes-file "~/Dropbox/org/test.org.txt")
+  (setq org-default-notes-file "~/Dropbox/org/todo.org.txt")
   ;; capture settings
   (setq org-capture-templates
-        (quote (("t" "todo" entry (file+headline "~/Dropbox/org/test.org.txt" "Refile")
+        (quote (("t" "todo" entry (file+headline "~/Dropbox/org/todo.org.txt" "Refile")
                  "** TODO")
                 ("e" "Event" entry (file  "~/Dropbox/org/gcal.org" )
-                 "* %?\n\n%^T\n\n")
-                )))
+                 "* %?\n\n%^T\n\n"))))
   ;; refiling settings
   (setq org-refile-targets '((nil :maxlevel . 9)
                              (org-agenda-files :maxlevel . 9)))
@@ -413,9 +419,12 @@ you should place your code here."
           org-gcal-client-id "1007167813898-af95nv19lap962tqogbpburbnsogmm2t.apps.googleusercontent.com"
           org-gcal-client-secret "fpKpegO_7Q6jUqcoaOFSOZOC"
           org-gcal-file-alist '(("platypusdiamond@gmail.com"
-          . "~/Dropbox/org/gcal.org") ("kd2drj3cpr7qj1jv39kk0i2aiiguf29b@import.calendar.google.com"
-          . "~/Dropbox/org/schoology.org"))))
+          . "~/Dropbox/org/gcal.org"))))
   (add-hook 'org-agenda-redo-hook (lambda () (org-gcal-sync)))
+  (advice-add 'org-gcal-sync :before 'org-gcal-refresh-token)
+
+  ;; theme
+  (require 'my-xresources-theme)
 
   ;; functions
   (defun my/org-agenda-gcal ()
@@ -439,6 +448,13 @@ you should place your code here."
   (evil-leader/set-key-for-mode 'org-agenda-mode "l" 'org-agenda-open-link)
   (evil-leader/set-key-for-mode 'org-agenda-mode "r" 'org-gcal-sync)
   (evil-leader/set-key-for-mode 'latex-mode "w" 'thesaurus-choose-synonym-and-replace)
+  (evil-leader/set-key-for-mode 'org-mode "i-" 'org-meta-return)
+
+  ;; lilypond
+  (setq load-path (append (list (expand-file-name "~/site-lisp")) load-path))
+  (autoload 'LilyPond-mode "lilypond-mode" "LilyPond Editing Mode" t)
+  (add-to-list 'auto-mode-alist '("\\.ly$" . LilyPond-mode))
+  (add-to-list 'auto-mode-alist '("\\.ily$" . LilyPond-mode))
 
   ;;server
   (server-start)
@@ -453,8 +469,6 @@ you should place your code here."
   (require 'gradle-mode)
   (require 'company)
   (require 'company-emacs-eclim)
-  (add-to-list 'load-path "~/.emacs.d/info-lookmore.el") 
-  (load "info-lookmore.el")
   (add-to-list 'load-path "~/.emacs.d/el-go/")
   (load "go")
   ;;eclim settings
@@ -524,10 +538,10 @@ you should place your code here."
 
  ;; clojure-config
  (require 'seq-25)
- (setq cider-cljs-lein-repl
-       "(do (require 'figwheel-sidecar.repl-api)
-         (figwheel-sidecar.repl-api/start-figwheel!)
-         (figwheel-sidecar.repl-api/cljs-repl))")
+ ;; (setq cider-cljs-lein-repl
+ ;;       "(do (require 'figwheel-sidecar.repl-api)
+ ;;         (figwheel-sidecar.repl-api/start-figwheel!)
+ ;;         (figwheel-sidecar.repl-api/cljs-repl))")
  (defun clojure-goto-tests ()
    (interactive)
    "Switches from a clojure file to its corresponding test file."
@@ -597,7 +611,8 @@ you should place your code here."
         smtpmail-smtp-server "smtp.gmail.com"
         smtpmail-smtp-service 587
         smtpmail-debug-info t)
-
+  (setq mu4e-update-interval 600)
+  (mu4e t)
 
   ;; keybindings
   (frames-only-mode t)
@@ -633,24 +648,21 @@ you should place your code here."
       (define-key map (kbd "M-[") 'yas-expand)
       map)
     "my-keys-minor-mode keymap.")
+
   (define-minor-mode my-keys-minor-mode
     "A minor mode so that my key settings override annoying major modes."
     :init-value t
     :lighter " my-keys")
 
-    (my-keys-minor-mode 1)
-    (add-hook 'after-load-functions 'my-keys-have-priority)
-    (defun my-keys-have-priority (_file)
-      "Try to ensure that my keybindings retain priority over other minor modes.
-
-Called via the `after-load-functions' special hook."
-      (unless (eq (caar minor-mode-map-alist) 'my-keys-minor-mode)
-        (let ((mykeys (assq 'my-keys-minor-mode minor-mode-map-alist)))
-          (assq-delete-all 'my-keys-minor-mode minor-mode-map-alist)
-          (add-to-list 'minor-mode-map-alist mykeys))))
-
-
-  )
+  (my-keys-minor-mode 1)
+  (add-hook 'after-load-functions 'my-keys-have-priority)
+  (defun my-keys-have-priority (_file)
+    "Try to ensure that my keybindings retain priority over other
+minor modes. Called via the `after-load-functions' special hook."
+    (unless (eq (caar minor-mode-map-alist) 'my-keys-minor-mode)
+      (let ((mykeys (assq 'my-keys-minor-mode minor-mode-map-alist)))
+        (assq-delete-all 'my-keys-minor-mode minor-mode-map-alist)
+        (add-to-list 'minor-mode-map-alist mykeys)))))
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -660,6 +672,7 @@ Called via the `after-load-functions' special hook."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(LaTeX-command "latex --shell-escape")
+ '(LilyPond-pdf-command "zathura")
  '(TeX-view-program-selection
    (quote
     (((output-dvi has-no-display-manager)
@@ -774,6 +787,9 @@ static char *gnus-pointer[] = {
                (quote bh/skip-non-archivable-tasks))
               (org-tags-match-list-sublevels nil))
              nil))))))
+ '(org-agenda-files
+   (quote
+    ("~/Dropbox/org/todo.org.txt" "~/Dropbox/org/gcal.org")))
  '(org-babel-load-languages
    (quote
     ((shell . t)
@@ -793,7 +809,7 @@ static char *gnus-pointer[] = {
      ("MELPA" . "melpa.milkbox.net/#/"))))
  '(package-selected-packages
    (quote
-    (yasnippet-snippets gitignore-mode white-sand-theme rebecca-theme org-mime exotica-theme powerline org-category-capture ghub let-alist bind-key iedit goto-chg undo-tree epl deferred dash-functional frames-only-mode clojure-snippets clj-refactor inflections edn cider paredit seq peg cider-eval-sexp-fu queue clojure-mode openwith disaster company-c-headers cmake-mode clang-format yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode xresources-theme-theme xresources-theme dired-ranger mmt markdown-mode magit diminish autothemer packed auto-complete avy auctex eclim magit-popup highlight smartparens evil flyspell-correct git-commit with-editor yasnippet helm helm-core async company request alert log4e projectile f hydra dash s moe-theme-theme winum unfill sudoku solarized-theme madhat2r-theme fuzzy Ard-Dark-theme moe-theme Arc-dark-theme intero hlint-refactor hindent helm-hoogle company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode haskell-snippets yaml-mode evil-smartparens evil-mu4e mu4e-maildirs-extension mu4e-alert ht org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org thesaurus tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs ranger rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md gandalf-theme flyspell-correct-helm flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
+    (ox-twbs ox-reveal auctex-latexmk yasnippet-snippets gitignore-mode white-sand-theme rebecca-theme org-mime exotica-theme powerline org-category-capture ghub let-alist bind-key iedit goto-chg undo-tree epl deferred dash-functional frames-only-mode clojure-snippets clj-refactor inflections edn cider paredit seq peg cider-eval-sexp-fu queue clojure-mode openwith disaster company-c-headers cmake-mode clang-format yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode dired-ranger mmt markdown-mode magit diminish autothemer packed auto-complete avy auctex eclim magit-popup highlight smartparens evil flyspell-correct git-commit with-editor yasnippet helm helm-core async company request alert log4e projectile f hydra dash s moe-theme-theme winum unfill sudoku solarized-theme madhat2r-theme fuzzy Ard-Dark-theme moe-theme Arc-dark-theme intero hlint-refactor hindent helm-hoogle company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode haskell-snippets yaml-mode evil-smartparens evil-mu4e mu4e-maildirs-extension mu4e-alert ht org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org thesaurus tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs ranger rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md gandalf-theme flyspell-correct-helm flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#414E63")
  '(pos-tip-foreground-color "#BEC8DB")
@@ -806,4 +822,172 @@ static char *gnus-pointer[] = {
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Source Code Pro" :foundry "ADBE" :slant normal :weight normal :height 111 :width normal))))
  )
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(LaTeX-command "latex --shell-escape")
+ '(LilyPond-pdf-command "zathura")
+ '(TeX-view-program-selection
+   (quote
+    (((output-dvi has-no-display-manager)
+      "dvi2tty")
+     ((output-dvi style-pstricks)
+      "dvips and gv")
+     (output-dvi "xdvi")
+     (output-pdf "Zathura")
+     (output-html "xdg-open"))))
+ '(ansi-color-faces-vector
+   [default bold shadow italic underline bold bold-italic bold])
+ '(ansi-color-names-vector
+   ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
+ '(cider-default-repl-command "lein")
+ '(custom-safe-themes
+   (quote
+    ("12fca95bcf0f3526233a6100c8967356b243b92f103944587997c9cc9fe8e72e" "afa30b4eaa7b1ca516511e7179869ac66badc65bde73e53e7ea91a736c93cb9b" "f5b08a72c679389e480edc2f6f194bb0dc8a69ab8de8db7800f20f44faa63fb6" default)))
+ '(diary-entry-marker (quote font-lock-variable-name-face))
+ '(doc-view-continuous t)
+ '(eclim-executable (quote ~/eclipse/eclim))
+ '(eclimd-autostart t)
+ '(eclimd-executable "~/eclipse/eclimd")
+ '(eclimd-wait-for-process nil)
+ '(emms-mode-line-icon-image-cache
+   (quote
+    (image :type xpm :ascent center :data "/* XPM */
+static char *note[] = {
+/* width height num_colors chars_per_pixel */
+\"    10   11        2            1\",
+/* colors */
+\". c #1ba1a1\",
+\"# c None s None\",
+/* pixels */
+\"###...####\",
+\"###.#...##\",
+\"###.###...\",
+\"###.#####.\",
+\"###.#####.\",
+\"#...#####.\",
+\"....#####.\",
+\"#..######.\",
+\"#######...\",
+\"######....\",
+\"#######..#\" };")))
+ '(evil-escape-key-sequence "jk")
+ '(evil-want-Y-yank-to-eol nil)
+ '(fci-rule-color "#383838" t)
+ '(global-auto-revert-mode t)
+ '(global-vi-tilde-fringe-mode nil)
+ '(gnus-logo-colors (quote ("#4c8383" "#bababa")) t)
+ '(gnus-mode-line-image-cache
+   (quote
+    (image :type xpm :ascent center :data "/* XPM */
+static char *gnus-pointer[] = {
+/* width height num_colors chars_per_pixel */
+\"    18    13        2            1\",
+/* colors */
+\". c #1ba1a1\",
+\"# c None s None\",
+/* pixels */
+\"##################\",
+\"######..##..######\",
+\"#####........#####\",
+\"#.##.##..##...####\",
+\"#...####.###...##.\",
+\"#..###.######.....\",
+\"#####.########...#\",
+\"###########.######\",
+\"####.###.#..######\",
+\"######..###.######\",
+\"###....####.######\",
+\"###..######.######\",
+\"###########.######\" };")) t)
+ '(haskell-font-lock-symbols t)
+ '(haskell-font-lock-symbols-alist
+   (quote
+    (("\\" . "λ")
+     ("not" . "¬")
+     ("->" . "→")
+     ("<-" . "←")
+     ("=>" . "⇒")
+     ("==" . "≡")
+     ("/=" . "≢")
+     (">=" . "≥")
+     ("<=" . "≤")
+     ("!!" . "‼")
+     ("&&" . "∩")
+     ("||" . "∪")
+     ("sqrt" . "√")
+     ("undefined" . "⊥")
+     ("pi" . "π")
+     ("~>" . "⇝")
+     ("-<" . "↢")
+     ("::" . "∷")
+     ("." "∘" haskell-font-lock-dot-is-not-composition)
+     ("forall" . "∀"))))
+ '(helm-external-programs-associations (quote (("pdf" . "zathura"))))
+ '(mc/always-run-for-all t)
+ '(nrepl-message-colors
+   (quote
+    ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
+ '(org-agenda-compact-blocks nil)
+ '(org-agenda-custom-commands
+   (quote
+    ((" " "My Agenda"
+      ((agenda "" nil)
+       (todo "ONGOING|FUTURE" nil)
+       (tags "REFILE" nil)
+       (todo "DONE"
+             ((org-agenda-overriding-header "Tasks to Archive")
+              (org-agenda-skip-function
+               (quote bh/skip-non-archivable-tasks))
+              (org-tags-match-list-sublevels nil))
+             nil))))))
+ '(org-agenda-files
+   (quote
+    ("~/Dropbox/org/todo.org.txt" "~/Dropbox/org/gcal.org")))
+ '(org-babel-load-languages
+   (quote
+    ((shell . t)
+     (emacs-lisp . t)
+     (java . t)
+     (clojure . t)
+     (gnuplot . t))))
+ '(org-confirm-babel-evaluate nil)
+ '(org-habit-graph-column 40)
+ '(org-refile-use-outline-path t)
+ '(org-src-tab-acts-natively t)
+ '(package-archives
+   (quote
+    (("melpa" . "https://melpa.org/packages/")
+     ("org" . "http://orgmode.org/elpa/")
+     ("gnu" . "https://elpa.gnu.org/packages/")
+     ("MELPA" . "melpa.milkbox.net/#/"))))
+ '(package-selected-packages
+   (quote
+    (frames-only-mode ox-twbs ox-reveal auctex-latexmk yasnippet-snippets gitignore-mode white-sand-theme rebecca-theme org-mime exotica-theme powerline org-category-capture ghub let-alist bind-key iedit goto-chg undo-tree epl deferred dash-functional clojure-snippets clj-refactor inflections edn cider paredit seq peg cider-eval-sexp-fu queue clojure-mode openwith disaster company-c-headers cmake-mode clang-format yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode dired-ranger mmt markdown-mode magit diminish autothemer packed auto-complete avy auctex eclim magit-popup highlight smartparens evil flyspell-correct git-commit with-editor yasnippet helm helm-core async company request alert log4e projectile f hydra dash s moe-theme-theme winum unfill sudoku solarized-theme madhat2r-theme fuzzy Ard-Dark-theme moe-theme Arc-dark-theme intero hlint-refactor hindent helm-hoogle company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode haskell-snippets yaml-mode evil-smartparens evil-mu4e mu4e-maildirs-extension mu4e-alert ht org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org thesaurus tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs ranger rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md gandalf-theme flyspell-correct-helm flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
+ '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
+ '(pos-tip-background-color "#414E63")
+ '(pos-tip-foreground-color "#BEC8DB")
+ '(send-mail-function (quote mailclient-send-it))
+ '(tab-always-indent t)
+ '(thesaurus-bhl-api-key "c8a8969932f1c69d2f464578b9761c48" t)
+ '(writegood-weasel-words nil))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Source Code Pro" :foundry "ADBE" :slant normal :weight normal :height 111 :width normal)))))
+)

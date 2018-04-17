@@ -1,6 +1,6 @@
 ;;; config.el --- Python Layer Configuration File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -11,18 +11,21 @@
 
 ;; variables
 
-(spacemacs|defvar-company-backends python-mode)
-(spacemacs|defvar-company-backends inferior-python-mode)
-(spacemacs|defvar-company-backends pip-requirements-mode)
-
 (spacemacs|define-jump-handlers python-mode)
 (spacemacs|define-jump-handlers cython-mode anaconda-mode-goto)
+
+(defvar python-backend 'anaconda
+  "The backend to use for IDE features. Possible values are `anaconda'
+and `lsp'.")
 
 (defvar python-enable-yapf-format-on-save nil
   "If non-nil, automatically format code with YAPF on save.")
 
 (defvar python-test-runner 'nose
   "Test runner to use. Possible values are `nose' or `pytest'.")
+
+(defvar python-save-before-test t
+  "If non nil, current buffer will be save before call a test function")
 
 (defvar python-fill-column 79
   "Fill column value for python buffers")

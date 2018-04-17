@@ -1,6 +1,6 @@
 ;;; packages.el --- ipython Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -9,15 +9,25 @@
 ;;
 ;;; License: GPLv3
 
-(setq ipython-notebook-packages '(ein))
+(setq ipython-notebook-packages '(company
+                                  ein
+                                  ob-ipython
+                                  ))
+
+(defun ipython-notebook/post-init-company ()
+  (spacemacs|add-company-backends
+    :backends ein:company-backend
+    :modes ein:notebook-mode))
 
 (defun ipython-notebook/init-ein ()
   (use-package ein
     :defer t
-    :commands ein:notebooklist-open
+    :commands (ein:notebooklist-open ein:notebooklist-login)
     :init
     (progn
-      (spacemacs/set-leader-keys "ain" 'ein:notebooklist-open)
+      (spacemacs/set-leader-keys
+        "ayl" 'ein:notebooklist-login
+        "ayo" 'ein:notebooklist-open)
       (with-eval-after-load 'ein-notebooklist
         (evilified-state-evilify-map ein:notebooklist-mode-map
           :mode ein:notebooklist-mode
@@ -53,16 +63,17 @@
         "R" 'ein:worksheet-rename-sheet
         "RET" 'ein:worksheet-execute-cell-and-goto-next
         ;; Output
-        " C-l" 'ein:worksheet-clear-output
-        " C-S-l" 'ein:worksheet-clear-all-output
+        "C-l" 'ein:worksheet-clear-output
+        "C-S-l" 'ein:worksheet-clear-all-output
         ;;Console
-        " C-o" 'ein:console-open
+        "C-o" 'ein:console-open
         ;; Merge cells
-        " C-k" 'ein:worksheet-merge-cell
-        " C-j" 'spacemacs/ein:worksheet-merge-cell-next
+        "C-k" 'ein:worksheet-merge-cell
+        "C-j" 'spacemacs/ein:worksheet-merge-cell-next
+        "s" 'ein:worksheet-split-cell-at-point
         ;; Notebook
-        " C-s" 'ein:notebook-save-notebook-command
-        " C-r" 'ein:notebook-rename-command
+        "C-s" 'ein:notebook-save-notebook-command
+        "C-r" 'ein:notebook-rename-command
         "1" 'ein:notebook-worksheet-open-1th
         "2" 'ein:notebook-worksheet-open-2th
         "3" 'ein:notebook-worksheet-open-3th
@@ -87,6 +98,11 @@
 
       ;; keybindings mirror ipython web interface behavior
       (evil-define-key 'insert ein:notebook-multilang-mode-map
+        (kbd "<C-return>") 'ein:worksheet-execute-cell
+        (kbd "<S-return>") 'ein:worksheet-execute-cell-and-goto-next)
+
+      ;; keybindings mirror ipython web interface behavior
+      (evil-define-key 'hybrid ein:notebook-multilang-mode-map
         (kbd "<C-return>") 'ein:worksheet-execute-cell
         (kbd "<S-return>") 'ein:worksheet-execute-cell-and-goto-next)
 
@@ -140,9 +156,10 @@
         ("C-S-l" ein:worksheet-clear-all-output)
         ;;Console
         ("C-o" ein:console-open)
-        ;; Merge cells
+        ;; Merge and split cells
         ("C-k" ein:worksheet-merge-cell)
         ("C-j" spacemacs/ein:worksheet-merge-cell-next)
+        ("s" ein:worksheet-split-cell-at-point)
         ;; Notebook
         ("C-s" ein:notebook-save-notebook-command)
         ("C-r" ein:notebook-rename-command)
@@ -157,4 +174,12 @@
         ("9" ein:notebook-worksheet-open-last)
         ("+" ein:notebook-worksheet-insert-next)
         ("-" ein:notebook-worksheet-delete)
-        ("x" ein:notebook-close)))))
+        ("x" ein:notebook-close))
+      (spacemacs/set-leader-keys "ein" 'spacemacs/ipython-notebook-transient-state/body))))
+
+(defun ipython-notebook/pre-init-ob-ipython ()
+  (spacemacs|use-package-add-hook org
+    :post-config
+    (use-package ob-ipython
+      :init (add-to-list 'org-babel-load-languages '(ipython . t)))))
+(defun ipython-notebook/init-ob-ipython ())

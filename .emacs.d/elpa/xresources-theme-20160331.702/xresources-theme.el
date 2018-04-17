@@ -4,7 +4,6 @@
 
 ;; Author: Marten Lienen <marten.lienen@gmail.com>
 ;; Keywords: xresources, theme
-;; Package-Version: 20160331.702
 ;; Version: 0.2.0
 
 ;; This file is not part of GNU Emacs.
@@ -35,8 +34,8 @@
 
 (deftheme xresources "~/.Xresources as a theme")
 
-(let* ((foreground (xresources-theme-color "color1"))
-       (background (xresources-theme-color "color0"))
+(let* ((foreground (xresources-theme-color "*.color7"))
+       (background (xresources-theme-color "*.color0"))
        (black (xresources-theme-color "color0"))
        (red (xresources-theme-color "color1"))
        (green (xresources-theme-color "color2"))
@@ -166,7 +165,7 @@
 
    ;; company-mode
    `(company-tooltip ((t (:foreground ,foreground :background ,background))))
-   `(company-tooltip-selection ((t (:foreground ,foreground :background ,magenta))))
+   `(company-tooltip-selection ((t (:foreground ,foreground :background ,background))))
    `(company-tooltip-mouse ((t (:background ,background))))
    `(company-tooltip-common ((t (:foreground ,green))))
    `(company-tooltip-common-selection ((t (:foreground ,green))))

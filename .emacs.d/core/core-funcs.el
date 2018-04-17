@@ -1,6 +1,6 @@
 ;;; core-funcs.el --- Spacemacs Core File
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -137,20 +137,19 @@ The buffer's major mode should be `org-mode'."
   (interactive)
   (unless (derived-mode-p 'org-mode)
     (user-error "org-mode should be enabled in the current buffer."))
-
-  ;; Make ~SPC ,~ work, reference:
-  ;; http://stackoverflow.com/questions/24169333/how-can-i-emphasize-or-verbatim-quote-a-comma-in-org-mode
-  (setcar (nthcdr 2 org-emphasis-regexp-components) " \t\n")
-  (org-set-emph-re 'org-emphasis-regexp-components org-emphasis-regexp-components)
-  (setq-local org-emphasis-alist '(("*" bold)
-                                   ("/" italic)
-                                   ("_" underline)
-                                   ("=" org-verbatim verbatim)
-                                   ("~" org-kbd)
-                                   ("+"
-                                    (:strike-through t))))
-  (when (require 'space-doc nil t)
-    (space-doc-mode)))
+  (if (require 'space-doc nil t)
+      (space-doc-mode)
+    ;; Make ~SPC ,~ work, reference:
+    ;; http://stackoverflow.com/questions/24169333/how-can-i-emphasize-or-verbatim-quote-a-comma-in-org-mode
+    (setcar (nthcdr 2 org-emphasis-regexp-components) " \t\n")
+    (org-set-emph-re 'org-emphasis-regexp-components org-emphasis-regexp-components)
+    (setq-local org-emphasis-alist '(("*" bold)
+                                     ("/" italic)
+                                     ("_" underline)
+                                     ("=" org-verbatim verbatim)
+                                     ("~" org-kbd)
+                                     ("+"
+                                      (:strike-through t))))))
 
 (defun spacemacs/view-org-file (file &optional anchor-text expand-scope)
   "Open org file and apply visual enchantments.
@@ -169,7 +168,7 @@ If EXPAND-SCOPE is `all' then run `outline-show-all' at the matched line."
     ;; If `anchor-text' is GitHub style link.
     (if (string-prefix-p "#" anchor-text)
         ;; If the toc-org package is loaded.
-        (if (configuration-layer/package-usedp 'toc-org)
+        (if (configuration-layer/package-used-p 'toc-org)
             ;; For each heading. Search the heading that corresponds
             ;; to `anchor-text'.
             (while (and (re-search-forward "^[\\*]+\s\\(.*\\).*$" nil t)
@@ -266,7 +265,7 @@ buffer."
 
 ;; http://stackoverflow.com/questions/11847547/emacs-regexp-count-occurrences
 (defun spacemacs/how-many-str (regexp str)
-  (loop with start = 0
+  (cl-loop with start = 0
         for count from 0
         while (string-match regexp str start)
         do (setq start (match-end 0))
@@ -306,19 +305,13 @@ buffer."
   "Switch back and forth between current and last buffer in the
 current window."
   (interactive)
-  (let ((current-buffer (window-buffer window))
-        (buffer-predicate
-         (frame-parameter (window-frame window) 'buffer-predicate)))
-    ;; switch to first buffer previously shown in this window that matches
-    ;; frame-parameter `buffer-predicate'
+  (let ((current-buffer (window-buffer window)))
+    ;; if no window is found in the windows history, `switch-to-buffer' will
+    ;; default to calling `other-buffer'.
     (switch-to-buffer
-     (or (cl-find-if (lambda (buffer)
-                       (and (not (eq buffer current-buffer))
-                            (or (null buffer-predicate)
-                                (funcall buffer-predicate buffer))))
-                     (mapcar #'car (window-prev-buffers window)))
-         ;; `other-buffer' honors `buffer-predicate' so no need to filter
-         (other-buffer current-buffer t)))))
+     (cl-find-if (lambda (buffer)
+                   (not (eq buffer current-buffer)))
+                 (mapcar #'car (window-prev-buffers window))))))
 
 (defun spacemacs/alternate-window ()
   "Switch back and forth between current and last window in the

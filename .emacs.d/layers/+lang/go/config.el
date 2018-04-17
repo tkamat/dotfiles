@@ -1,6 +1,6 @@
 ;;; config.el --- Go Layer config File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -10,8 +10,6 @@
 ;;; License: GPLv3
 
 ;; variables
-
-(spacemacs|defvar-company-backends go-mode)
 
 (spacemacs|define-jump-handlers go-mode godef-jump)
 
@@ -23,3 +21,9 @@
 
 (defvar go-use-gometalinter nil
   "Use gometalinter if the variable has non-nil value.")
+
+(defvar go-test-buffer-name "*go test*"
+  "Name of the buffer for go test output. Default is *go test*.")
+
+(defvar go-use-test-args ""
+  "Additional arguments to be supplied to `go test` during runtime.")

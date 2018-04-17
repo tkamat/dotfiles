@@ -1,6 +1,6 @@
 ;;; funcs.el --- Haskell Layer funcs File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -11,21 +11,23 @@
 
 (defun spacemacs-haskell//setup-completion-backend ()
   "Conditionally setup haskell completion backend."
-  (unless (eq haskell-completion-backend 'ghc-mod)
-    (add-hook 'haskell-mode-hook 'interactive-haskell-mode))
-  (when (configuration-layer/package-usedp 'company)
+  (when (configuration-layer/package-used-p 'company)
     (pcase haskell-completion-backend
       (`ghci (spacemacs-haskell//setup-ghci))
       (`ghc-mod (spacemacs-haskell//setup-ghc-mod))
-      (`intero (spacemacs-haskell//setup-intero)))))
+      (`intero (spacemacs-haskell//setup-intero))
+      (`dante (spacemacs-haskell//setup-dante)))))
 
 (defun spacemacs-haskell//setup-ghci ()
-  (add-to-list 'company-backends-haskell-mode
-               '(company-ghci company-dabbrev-code company-yasnippet)))
+  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+  (spacemacs|add-company-backends
+    :backends (company-ghci company-dabbrev-code company-yasnippet)
+    :modes haskell-mode))
 
 (defun spacemacs-haskell//setup-ghc-mod ()
-  (add-to-list 'company-backends-haskell-mode
-               '(company-ghc company-dabbrev-code company-yasnippet))
+  (spacemacs|add-company-backends
+    :backends (company-ghc company-dabbrev-code company-yasnippet)
+    :modes haskell-mode)
   (ghc-init)
   (dolist (mode haskell-modes)
     (spacemacs/declare-prefix-for-mode mode "mm" "haskell/ghc-mod")
@@ -41,14 +43,31 @@
       "m<" 'ghc-make-indent-shallower
       "hi" 'ghc-show-info
       "ht" 'ghc-show-type))
-  (when (configuration-layer/package-usedp 'flycheck)
+  (when (configuration-layer/package-used-p 'flycheck)
     ;; remove overlays from ghc-check.el if flycheck is enabled
     (set-face-attribute 'ghc-face-error nil :underline nil)
     (set-face-attribute 'ghc-face-warn nil :underline nil)))
 
+(defun spacemacs-haskell//setup-dante ()
+  (spacemacs|add-company-backends
+    :backends (dante-company company-dabbrev-code company-yasnippet)
+    :modes haskell-mode)
+  (push 'xref-find-definitions spacemacs-jump-handlers)
+  (dante-mode)
+  (dolist (mode haskell-modes)
+    (spacemacs/set-leader-keys-for-major-mode mode
+      "ht" 'dante-type-at
+      "hT" 'spacemacs-haskell//dante-insert-type
+      "hi" 'dante-info
+      "rs" 'dante-auto-fix
+      "se" 'dante-eval-block
+      "sr" 'dante-restart)))
+
 (defun spacemacs-haskell//setup-intero ()
-  (add-to-list 'company-backends-haskell-mode
-               '(company-intero company-dabbrev-code company-yasnippet))
+  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+  (spacemacs|add-company-backends
+    :backends (company-intero company-dabbrev-code company-yasnippet)
+    :modes haskell-mode)
   (push 'intero-goto-definition spacemacs-jump-handlers)
   (intero-mode)
   (dolist (mode haskell-modes)
@@ -62,8 +81,8 @@
   (dolist (mode (cons 'haskell-cabal-mode haskell-modes))
     (spacemacs/set-leader-keys-for-major-mode mode
       "sc"  nil
-      "ss"  'haskell-intero/display-repl
-      "sS"  'haskell-intero/pop-to-repl))
+      "sS"  'haskell-intero/display-repl
+      "ss"  'haskell-intero/pop-to-repl))
 
   (dolist (mode (append haskell-modes '(haskell-cabal-mode intero-repl-mode)))
     (spacemacs/declare-prefix-for-mode mode "mi" "haskell/intero")
@@ -78,6 +97,25 @@
   (evil-define-key '(insert normal) intero-mode-map
     (kbd "M-.") 'intero-goto-definition))
 
+(defun spacemacs-haskell//disable-electric-indent ()
+  "Disable electric indent mode if available"
+  ;; use only internal indentation system from haskell
+  (if (fboundp 'electric-indent-local-mode)
+      (electric-indent-local-mode -1)))
+
+(defun spacemacs/haskell-format-imports ()
+  "Sort and align import statements from anywhere in the source file."
+  (interactive)
+  (save-excursion
+    (haskell-navigate-imports)
+    (haskell-mode-format-imports)))
+
+;; Dante Functions
+
+(defun spacemacs-haskell//dante-insert-type ()
+  (interactive)
+  (dante-type-at :insert))
+
 
 ;; Intero functions
 
@@ -87,13 +125,13 @@
 
 (defun haskell-intero/display-repl (&optional prompt-options)
   (interactive "P")
-  (let ((buffer (intero-repl-buffer prompt-options)))
+  (let ((buffer (intero-repl-buffer prompt-options t)))
     (unless (get-buffer-window buffer 'visible)
       (display-buffer buffer))))
 
 (defun haskell-intero/pop-to-repl (&optional prompt-options)
   (interactive "P")
-  (pop-to-buffer (intero-repl-buffer prompt-options)))
+  (pop-to-buffer (intero-repl-buffer prompt-options t)))
 
 (defun haskell-intero//preserve-focus (f &rest args)
   (let ((buffer (current-buffer)))

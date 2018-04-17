@@ -1,6 +1,6 @@
 ;;; funcs.el --- Slime Layer functions File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -23,3 +23,12 @@
   (interactive)
   (let ((command (helm :sources (spacemacs//slime-helm-source))))
     (and command (slime (intern command)))))
+
+
+;; Evil integration
+
+(defun spacemacs/slime-eval-sexp-end-of-line ()
+  "Evaluate current line."
+  (interactive)
+  (move-end-of-line 1)
+  (slime-eval-last-expression))

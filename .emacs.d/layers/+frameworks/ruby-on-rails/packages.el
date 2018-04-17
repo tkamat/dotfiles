@@ -1,6 +1,6 @@
 ;;; packages.el --- Ruby on Rails Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -40,6 +40,7 @@
           "rfp" 'projectile-rails-find-spec
           "rfr" 'projectile-rails-find-rake-task
           "rfs" 'projectile-rails-find-stylesheet
+          "rfS" 'projectile-rails-find-serializer
           "rft" 'projectile-rails-find-test
           "rfu" 'projectile-rails-find-fixture
           "rfv" 'projectile-rails-find-view

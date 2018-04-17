@@ -1,6 +1,6 @@
 ;;; funcs.el --- Emacs Lisp functions File
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -11,9 +11,10 @@
 
 
 
-;; idea from http://www.reddit.com/r/emacs/comments/312ge1/i_created_this_function_because_i_was_tired_of/
+;; Idea from http://www.reddit.com/r/emacs/comments/312ge1/i_created_this_function_because_i_was_tired_of/
 (defun spacemacs/eval-current-form ()
-  "Looks for the current def* or set* command then evaluates, unlike `eval-defun', does not go to topmost function"
+  "Find and evaluate the current def* or set* command.
+Unlike `eval-defun', this does not go to topmost function."
   (interactive)
   (save-excursion
     (search-backward-regexp "(def\\|(set")
@@ -39,9 +40,9 @@
   (eval-defun 'edebugit))
 
 (defun spacemacs/edebug-instrument-defun-off ()
-  "Toggle on instrumentalisation for the function under `defun'."
+  "Toggle off instrumentalisation for the function under `defun'."
   (interactive)
-  (eval-defun))
+  (eval-defun nil))
 
 (defun spacemacs/elisp-toggle-debug-expr-and-eval-func ()
   "Insert or remove debug expression, evaluate function and save buffer."

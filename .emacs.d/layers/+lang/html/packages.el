@@ -1,6 +1,6 @@
 ;;; packages.el --- HTML Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -10,46 +10,67 @@
 ;;; License: GPLv3
 
 (setq html-packages
-  '(
-    company
-    (company-web :toggle (configuration-layer/package-usedp 'company))
-    css-mode
-    emmet-mode
-    evil-matchit
-    flycheck
-    haml-mode
-    (helm-css-scss :toggle (configuration-layer/package-usedp 'helm))
-    less-css-mode
-    pug-mode
-    sass-mode
-    scss-mode
-    slim-mode
-    smartparens
-    tagedit
-    web-mode
-    yasnippet
-    ))
+      '(
+        add-node-modules-path
+        company
+        (company-web :requires company)
+        css-mode
+        emmet-mode
+        evil-matchit
+        flycheck
+        haml-mode
+        (counsel-css :requires ivy
+                     :location (recipe :fetcher github :repo "hlissner/emacs-counsel-css"))
+        (helm-css-scss :requires helm)
+        impatient-mode
+        less-css-mode
+        pug-mode
+        sass-mode
+        scss-mode
+        slim-mode
+        smartparens
+        tagedit
+        web-mode
+        yasnippet
+        ))
+
+(defun html/post-init-add-node-modules-path ()
+  (add-hook 'css-mode-hook #'add-node-modules-path)
+  (add-hook 'less-css-mode-hook #'add-node-modules-path)
+  (add-hook 'pug-mode-hook #'add-node-modules-path)
+  (add-hook 'sass-mode-hook #'add-node-modules-path)
+  (add-hook 'scss-mode-hook #'add-node-modules-path)
+  (add-hook 'slim-mode-hook #'add-node-modules-path)
+  (add-hook 'web-mode-hook #'add-node-modules-path))
 
 (defun html/post-init-company ()
-  (spacemacs|add-company-hook css-mode))
+  (spacemacs|add-company-backends
+    :backends company-css
+    :modes css-mode))
 
-;;TODO: whenever company-web makes a backend for haml-mode it should be added here. -- @robbyoconnor
 (defun html/init-company-web ()
   (use-package company-web
     :defer t
     :init
     (progn
-      (spacemacs|add-company-hook jade-mode)
-      (spacemacs|add-company-hook slim-mode)
-      (spacemacs|add-company-hook web-mode))))
+      (spacemacs|add-company-backends
+        :backends (company-web-html company-css)
+        :modes web-mode
+        :variables
+        ;; see https://github.com/osv/company-web/issues/4
+        company-minimum-prefix-length 0)
+      (spacemacs|add-company-backends
+        :backends company-web-jade
+        :modes pug-mode)
+      (spacemacs|add-company-backends
+        :backends company-web-slim
+        :modes slim-mode))))
 
 (defun html/init-css-mode ()
   (use-package css-mode
     :defer t
     :init
     (progn
-      (push 'company-css company-backends-css-mode)
-
       ;; Mark `css-indent-offset' as safe-local variable
       (put 'css-indent-offset 'safe-local-variable #'integerp)
 
@@ -114,11 +135,19 @@
                   scss-mode
                   slim-mode
                   web-mode))
-    (spacemacs/add-flycheck-hook mode)))
+    (spacemacs/enable-flycheck mode)))
 
 (defun html/init-haml-mode ()
   (use-package haml-mode
     :defer t))
+
+(defun html/init-counsel-css ()
+  (use-package counsel-css
+    :defer t
+    :init (cl-loop for (mode . mode-hook) in '((css-mode . css-mode-hook)
+                                            (scss-mode . scss-mode-hook))
+                do (add-hook mode-hook 'counsel-css-imenu-setup)
+                (spacemacs/set-leader-keys-for-major-mode mode "gh" 'counsel-css))))
 
 (defun html/init-helm-css-scss ()
   (use-package helm-css-scss
@@ -126,6 +155,14 @@
     :init
     (dolist (mode '(css-mode scss-mode))
       (spacemacs/set-leader-keys-for-major-mode mode "gh" 'helm-css-scss))))
+
+(defun html/init-impatient-mode ()
+  (use-package impatient-mode
+    :defer t
+    :init
+    (progn
+      (dolist (mode '(web-mode css-mode))
+        (spacemacs/set-leader-keys-for-major-mode 'web-mode "i" 'spacemacs/impatient-mode)))))
 
 (defun html/init-less-css-mode ()
   (use-package less-css-mode
@@ -135,8 +172,7 @@
 (defun html/init-pug-mode ()
   (use-package pug-mode
     :defer t
-    :mode ("\\.pug$" . pug-mode)
-    :init (push 'company-web-jade company-backends-jade-mode)))
+    :mode ("\\.pug$" . pug-mode)))
 
 (defun html/init-sass-mode ()
   (use-package sass-mode
@@ -150,8 +186,7 @@
 
 (defun html/init-slim-mode ()
   (use-package slim-mode
-    :defer t
-    :init (push 'company-web-slim company-backends-slim-mode)))
+    :defer t))
 
 (defun html/post-init-smartparens ()
   (spacemacs/add-to-hooks
@@ -174,18 +209,14 @@
 (defun html/init-web-mode ()
   (use-package web-mode
     :defer t
-    :init
-    (progn
-      (push '(company-web-html company-css) company-backends-web-mode)
-      (add-hook 'web-mode-hook 'spacemacs//company-web-minimum-prefix-length))
     :config
     (progn
-      (spacemacs/declare-prefix-for-mode 'web-mode "me" "errors")
+      (spacemacs/declare-prefix-for-mode 'web-mode "mE" "errors")
       (spacemacs/declare-prefix-for-mode 'web-mode "mg" "goto")
       (spacemacs/declare-prefix-for-mode 'web-mode "mh" "dom")
       (spacemacs/declare-prefix-for-mode 'web-mode "mr" "refactor")
       (spacemacs/set-leader-keys-for-major-mode 'web-mode
-        "eh" 'web-mode-dom-errors-show
+        "El" 'web-mode-dom-errors-show
         "gb" 'web-mode-element-beginning
         "gc" 'web-mode-element-child
         "gp" 'web-mode-element-parent
@@ -245,6 +276,7 @@
     (("\\.phtml\\'"      . web-mode)
      ("\\.tpl\\.php\\'"  . web-mode)
      ("\\.twig\\'"       . web-mode)
+     ("\\.xml\\'"        . web-mode)
      ("\\.html\\'"       . web-mode)
      ("\\.htm\\'"        . web-mode)
      ("\\.[gj]sp\\'"     . web-mode)

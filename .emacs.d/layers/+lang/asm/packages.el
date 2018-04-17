@@ -1,6 +1,6 @@
 ;;; packages.el --- Asm Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Tu, Do Hoang <tuhdo1710@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -15,6 +15,7 @@
         asm-mode
         electric-indent-mode
         ggtags
+        counsel-gtags
         helm-gtags
         nasm-mode
         x86-lookup
@@ -61,11 +62,13 @@
         (setq x86-lookup-browse-pdf-function 'x86-lookup-browse-pdf-pdf-tools)))))
 
 (defun asm/post-init-company ()
-  (spacemacs|add-company-hook asm-mode)
-  (spacemacs|add-company-hook nasm-mode))
+  (spacemacs|add-company-backends :modes asm-mode nasm-mode))
 
 (defun asm/post-init-ggtags ()
   (add-hook 'asm-mode-local-vars-hook #'spacemacs/ggtags-mode-enable))
+
+(defun asm/post-init-counsel-gtags ()
+  (spacemacs/counsel-gtags-define-keys-for-mode 'asm-mode))
 
 (defun asm/post-init-helm-gtags ()
   (spacemacs/helm-gtags-define-keys-for-mode 'asm-mode))

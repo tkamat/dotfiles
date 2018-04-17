@@ -1,6 +1,6 @@
 ;;; packages.el --- Purescript Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Ryan L. Bell
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -19,10 +19,13 @@
     popwin))
 
 (defun purescript/post-init-company ()
-  (spacemacs|add-company-hook purescript-mode))
+  (when (configuration-layer/package-used-p 'psc-ide)
+    (spacemacs|add-company-backends
+      :backends company-psc-ide-backend
+      :modes purescript-mode)))
 
 (defun purescript/post-init-flycheck ()
-  (spacemacs/add-flycheck-hook 'purescript-mode))
+  (spacemacs/enable-flycheck 'purescript-mode))
 
 (defun purescript/init-purescript-mode ()
   (use-package purescript-mode
@@ -30,6 +33,7 @@
     :init
     (progn
       (add-hook 'purescript-mode-hook 'turn-on-purescript-indentation)
+      (add-hook 'purescript-mode-hook 'purescript-decl-scan-mode)
       (spacemacs/set-leader-keys-for-major-mode 'purescript-mode
         "i="  'purescript-mode-format-imports
         "i`"  'purescript-navigate-imports-return
@@ -57,7 +61,6 @@
     (progn
       (add-hook 'purescript-mode-hook 'psc-ide-mode)
       (spacemacs/declare-prefix-for-mode 'purescript-mode "mm" "purescript/psc-ide")
-      (push 'company-psc-ide-backend company-backends-purescript-mode)
 
       (customize-set-variable 'psc-ide-add-import-on-completion purescript-add-import-on-completion)
       (customize-set-variable 'psc-ide-rebuild-on-save purescript-enable-rebuild-on-save)

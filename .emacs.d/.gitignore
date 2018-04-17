@@ -1,5 +1,7 @@
 auto-save-list/
+elpa/
 export/
+!/core/tools/export/
 ac-comphist.dat
 eproject.lst
 .smex-items
@@ -12,7 +14,7 @@ eshell/history
 .emacs.desktop.lock
 eshell/alias
 eshell/lastdir
-/url/cookies
+url/*
 my-org/
 org-files/
 semanticdb/
@@ -46,3 +48,10 @@ python-*-docs-html
 .mc-lists.el
 
 # Private directory
+private/
+!private/README.md
+!private/snippets/README.md
+!private/local/README.md
+/games/
+/doc/COMMUNITY.org
+/doc/CONTRIBUTING.org

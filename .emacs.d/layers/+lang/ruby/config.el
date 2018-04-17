@@ -1,6 +1,6 @@
 ;;; config.el --- Ruby Layer configuration File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -10,9 +10,6 @@
 ;;; License: GPLv3
 
 ;; Variables
-
-(spacemacs|defvar-company-backends enh-ruby-mode)
-(spacemacs|defvar-company-backends ruby-mode)
 
 (spacemacs|define-jump-handlers enh-ruby-mode)
 (spacemacs|define-jump-handlers ruby-mode)
@@ -26,3 +23,6 @@ Possible values are `rbenv', `rvm' or `chruby'.)")
 
 (defvar ruby-test-runner 'ruby-test
   "Test runner to use. Possible values are `ruby-test', `minitest' or `rspec'.")
+
+(defvar ruby-highlight-debugger-keywords t
+  "If non-nil, enable highlight for debugger keywords.")

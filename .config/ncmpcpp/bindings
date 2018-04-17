@@ -39,3 +39,5 @@ def_key "J"
     move_sort_order_down
 def_key "K"
     move_sort_order_up
+def_key "s"
+    jump_to_media_library

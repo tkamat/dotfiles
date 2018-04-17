@@ -2,10 +2,11 @@
 [[file:img/logo.png]]
 
 * Table of Contents                                        :TOC_4_gh:noexport:
- - [[#description][Description]]
- - [[#install][Install]]
- - [[#org-babel-integration][Org-Babel Integration]]
- - [[#key-bindings][Key bindings]]
+- [[#description][Description]]
+  - [[#features][Features:]]
+- [[#install][Install]]
+- [[#org-babel-integration][Org-Babel Integration]]
+- [[#key-bindings][Key bindings]]
 
 * Description
 This layer enables support for [[https://github.com/skuro/plantuml-mode][plantuml-mode]], which provides
@@ -31,6 +32,12 @@ robbyoconnor->theOtherPerson : And they thinks it's funny? Yup, they definitely 
 
 [[file:img/dia.png]]
 
+** Features:
+- Syntax highlighting
+- Diagram preview in various output formats
+- Embedding into org documents
+- Controlling the =Plantuml= compiler directly from emacs
+
 * Install
 To use this contribution add it to your =~/.spacemacs=
 
@@ -38,14 +45,27 @@ To use this contribution add it to your =~/.spacemacs=
   (setq-default dotspacemacs-configuration-layers '(plantuml))
 #+end_src
 
-* Org-Babel Integration
+To control the =Plantuml= compiler you also need to download the [[http://plantuml.com/download][Plantuml jar]]
+and configure the =plantuml-jar-path= respectively:
 
+#+begin_src emacs-lisp
+  (setq-default dotspacemacs-configuration-layers '((plantuml :variables plantuml-jar-path "~/plantUml.jar")))
+#+end_src
+
+To get the full range of =Plantuml= compilations working, you will also need
+the native package [[http://graphviz.org/][graphviz]] installed on your system.
+
+* Org-Babel Integration
 To enable the execution of embedded plantuml code blocks within [[http://orgmode.org/][Org-Mode]]
-documents, define a value for =org-plantuml-jar-path= in your =~/.spacemacs=.
+documents, define a value for =org-plantuml-jar-path= in your =~/.spacemacs=:
+
+#+begin_src emacs-lisp
+  (setq-default dotspacemacs-configuration-layers '((plantuml :variables org-plantuml-jar-path "~/plantUml.jar")))
+#+end_src
 
 * Key bindings
 
 | Key Binding              | Description                                           |
 |--------------------------+-------------------------------------------------------|
 | ~SPC m c c~ or ~C-c C-c~ | Build diagram from the text in the current buffer     |
-| ~SPC m c o~              | Set the output type (~unicode text~, ~svg~, or ~png~) |
+| ~SPC m c o~              | Set the output type (=unicode text=, =svg=, or =png=) |

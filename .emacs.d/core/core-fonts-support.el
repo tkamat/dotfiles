@@ -1,6 +1,6 @@
 ;;; core-fonts-support.el --- Spacemacs Core File
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -28,16 +28,15 @@ The return value is nil if no font was found, truthy otherwise."
       (when (find-font (font-spec :name (car plist)))
         (let* ((font (car plist))
                (props (cdr plist))
-               (scale (plist-get props :powerline-scale))
                (font-props (spacemacs/mplist-remove
+                            ;; although this keyword does not exist anymore
+                            ;; we keep it for backward compatibility
                             (spacemacs/mplist-remove props :powerline-scale)
                             :powerline-offset))
                (fontspec (apply 'font-spec :name font font-props)))
           (spacemacs-buffer/message "Setting font \"%s\"..." font)
           (set-frame-font fontspec nil t)
           (push `(font . ,(frame-parameter nil 'font)) default-frame-alist)
-          (setq-default powerline-scale scale)
-          (setq-default powerline-height (spacemacs/compute-powerline-height))
           ;; fallback font for unicode characters used in spacemacs
           (pcase system-type
             (`gnu/linux
@@ -83,8 +82,8 @@ The return value is nil if no font was found, truthy otherwise."
         (throw 'break t)))
     nil))
 
-(defun spacemacs/compute-powerline-height ()
-  "Return an adjusted powerline height."
+(defun spacemacs/compute-mode-line-height ()
+  "Return an adjusted mode-line height."
   (let ((scale (if (and (boundp 'powerline-scale) powerline-scale)
                    powerline-scale 1)))
     (truncate (* scale (frame-char-height)))))
@@ -106,6 +105,21 @@ the mode will not show in the mode line."
      (if cell
          (setcdr cell '(,unicode ,ascii))
        (push '(,mode ,unicode ,ascii) spacemacs--diminished-minor-modes))))
+
+(defun spacemacs/diminish-undo (mode)
+  "Restore the diminished lighter."
+  (interactive
+   (list (read (completing-read
+                "Restore what diminished mode: "
+                (cons (list "diminished-modes")
+                      (mapcar (lambda (x) (list (symbol-name (car x))))
+                              diminished-mode-alist))
+                nil t nil 'diminish-history-symbols))))
+  ;; remove the `mode' entry from spacemacs own list
+  (setq spacemacs--diminished-minor-modes
+        (delq nil (mapcar (lambda (x) (unless (eq (car x) mode) x))
+                          spacemacs--diminished-minor-modes)))
+  (diminish-undo mode))
 
 (defmacro spacemacs|hide-lighter (mode)
   "Diminish MODE name in mode line to LIGHTER."

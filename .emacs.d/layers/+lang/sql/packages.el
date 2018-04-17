@@ -1,6 +1,6 @@
 ;;; packages.el --- sql Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Brian Hicks <brian@brianthicks.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -9,7 +9,13 @@
 ;;
 ;;; License: GPLv3
 
-(setq sql-packages '(sql sql-indent))
+(setq sql-packages
+      '(
+        company
+        sql
+        sql-indent
+        (sqlup-mode :toggle sql-capitalize-keywords)
+        ))
 
 (defun sql/init-sql ()
   (use-package sql
@@ -17,14 +23,13 @@
     :init (spacemacs/register-repl 'sql 'spacemacs/sql-start "sql")
     :config
     (progn
-      (setq spacemacs-sql-highlightable sql-product-alist
-            spacemacs-sql-startable (remove-if-not
-                                (lambda (product) (sql-get-product-feature (car product) :sqli-program))
-                                sql-product-alist)
-
+      (setq
             ;; should not set this to anything else than nil
             ;; the focus of SQLi is handled by spacemacs conventions
             sql-pop-to-buffer-after-send-region nil)
+      (advice-add 'sql-add-product :after #'spacemacs/sql-populate-products-list)
+      (advice-add 'sql-del-product :after #'spacemacs/sql-populate-products-list)
+      (spacemacs/sql-populate-products-list)
 
       (defun spacemacs//sql-source (products)
         "return a source for helm selection"
@@ -78,6 +83,10 @@
           (sql-send-region start end)
           (evil-insert-state)))
 
+      (spacemacs/declare-prefix-for-mode 'sql-mode "mb" "buffer")
+      (spacemacs/declare-prefix-for-mode 'sql-mode "mh" "dialects")
+      (spacemacs/declare-prefix-for-mode 'sql-mode "ms" "interactivity")
+      (spacemacs/declare-prefix-for-mode 'sql-mode "ml" "listing")
       (spacemacs/set-leader-keys-for-major-mode 'sql-mode
         "'" 'spacemacs/sql-start
 
@@ -106,6 +115,7 @@
         "la" 'sql-list-all
         "lt" 'sql-list-table)
 
+      (spacemacs/declare-prefix-for-mode 'sql-interactive-mode "mb" "buffer")
       (spacemacs/set-leader-keys-for-major-mode 'sql-interactive-mode
         ;; sqli buffer
         "br" 'sql-rename-buffer
@@ -117,3 +127,24 @@
 (defun sql/init-sql-indent ()
   (use-package sql-indent
     :defer t))
+
+(defun sql/init-sqlup-mode ()
+  (use-package sqlup-mode
+    :defer t
+    :init
+    (progn
+      (add-hook 'sql-mode-hook 'sqlup-mode)
+      (unless sql-capitalize-keywords-disable-interactive
+        (add-hook 'sql-interactive-mode-hook 'sqlup-mode))
+      (spacemacs/set-leader-keys-for-major-mode 'sql-mode
+        "=c" 'sqlup-capitalize-keywords-in-region))
+    :config
+    (progn
+      (spacemacs|diminish sqlup-mode)
+      (setq sqlup-blacklist (append sqlup-blacklist
+                                    sql-capitalize-keywords-blacklist)))))
+
+(defun sql/post-init-company ()
+  (spacemacs|add-company-backends
+    :backends company-capf
+    :modes sql-mode))

@@ -3,19 +3,21 @@
 [[file:img/fsharp.png]]
 
 * Table of Contents                                         :TOC_4_gh:noexport:
- - [[#description][Description]]
- - [[#packages-included][Packages Included]]
- - [[#install][Install]]
- - [[#key-bindings][Key Bindings]]
-   - [[#repl][REPL]]
+- [[#description][Description]]
+  - [[#features][Features:]]
+- [[#install][Install]]
+- [[#key-bindings][Key Bindings]]
+  - [[#repl][REPL]]
 
 * Description
+This layer adds support for F# language using [[https://github.com/fsharp/fsharpbinding][fsharpbinding]] and [[https://github.com/fsharp/fsharpbinding][fsharp-mode]].
 
-This layer adds support for F# language using [[https://github.com/fsharp/fsharpbinding][fsharpbinding]].
-
-* Packages Included
-
-- [[https://github.com/fsharp/fsharpbinding][fsharp-mode]]
+** Features:
+- Syntax highlighting
+- Code completion
+- Flycheck integration
+- REPL
+- Compile/Run/Interpreter and info tooltip shortcuts
 
 * Install
 To use this configuration layer, add it to your =~/.spacemacs=. You will need to

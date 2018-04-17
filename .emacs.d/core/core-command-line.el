@@ -1,6 +1,6 @@
 ;;; core-command-line.el --- Spacemacs Core File
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -15,6 +15,10 @@
 
 (defvar spacemacs-insecure nil
   "If non-nil force Spacemacs to operate without secured protocols.")
+
+(defvar spacemacs-sync-packages t
+  "If non-nil packages are synchronized when the configuration layer system is
+loaded.")
 
 (defun spacemacs//parse-command-line (args)
   "Handle Spacemacs specific command line arguments.
@@ -53,6 +57,8 @@ arguments is that we want to process these arguments as soon as possible."
                  i (1+ i)))
           ("--resume-layouts"
            (setq spacemacs-force-resume-layouts t))
+          ("--no-package-sync"
+           (setq spacemacs-sync-packages nil))
           (_ (push arg new-args))))
       (setq i (1+ i)))
     (nreverse new-args)))

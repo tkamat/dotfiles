@@ -1,6 +1,6 @@
 ;;; funcs.el --- React Layer functions File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Muneeb Shaikh <muneeb@reversehack.in>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -22,19 +22,6 @@
   ;; Force jsx content type
   (web-mode-set-content-type "jsx")
   ;; Don't auto-quote attribute values
-  (setq-local web-mode-enable-auto-quoting nil))
-
-
-;; flycheck
-
-(defun spacemacs//react-use-eslint-from-node-modules ()
-  (let* ((root (locate-dominating-file
-                (or (buffer-file-name) default-directory)
-                "node_modules"))
-         (global-eslint (executable-find "eslint"))
-         (local-eslint (expand-file-name "node_modules/.bin/eslint"
-                                         root))
-         (eslint (if (file-executable-p local-eslint)
-                     local-eslint
-                   global-eslint)))
-    (setq-local flycheck-javascript-eslint-executable eslint)))
+  (setq-local web-mode-enable-auto-quoting nil)
+  ;; See https://github.com/syl20bnr/spacemacs/issues/8222
+  (set (make-local-variable 'company-minimum-prefix-length) 2))

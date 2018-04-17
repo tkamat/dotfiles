@@ -1,6 +1,6 @@
 ;;; funcs.el --- Elixir Layer functions File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -9,7 +9,7 @@
 ;;
 ;;; License: GPLv3
 
-(defun spacemas//elixir-looking-back-special-p (expr)
+(defun spacemacs//elixir-looking-back-special-p (expr)
   (save-excursion
     (when (or (looking-back " ")
               (looking-back "-")) (backward-char))
@@ -22,7 +22,7 @@
 
 (defun spacemacs//elixir-do-end-close-action (id action context)
   (when (eq action 'insert)
-    (cond ((spacemas//elixir-looking-back-special-p id)
+    (cond ((spacemacs//elixir-looking-back-special-p id)
            (insert " ") (backward-char))
           ((looking-back "(")
            (insert ") ") (backward-char) (backward-char))

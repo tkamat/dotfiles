@@ -1,15 +1,23 @@
 #+TITLE: Theming layer
 
 * Table of Contents                                         :TOC_4_gh:noexport:
- - [[#description][Description]]
- - [[#install][Install]]
- - [[#usage][Usage]]
- - [[#attributes][Attributes]]
- - [[#faces][Faces]]
- - [[#headers][Headers]]
+- [[#description][Description]]
+  - [[#features][Features:]]
+- [[#install][Install]]
+- [[#usage][Usage]]
+  - [[#example][Example]]
+- [[#attributes][Attributes]]
+- [[#faces][Faces]]
+- [[#headers][Headers]]
+- [[#example-1][Example]]
 
 * Description
 This layer allows for a simple way of modifying themes.
+
+** Features:
+  - Modify themes from your =.spacemacs=.
+  - Tweak face attributes and other aspects of themes.
+  - Includes three additional layer variables for tweaking headings.
 
 * Install
 To use this configuration layer, add it to your =~/.spacemacs=. You will need to
@@ -17,8 +25,9 @@ add =theming= to the existing =dotspacemacs-configuration-layers= list in this
 file.
 
 * Usage
-To use this layer, set the value of =theming-modifications=. It should be a list
-of the following form:
+To use this layer, set the value of =theming-modifications= (a good place is
+inside your =.spacemacs= in =dotspacemacs/user-init()=).
+It should be a list of the following form:
 
 #+begin_src emacs-lisp
   ((theme1 (face1 attributes...)
@@ -29,6 +38,23 @@ of the following form:
            ...)
    ...)
 #+end_src
+
+** Example
+#+begin_src lisp
+  (defun dotspacemacs/user-init ()
+    (setq theming-modifications
+          '((monokai
+             ;; Font locking
+             (font-lock-comment-face :slant italic)
+             (web-mode-html-attr-name-face :inherit font-lock-variable-name-face
+                                           :foreground nil)
+             ;; Modeline
+             (powerline-active1 :box (:color "#999999"
+                                      :line-width 1
+                                      :style released-button)
+                                :background "#5a5a5a")))))
+#+end_src
+Source: [[https://gist.github.com/TheBB/f25a607b9bda4d5861f2#file-init-el-L274][gist]]
 
 This will apply the given attributes to the relevant faces whenever the
 appropriate theme is loaded. To update without changing the theme, use ~SPC SPC
@@ -85,3 +111,20 @@ the symbol =all= to apply it on all themes.
      headings to give them the same size as the rest of the text
 - =theming-headings-bold= :: sets the =:weight= attribute to bold on all
      headings
+
+* Example
+An example of how to set the default font colour to be black in a custom theme leuven:
+
+#+begin_src emacs-lisp
+(defun dotspacemacs/user-init ()
+
+  ; custom theme modification - overriding default font colour
+  (setq-default
+    theming-modifications
+      '((leuven
+          (default :foreground "#000000")
+       ))
+  )
+
+)
+#+end_src

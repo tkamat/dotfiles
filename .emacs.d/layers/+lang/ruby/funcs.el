@@ -1,6 +1,6 @@
 ;;; funcs.el --- Ruby Layer functions File
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -59,3 +59,14 @@ Called interactively it prompts for a directory."
   "Conditionally enable `minitest-mode'"
   (when (eq 'minitest ruby-test-runner)
     (minitest-enable-appropriate-mode)))
+
+
+;; highlight debugger keywords
+
+(defun spacemacs/ruby-maybe-highlight-debugger-keywords ()
+  "Highlight break point lines."
+  (interactive)
+  (when ruby-highlight-debugger-keywords
+    (highlight-lines-matching-regexp "byebug")
+    (highlight-lines-matching-regexp "binding.irb")
+    (highlight-lines-matching-regexp "binding.pry")))

@@ -1,6 +1,6 @@
 ;;; funcs.el --- Clojure Layer functions File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -170,3 +170,12 @@ If called with a prefix argument, uses the other-window instead."
   (when (memq dotspacemacs-editing-style '(hybrid vim))
     (evil-make-overriding-map cider--debug-mode-map 'normal)
     (evil-normalize-keymaps)))
+
+(defun spacemacs/clj-find-var ()
+  "Attempts to jump-to-definition of the symbol-at-point. If CIDER fails, or not available, falls back to dumb-jump"
+  (interactive)
+  (let ((var (cider-symbol-at-point)))
+    (if (and (cider-connected-p) (cider-var-info var))
+        (unless (eq 'symbol (type-of (cider-find-var nil var)))
+          (dumb-jump-go))
+      (dumb-jump-go))))

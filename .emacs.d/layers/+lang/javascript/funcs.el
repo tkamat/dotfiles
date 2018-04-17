@@ -1,6 +1,6 @@
 ;;; funcs.el --- Javascript Layer functions File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Muneeb Shaikh <muneeb@reversehack.in>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -22,7 +22,9 @@
   (spacemacs/declare-prefix-for-mode mode "mrd" "documentation")
   (spacemacs/set-leader-keys-for-major-mode mode
     "rdb" 'js-doc-insert-file-doc
-    "rdf" 'js-doc-insert-function-doc
+    "rdf" (if (configuration-layer/package-used-p 'yasnippet)
+              'js-doc-insert-function-doc-snippet
+            'js-doc-insert-function-doc)
     "rdt" 'js-doc-insert-tag
     "rdh" 'js-doc-describe-tag))
 

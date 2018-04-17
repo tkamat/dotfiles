@@ -1,6 +1,6 @@
 ;;; packages.el --- ocaml Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -13,9 +13,10 @@
   '(
     ;; auto-complete
     company
-   ;; flycheck
-   ;; flycheck-ocaml
+    flycheck
+    flycheck-ocaml
     ggtags
+    counsel-gtags
     helm-gtags
     merlin
     ocp-indent
@@ -25,14 +26,18 @@
     ))
 
 (defun ocaml/post-init-company ()
-  (spacemacs|add-company-hook merlin-mode))
+  (when (configuration-layer/package-used-p 'merlin)
+    (spacemacs|add-company-backends
+      :backends merlin-company-backend
+      :modes merlin-mode
+      :variables merlin-completion-with-doc t)))
 
-(when (configuration-layer/layer-usedp 'syntax-checking)
+(when (configuration-layer/layer-used-p 'syntax-checking)
   (defun ocaml/post-init-flycheck ()
-    (spacemacs/add-flycheck-hook 'merlin-mode))
+    (spacemacs/enable-flycheck 'tuareg-mode))
   (defun ocaml/init-flycheck-ocaml ()
     (use-package flycheck-ocaml
-      :if (configuration-layer/package-usedp 'flycheck)
+      :if (configuration-layer/package-used-p 'flycheck)
       :defer t
       :init
       (progn
@@ -42,6 +47,9 @@
 
 (defun ocaml/post-init-ggtags ()
   (add-hook 'ocaml-mode-local-vars-hook #'spacemacs/ggtags-mode-enable))
+
+(defun ocaml/post-init-counsel-gtags ()
+  (spacemacs/counsel-gtags-define-keys-for-mode 'ocaml-mode))
 
 (defun ocaml/post-init-helm-gtags ()
   (spacemacs/helm-gtags-define-keys-for-mode 'ocaml-mode))
@@ -54,14 +62,12 @@
       (add-to-list 'spacemacs-jump-handlers-tuareg-mode
                 'spacemacs/merlin-locate)
       (add-hook 'tuareg-mode-hook 'merlin-mode)
-      (setq merlin-completion-with-doc t)
-      (push 'merlin-company-backend company-backends-merlin-mode)
       (spacemacs/set-leader-keys-for-major-mode 'tuareg-mode
         "cp" 'merlin-project-check
         "cv" 'merlin-goto-project-file
-        "eC" 'merlin-error-check
-        "en" 'merlin-error-next
-        "eN" 'merlin-error-prev
+        "Ec" 'merlin-error-check
+        "En" 'merlin-error-next
+        "EN" 'merlin-error-prev
         "gb" 'merlin-pop-stack
         "gG" 'spacemacs/merlin-locate-other-window
         "gl" 'merlin-locate-ident
@@ -73,7 +79,7 @@
         "hT" 'merlin-type-expr
         "rd" 'merlin-destruct)
       (spacemacs/declare-prefix-for-mode 'tuareg-mode "mc" "compile/check")
-      (spacemacs/declare-prefix-for-mode 'tuareg-mode "me" "errors")
+      (spacemacs/declare-prefix-for-mode 'tuareg-mode "mE" "errors")
       (spacemacs/declare-prefix-for-mode 'tuareg-mode "mg" "goto")
       (spacemacs/declare-prefix-for-mode 'tuareg-mode "mh" "help")
       (spacemacs/declare-prefix-for-mode 'tuareg-mode "mr" "refactor"))))

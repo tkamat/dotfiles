@@ -1,6 +1,6 @@
 ;;; packages.el --- slack layer packages file for Spacemacs.
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Kosta Harlan <kosta@kostaharlan.net>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -39,21 +39,20 @@
 (defun slack/post-init-linum ()
   (add-hook 'slack-mode-hook 'spacemacs/no-linum))
 
-(defun slack/post-init-persp-mode ()
-  (spacemacs|define-custom-layout "@Slack"
-    :binding "s"
-    :body
-    (progn
-      (add-hook 'slack-mode #'(lambda ()
-                                (persp-add-buffer (current-buffer))))
-      ;; TODO: We don't want to slack-start every time someone types `<SPC> l o s`
-      (call-interactively 'slack-start)
-      (call-interactively 'slack-channel-select)))
-  ;; Do not save slack buffers
+(defun slack/pre-init-persp-mode ()
   (spacemacs|use-package-add-hook persp-mode
     :post-config
-    (push (lambda (b) (with-current-buffer b (eq major-mode 'slack-mode)))
-          persp-filter-save-buffers-functions)))
+    (progn
+      (add-to-list 'persp-filter-save-buffers-functions
+                   'spacemacs//slack-persp-filter-save-buffers-function)
+      (spacemacs|define-custom-layout slack-spacemacs-layout-name
+        :binding slack-spacemacs-layout-binding
+        :body
+        (progn
+          (add-hook 'slack-mode #'spacemacs//slack-buffer-to-persp)
+          ;; TODO: We don't want to slack-start every time someone types `SPC l o s`
+          (call-interactively 'slack-start)
+          (call-interactively 'slack-channel-select))))))
 
 (defun slack/init-slack ()
   "Initialize Slack"
@@ -65,6 +64,8 @@
       (spacemacs/set-leader-keys
         "aCs" 'slack-start
         "aCj" 'slack-channel-select
+        "aCg" 'slack-group-select
+        "aCr" 'slack-select-rooms
         "aCd" 'slack-im-select
         "aCq" 'slack-ws-close)
       (setq slack-enable-emoji t))
@@ -72,15 +73,20 @@
     (progn
       (spacemacs/set-leader-keys-for-major-mode 'slack-mode
         "j" 'slack-channel-select
+        "g" 'slack-group-select
+        "r" 'slack-select-rooms
         "d" 'slack-im-select
         "p" 'slack-room-load-prev-messages
         "e" 'slack-message-edit
+        "t" 'slack-thread-show-or-create
         "q" 'slack-ws-close
         "mm" 'slack-message-embed-mention
         "mc" 'slack-message-embed-channel
-        "k" 'slack-channel-select
+        "k" 'slack-select-rooms
         "@" 'slack-message-embed-mention
-        "#" 'slack-message-embed-channel)
+        "#" 'slack-message-embed-channel
+        ")" 'slack-message-add-reaction
+        "(" 'slack-message-remove-reaction)
       (evil-define-key 'insert slack-mode-map
         (kbd "@") 'slack-message-embed-mention
         (kbd "#") 'slack-message-embed-channel))))

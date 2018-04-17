@@ -1,6 +1,6 @@
 ;;; packages.el --- spacemacs-org layer packages file for Spacemacs.
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Boris Buliga <d12frosted@d12frosted.local>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -75,6 +75,7 @@
       (setq toc-org-max-depth 10)
       (add-hook 'org-mode-hook 'toc-org-enable))))
 
-(defun spacemacs-org/init-space-doc ())
+(defun spacemacs-org/init-space-doc ()
+  (add-hook 'org-mode-hook 'dotspacemacs//prettify-spacemacs-docs))
 
 ;;; packages.el ends here

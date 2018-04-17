@@ -1,6 +1,6 @@
 ;;; packages.el --- react Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Andrea Moretti <axyzxp@gmail.com>
 ;; URL: https://github.com/axyz
@@ -11,7 +11,6 @@
 
 (setq react-packages
       '(
-        company
         company-tern
         emmet-mode
         evil-matchit
@@ -23,11 +22,8 @@
         web-mode
         ))
 
-(defun react/post-init-company ()
-  (spacemacs|add-company-hook react-mode))
-
 (defun react/post-init-company-tern ()
-  (push 'company-tern company-backends-react-mode))
+  (spacemacs|add-company-backends :backends company-tern :modes react-mode))
 
 (defun react/post-init-emmet-mode ()
   (add-hook 'react-mode-hook 'emmet-mode))
@@ -43,8 +39,7 @@
   (with-eval-after-load 'flycheck
     (dolist (checker '(javascript-eslint javascript-standard))
       (flycheck-add-mode checker 'react-mode)))
-  (add-hook 'react-mode-hook #'spacemacs//react-use-eslint-from-node-modules)
-  (spacemacs/add-flycheck-hook 'react-mode))
+  (spacemacs/enable-flycheck 'react-mode))
 
 (defun react/post-init-js-doc ()
   (add-hook 'react-mode-hook 'spacemacs/js-doc-require)
@@ -68,6 +63,6 @@
   (add-to-list 'auto-mode-alist '("\\.react.js\\'" . react-mode))
   (add-to-list 'auto-mode-alist '("\\index.android.js\\'" . react-mode))
   (add-to-list 'auto-mode-alist '("\\index.ios.js\\'" . react-mode))
-  (add-to-list 'magic-mode-alist '("/\\*\\* @jsx React\\.DOM \\*/" . react-mode))
-  (add-to-list 'magic-mode-alist '("^import React" . react-mode))
+  (add-to-list 'magic-mode-alist '("/\\*\\* @jsx .*\\*/" . react-mode))
+  (add-to-list 'magic-mode-alist '("import\s+[^\s]+\s+from\s+['\"]react['\"]" . react-mode))
   (add-hook 'react-mode-hook 'spacemacs//setup-react-mode))

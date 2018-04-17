@@ -1,6 +1,6 @@
 ;;; packages.el --- Javascript Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -10,55 +10,87 @@
 ;;; License: GPLv3
 
 (setq javascript-packages
-  '(
-    coffee-mode
-    company
-    (company-tern :toggle (configuration-layer/package-usedp 'company))
-    evil-matchit
-    flycheck
-    ggtags
-    helm-gtags
-    js-doc
-    js2-mode
-    js2-refactor
-    json-mode
-    json-snatcher
-    (tern :toggle (spacemacs//tern-detect))
-    web-beautify
-    skewer-mode
-    livid-mode
-    ))
+      '(
+        add-node-modules-path
+        coffee-mode
+        company
+        (company-tern :requires company)
+        evil-matchit
+        flycheck
+        ggtags
+        counsel-gtags
+        helm-gtags
+        impatient-mode
+        js-doc
+        js2-mode
+        js2-refactor
+        json-mode
+        json-snatcher
+        (tern :toggle (spacemacs//tern-detect))
+        web-beautify
+        skewer-mode
+        livid-mode
+        ))
+
+(defun javascript/post-init-add-node-modules-path ()
+  (add-hook 'css-mode-hook #'add-node-modules-path)
+  (add-hook 'coffee-mode-hook #'add-node-modules-path)
+  (add-hook 'js2-mode-hook #'add-node-modules-path)
+  (add-hook 'json-mode-hook #'add-node-modules-path))
 
 (defun javascript/init-coffee-mode ()
   (use-package coffee-mode
     :defer t
     :init
     (progn
+      (spacemacs/register-repl 'coffee-mode 'coffee-repl "coffeescript")
+      ;; keybindings
+      (spacemacs/declare-prefix-for-mode 'coffee-mode "mc" "compile")
+      (spacemacs/declare-prefix-for-mode 'coffee-mode "ms" "REPL")
+      (spacemacs/set-leader-keys-for-major-mode 'coffee-mode
+        "'"  'coffee-repl
+        "cc" 'coffee-compile-buffer
+        "cr" 'coffee-compile-region
+        "sb" 'coffee-send-buffer
+        "sl" 'coffee-send-line
+        "si" 'coffee-repl
+        "sr" 'coffee-send-region
+        "Tc" 'coffee-cos-mode)
       ;; indent to right position after `evil-open-below' and `evil-open-above'
-      (add-hook 'coffee-mode-hook '(lambda ()
-                                     (setq indent-line-function 'javascript/coffee-indent
-                                           evil-shift-width coffee-tab-width))))))
-
-(defun javascript/post-init-company ()
-  (spacemacs|add-company-hook js2-mode))
+      (add-hook 'coffee-mode-hook
+                '(lambda ()
+                   (setq indent-line-function 'javascript/coffee-indent
+                         evil-shift-width coffee-tab-width))))))
 
 (defun javascript/init-company-tern ()
   (use-package company-tern
-    :if (and (configuration-layer/package-usedp 'company)
-             (configuration-layer/package-usedp 'tern))
+    :if (and (configuration-layer/package-used-p 'company)
+             (configuration-layer/package-used-p 'tern))
     :defer t
-    :init
-    (push 'company-tern company-backends-js2-mode)))
+    :init (spacemacs|add-company-backends
+            :backends company-tern
+            :modes js2-mode)))
+
+(defun javascript/post-init-company ()
+  (spacemacs|add-company-backends
+    :backends company-capf
+    :modes coffee-mode))
 
 (defun javascript/post-init-flycheck ()
   (dolist (mode '(coffee-mode js2-mode json-mode))
-    (spacemacs/add-flycheck-hook mode)))
+    (spacemacs/enable-flycheck mode)))
 
 (defun javascript/post-init-ggtags ()
   (add-hook 'js2-mode-local-vars-hook #'spacemacs/ggtags-mode-enable))
 
+(defun javascript/post-init-counsel-gtags ()
+  (spacemacs/counsel-gtags-define-keys-for-mode 'js2-mode))
+
 (defun javascript/post-init-helm-gtags ()
   (spacemacs/helm-gtags-define-keys-for-mode 'js2-mode))
+
+(defun javascript/post-init-impatient-mode ()
+  (spacemacs/set-leader-keys-for-major-mode 'js2-mode "i" 'spacemacs/impatient-mode))
 
 (defun javascript/init-js-doc ()
   (use-package js-doc
@@ -214,7 +246,10 @@
 (defun javascript/init-livid-mode ()
   (use-package livid-mode
     :defer t
-    :init (spacemacs|add-toggle javascript-repl-live-evaluation
-            :mode livid-mode
-            :documentation "Live evaluation of JS buffer change."
-            :evil-leader-for-mode (js2-mode . "sa"))))
+    :init
+    (progn
+      (spacemacs|add-toggle javascript-repl-live-evaluation
+        :mode livid-mode
+        :documentation "Live evaluation of JS buffer change."
+        :evil-leader-for-mode (js2-mode . "Tl"))
+      (spacemacs|diminish livid-mode " 🅻" " [l]"))))

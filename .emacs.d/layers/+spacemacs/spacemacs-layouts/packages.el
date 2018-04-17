@@ -1,6 +1,6 @@
 ;;; packages.el --- Spacemacs Layouts Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -15,7 +15,7 @@
         ivy
         persp-mode
         spaceline
-        swiper))
+        (counsel-projectile :requires projectile)))
 
 
 
@@ -34,9 +34,11 @@
  [_0_.._9_]^^     nth/new workspace  [_d_] close current workspace
  [_C-0_.._C-9_]^^ nth/new workspace  [_R_] rename current workspace
  [_<tab>_]^^^^    last workspace     [_?_] toggle help\n
+ [_c_/_C_]^^      create workspace
  [_l_]^^^^        layouts
  [_n_/_C-l_]^^    next workspace
- [_N_/_p_/_C-h_]  prev workspace\n")
+ [_N_/_p_/_C-h_]  prev workspace\n
+ [_w_]^^^^       workspace w/helm/ivy\n")
 
       (spacemacs|define-transient-state workspaces
         :title "Workspaces Transient State"
@@ -65,8 +67,12 @@
         ("C-8" eyebrowse-switch-to-window-config-8)
         ("C-9" eyebrowse-switch-to-window-config-9)
         ("<tab>" eyebrowse-last-window-config)
+        ("<return>" nil :exit t)
+        ("TAB" eyebrowse-last-window-config)
+        ("RET" nil :exit t)
+        ("c" eyebrowse-create-window-config :exit t)
+        ("C" eyebrowse-create-window-config)
         ("C-h" eyebrowse-prev-window-config)
-        ("C-i" eyebrowse-last-window-config)
         ("C-l" eyebrowse-next-window-config)
         ("d" eyebrowse-close-window-config)
         ("l" spacemacs/layouts-transient-state/body :exit t)
@@ -79,14 +85,17 @@
       ;; declare in the layout transient state
       (spacemacs/set-leader-keys "bW" 'spacemacs/goto-buffer-workspace)
       ;; hooks
-      (add-hook 'persp-before-switch-functions
-                #'spacemacs/update-eyebrowse-for-perspective)
-      (add-hook 'eyebrowse-post-window-switch-hook
-                #'spacemacs/save-eyebrowse-for-perspective)
-      (add-hook 'persp-activated-functions
-                #'spacemacs/load-eyebrowse-for-perspective)
-      (add-hook 'persp-before-save-state-to-file-functions #'spacemacs/update-eyebrowse-for-perspective)
-      (add-hook 'persp-after-load-state-functions #'spacemacs/load-eyebrowse-after-loading-layout)
+      (when (configuration-layer/package-used-p 'persp-mode)
+        (add-hook 'persp-before-switch-functions
+                  #'spacemacs/update-eyebrowse-for-perspective)
+        (add-hook 'eyebrowse-post-window-switch-hook
+                  #'spacemacs/save-eyebrowse-for-perspective)
+        (add-hook 'persp-activated-functions
+                  #'spacemacs/load-eyebrowse-for-perspective)
+        (add-hook 'persp-before-save-state-to-file-functions
+                  #'spacemacs/update-eyebrowse-for-perspective)
+        (add-hook 'persp-after-load-state-functions
+                  #'spacemacs/load-eyebrowse-after-loading-layout))
       ;; vim-style tab switching
       (define-key evil-motion-state-map "gt" 'eyebrowse-next-window-config)
       (define-key evil-motion-state-map "gT" 'eyebrowse-prev-window-config))))
@@ -95,14 +104,14 @@
 
 (defun spacemacs-layouts/post-init-helm ()
   (spacemacs/set-leader-keys
-    "Bb" 'spacemacs-layouts/non-restricted-buffer-list-helm
+    "bB" 'spacemacs-layouts/non-restricted-buffer-list-helm
     "pl" 'spacemacs/helm-persp-switch-project))
 
 
 
 (defun spacemacs-layouts/post-init-ivy ()
   (spacemacs/set-leader-keys
-    "Bb" 'spacemacs-layouts/non-restricted-buffer-list-ivy))
+    "bB" 'spacemacs-layouts/non-restricted-buffer-list-ivy))
 
  
 
@@ -113,6 +122,7 @@
       (setq persp-auto-resume-time (if (or dotspacemacs-auto-resume-layouts
                                            spacemacs-force-resume-layouts)
                                        1 -1)
+            persp-is-ibc-as-f-supported nil
             persp-nil-name dotspacemacs-default-layout-name
             persp-reset-windows-on-nil-window-conf nil
             persp-set-last-persp-for-new-frames nil
@@ -137,13 +147,15 @@
  [_C-0_.._C-9_]^^ nth/new layout              [_A_]^^   add all from layout
  [_<tab>_]^^^^    last layout                 [_d_]^^   close current layout
  [_b_]^^^^        buffer in layout            [_D_]^^   close other layout
- [_h_]^^^^        default layout              [_r_]^^   remove current buffer
- [_l_]^^^^        layout w/helm/ivy           [_R_]^^   rename current layout
- [_L_]^^^^        layouts in file             [_s_/_S_] save all layouts/save by names
- [_n_/_C-l_]^^    next layout                 [_t_]^^   show a buffer without adding it to current layout
- [_N_/_p_/_C-h_]  prev layout                 [_x_]^^   kill current w/buffers
- [_o_]^^^^        custom layout               [_X_]^^   kill other w/buffers
- [_w_]^^^^        workspaces transient state  [_?_]^^   toggle help\n")
+ [_h_]^^^^        default layout              [_L_]^^   load layouts from file
+ [_l_]^^^^        layout w/helm/ivy           [_r_]^^   remove current buffer
+ [_n_/_C-l_]^^    next layout                 [_R_]^^   rename current layout
+ [_N_/_p_/_C-h_]  prev layout                 [_s_/_S_] save all layouts/save by names
+ [_o_]^^^^        custom layout               [_t_]^^   show a buffer without adding it to current layout
+ [_w_]^^^^        workspaces transient state  [_x_]^^   kill current w/buffers
+ ^^^^^^                                       [_X_]^^   kill other w/buffers
+ ^^^^^^                                       [_<_/_>_] move layout left/right
+ ^^^^^^                                       [_?_]^^   toggle help\n")
 
       (spacemacs|define-transient-state layouts
         :title "Layouts Transient State"
@@ -174,14 +186,20 @@
         ("C-0" spacemacs/persp-switch-to-0)
         ("<tab>" spacemacs/jump-to-last-layout)
         ("<return>" nil :exit t)
+        ("TAB" spacemacs/jump-to-last-layout)
+        ("RET" nil :exit t)
         ("C-h" persp-prev)
         ("C-l" persp-next)
+        ("<" spacemacs/move-current-persp-left)
+        (">" spacemacs/move-current-persp-right)
         ("a" persp-add-buffer :exit t)
         ("A" persp-import-buffers :exit t)
+        ("b" spacemacs/persp-buffers :exit t)
         ("d" spacemacs/layouts-ts-close)
         ("D" spacemacs/layouts-ts-close-other :exit t)
         ("h" spacemacs/layout-goto-default :exit t)
         ("L" persp-load-state-from-file :exit t)
+        ("l" spacemacs/persp-perspectives :exit t)
         ("n" persp-next)
         ("N" persp-prev)
         ("o" spacemacs/select-custom-layout :exit t)
@@ -207,10 +225,8 @@
         (setq spacemacs--last-selected-layout persp-last-persp-name))
       (add-hook 'persp-mode-hook 'spacemacs//layout-autosave)
       (spacemacs/declare-prefix "b" "persp-buffers")
-      (spacemacs/declare-prefix "B" "global-buffers")
       ;; Override SPC TAB to only change buffers in perspective
       (spacemacs/set-leader-keys
-        "TAB"  'spacemacs/alternate-buffer-in-persp
         "ba"   'persp-add-buffer
         "br"   'persp-remove-buffer))))
 
@@ -222,5 +238,7 @@
 
 
 
-(defun spacemacs-layouts/post-init-swiper ()
-  (spacemacs/set-leader-keys "pl" 'spacemacs/ivy-persp-switch-project))
+(defun spacemacs-layouts/init-counsel-projectile ()
+  (use-package counsel-projectile
+    :defer t
+    :init (spacemacs/set-leader-keys "pl" 'spacemacs/ivy-persp-switch-project)))

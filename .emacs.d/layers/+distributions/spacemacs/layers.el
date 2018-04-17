@@ -1,6 +1,6 @@
-;;; layers.el --- Spacemacs Layer layers File
+;;; layers.el --- Spacemacs distribution Layer layers File
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -9,7 +9,10 @@
 ;;
 ;;; License: GPLv3
 
-(configuration-layer/declare-layers '(spacemacs-base
+(configuration-layer/declare-layers '(
+                                      helm
+                                      neotree
+                                      spacemacs-base
                                       spacemacs-completion
                                       spacemacs-layouts
                                       spacemacs-editing
@@ -17,17 +20,10 @@
                                       spacemacs-evil
                                       spacemacs-language
                                       spacemacs-misc
-                                      spacemacs-ui
-                                      spacemacs-ui-visual
-                                      spacemacs-org))
-;; If the user has not explicitly declared `helm' or `ivy'
-;; and they are using the standard distribution, assume they
-;; want `helm' completion.
-(unless (or (configuration-layer/layer-usedp 'ivy)
-            (configuration-layer/layer-usedp 'helm))
-  (configuration-layer/declare-layers '(helm)))
-
-(when (and (configuration-layer/layer-usedp 'ivy)
-           (configuration-layer/layer-usedp 'helm))
-  (spacemacs-buffer/warning (concat "Both the `helm' and `ivy' layers are enabled. "
-                             "This may lead to unexpected behaviour.")))
+                                      spacemacs-modeline
+                                      spacemacs-navigation
+                                      spacemacs-org
+                                      spacemacs-project
+                                      spacemacs-purpose
+                                      spacemacs-visual
+                                      ))

@@ -232,6 +232,7 @@ exec --no-startup-id redshift
 exec --no-startup-id /usr/lib/notification-daemon/notification-daemon
 exec --no-startup-id xrandr --output DP-1 --auto --left-of eDP-1
 exec --no-startup-id insync start
+exec --no-startup-id mopidy 
 
 
 # Multimonitor

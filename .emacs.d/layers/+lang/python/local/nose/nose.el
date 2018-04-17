@@ -61,12 +61,15 @@
                                   ".git"))
 (defvar nose-project-root-test 'nose-project-root)
 (defvar nose-use-verbose t)
+(defvar nose--last-run-params nil
+  "Stores the last parameters passed to run-nose")
 
 (defun run-nose (&optional tests suite debug failed)
   "run nosetests by calling python instead of nosetests script.
 To be able to debug on Windows platform python output must be not buffered.
 For more details: http://pswinkels.blogspot.ca/2010/04/debugging-python-code-from-within-emacs.html
 "
+  (setq nose--last-run-params (list tests suite debug failed))
   (let* ((nose (nosetests-nose-command))
          (where (nose-find-project-root))
          (args (concat (if debug "--pdb" "")
@@ -93,12 +96,17 @@ For more details: http://pswinkels.blogspot.ca/2010/04/debugging-python-code-fro
   )
 
 (defun nosetests-nose-command ()
-  (let ((nose "python -u -c \"import nose; nose.run()\""))
+  (let ((nose "python -u -c \"import nose; nose.main()\""))
     (if python-shell-virtualenv-path
         (if (spacemacs/system-is-mswindows)
             (format "%s/Scripts/%s" python-shell-virtualenv-path nose)
          (format "%s/bin/%s" python-shell-virtualenv-path nose))
       nose)))
+
+(defun nosetests-again ()
+  "runs the most recently executed 'nosetests' command again"
+  (interactive)
+  (apply 'run-nose nose--last-run-params))
 
 (defun nosetests-all (&optional debug failed)
   "run all tests"

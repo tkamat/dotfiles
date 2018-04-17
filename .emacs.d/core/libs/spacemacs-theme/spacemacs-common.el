@@ -46,8 +46,17 @@
   :type 'boolean
   :group 'spacemacs-theme)
 
-(defcustom spacemacs-theme-org-agenda-height t
-  "Use varying text heights for org agenda."
+(defcustom spacemacs-theme-comment-italic nil
+  "Enable italics for comments and also disable background."
+  :type 'boolean
+  :group 'spacemacs-theme)
+
+(defcustom spacemacs-theme-org-agenda-height nil
+  "If non-nil, use varying text heights for agenda items.
+
+Note that if you change this to a non-nil value, you may want to
+also adjust the value of `org-agenda-tags-column'. If that is set
+to 'auto, tags may not be properly aligned. "
   :type 'boolean
   :group 'spacemacs-theme)
 
@@ -62,7 +71,7 @@
   :group 'spacemacs-theme)
 
 (defcustom spacemacs-theme-custom-colors nil
-  "Specify a list of custom colors"
+  "Specify a list of custom colors."
   :type 'alist
   :group 'spacemacs-theme)
 
@@ -95,6 +104,7 @@
         (cursor        (if (eq variant 'dark) (if (true-color-p) "#e3dedd" "#d0d0d0") (if (true-color-p) "#100a14" "#121212")))
         (const         (if (eq variant 'dark) (if (true-color-p) "#a45bad" "#d75fd7") (if (true-color-p) "#4e3163" "#8700af")))
         (comment       (if (eq variant 'dark) (if (true-color-p) "#2aa1ae" "#008787") (if (true-color-p) "#2aa1ae" "#008787")))
+        (comment-light (if (eq variant 'dark) (if (true-color-p) "#2aa1ae" "#008787") (if (true-color-p) "#a49da5" "#008787")))
         (comment-bg    (if (eq variant 'dark) (if (true-color-p) "#292e34" "#262626") (if (true-color-p) "#ecf3ec" "#ffffff")))
         (comp          (if (eq variant 'dark) (if (true-color-p) "#c56ec3" "#d75fd7") (if (true-color-p) "#6c4173" "#8700af")))
         (err           (if (eq variant 'dark) (if (true-color-p) "#e0211d" "#e0211d") (if (true-color-p) "#e0211d" "#e0211d")))
@@ -134,6 +144,7 @@
         (red-bg-s      (if (eq variant 'dark) (if (true-color-p) "#512e31" "#262626") (if (true-color-p) "#eed9d2" "#ffffff")))
         (blue          (if (eq variant 'dark) (if (true-color-p) "#4f97d7" "#268bd2") (if (true-color-p) "#3a81c3" "#268bd2")))
         (blue-bg       (if (eq variant 'dark) (if (true-color-p) "#293239" "#262626") (if (true-color-p) "#edf1ed" "#d7d7ff")))
+        (blue-bg-s     (if (eq variant 'dark) (if (true-color-p) "#2d4252" "#262626") (if (true-color-p) "#d1dcdf" "#d7d7ff")))
         (magenta       (if (eq variant 'dark) (if (true-color-p) "#a31db1" "#af00df") (if (true-color-p) "#a31db1" "#800080")))
         (yellow        (if (eq variant 'dark) (if (true-color-p) "#b1951d" "#875f00") (if (true-color-p) "#b1951d" "#875f00")))
         (yellow-bg     (if (eq variant 'dark) (if (true-color-p) "#32322c" "#262626") (if (true-color-p) "#f6f1e1" "#ffffff")))
@@ -153,9 +164,9 @@
      `(eval-sexp-fu-flash ((,class (:background ,suc :foreground ,bg1))))
      `(eval-sexp-fu-flash-error ((,class (:background ,err :foreground ,bg1))))
      `(font-lock-builtin-face ((,class (:foreground ,keyword))))
-     `(font-lock-comment-face ((,class (:foreground ,comment :background ,(when spacemacs-theme-comment-bg comment-bg)))))
+     `(font-lock-comment-face ((,class (:foreground ,(if spacemacs-theme-comment-italic comment-light comment) :background ,(when spacemacs-theme-comment-bg comment-bg) :slant ,(if spacemacs-theme-comment-italic 'italic 'normal)))))
      `(font-lock-constant-face ((,class (:foreground ,const))))
-     `(font-lock-doc-face ((,class (:foreground ,comment))))
+     `(font-lock-doc-face ((,class (:foreground ,meta))))
      `(font-lock-function-name-face ((,class (:foreground ,func :inherit bold))))
      `(font-lock-keyword-face ((,class (:inherit bold :foreground ,keyword))))
      `(font-lock-negation-char-face ((,class (:foreground ,const))))
@@ -184,6 +195,9 @@
      `(vertical-border ((,class (:foreground ,border))))
      `(warning ((,class (:foreground ,war))))
 
+;;;;; ace-window
+     `(aw-leading-char-face ((,class (:foreground ,func :weight bold :height 2.0 :box (:line-width 1 :color ,keyword :style released-button)))))
+
 ;;;;; ahs
      `(ahs-face ((,class (:background ,highlight))))
      `(ahs-plugin-whole-buffer-face ((,class (:background ,mat :foreground ,bg1))))
@@ -195,10 +209,30 @@
      `(ac-completion-face ((,class (:background ,ttip-bg :foreground ,ttip))))
 
 ;;;;; avy
-     `(avy-lead-face   ((,class (:background ,blue-bg :foreground ,magenta))))
-     `(avy-lead-face-0 ((,class (:background ,blue-bg :foreground ,blue))))
-     `(avy-lead-face-1 ((,class (:background ,blue-bg :foreground ,magenta))))
-     `(avy-lead-face-2 ((,class (:background ,blue-bg :foreground ,blue))))
+     `(avy-lead-face   ((,class (:background ,green-bg :foreground ,green))))
+     `(avy-lead-face-0 ((,class (:background ,green-bg :foreground ,yellow))))
+     `(avy-lead-face-1 ((,class (:background ,green-bg :foreground ,magenta))))
+     `(avy-lead-face-2 ((,class (:background ,green-bg :foreground ,blue))))
+
+;;;;; calfw
+     `(cfw:face-title               ((,class (:foreground ,head1 :height 2.0 :weight bold :inherit variable-pitch))))
+     `(cfw:face-header              ((,class (:foreground ,base :weight bold))))
+     `(cfw:face-saturday            ((,class (:foreground ,base :weight bold))))
+     `(cfw:face-sunday              ((,class (:foreground ,base :weight bold))))
+     `(cfw:face-holiday             ((,class (:foreground ,head1 :weight bold))))
+     `(cfw:face-grid                ((,class (:foreground ,border))))
+     `(cfw:face-default-content     ((,class (:foreground ,green))))
+     `(cfw:face-periods             ((,class (:foreground ,cyan))))
+     `(cfw:face-day-title           ((,class (:background ,head1-bg))))
+     `(cfw:face-default-day         ((,class (:foreground ,base :weight bold))))
+     `(cfw:face-annotation          ((,class (:foreground ,aqua))))
+     `(cfw:face-disable             ((,class (:foreground ,base-dim))))
+     `(cfw:face-today-title         ((,class (:background ,blue :weight bold))))
+     `(cfw:face-today               ((,class (:background ,head1-bg :weight bold))))
+     `(cfw:face-select              ((,class (:background ,magenta :weight bold))))
+     `(cfw:face-toolbar             ((,class (:foreground ,base :background ,bg1))))
+     `(cfw:face-toolbar-button-off  ((,class (:foreground ,base :weight bold))))
+     `(cfw:face-toolbar-button-on   ((,class (:foreground ,base :weight bold))))
 
 ;;;;; cider
      `(cider-enlightened ((,class (:background nil :box (:color ,yellow :line-width -1 :style nil) :foreground ,yellow))))
@@ -219,8 +253,8 @@
      `(company-scrollbar-fg ((,class (:background ,act2))))
      `(company-template-field ((,class (:inherit region))))
      `(company-tooltip ((,class (:background ,ttip-bg :foreground ,ttip))))
-     `(company-tooltip-annotation ((,class (:foreground ,keyword))))
-     `(company-tooltip-common ((,class (:background ,ttip-bg :foreground ,base))))
+     `(company-tooltip-annotation ((,class (:foreground ,type))))
+     `(company-tooltip-common ((,class (:background ,ttip-bg :foreground ,keyword))))
      `(company-tooltip-common-selection ((,class (:foreground ,base))))
      `(company-tooltip-mouse ((,class (:inherit highlight))))
      `(company-tooltip-search ((,class (:inherit match))))
@@ -287,7 +321,7 @@
      `(elfeed-search-date-face ((,class (:foreground ,head2))))
      `(elfeed-search-feed-face ((,class (:foreground ,blue))))
      `(elfeed-search-tag-face ((,class (:foreground ,func))))
-     `(elfeed-search-title-face ((,class (:foreground ,base-dim))))
+     `(elfeed-search-title-face ((,class (:foreground ,var))))
      `(elfeed-search-unread-title-face ((,class (:foreground ,base))))
 
 ;;;;; enh-ruby
@@ -337,6 +371,17 @@
        ((,(append '((supports :underline (:style line))) class)
          (:underline (:style line :color ,war)))
         (,class (:foreground ,base :background ,war :inherit bold :underline t))))
+
+;;;;; flymake
+     `(flymake-error ((,(append '((supports :underline (:style line))) class)
+                       (:underline (:style line :color ,err)))
+                      (,class (:foreground ,base :background ,err :inherit bold :underline t))))
+     `(flymake-note ((,(append '((supports :underline (:style line))) class)
+                      (:underline (:style wave :color ,keyword)))
+                     (,class (:foreground ,base :background ,keyword :inherit bold :underline t))))
+     `(flymake-warning ((,(append '((supports :underline (:style line))) class)
+                         (:underline (:style line :color ,war)))
+                        (,class (:foreground ,base :background ,war :inherit bold :underline t))))
 
 ;;;;; jabber
      `(jabber-activity-face ((,class (:inherit bold :foreground ,red))))
@@ -476,8 +521,18 @@
      `(font-latex-string-face ((,class (:foreground ,str))))
      `(font-latex-warning-face ((,class (:foreground ,war))))
 
+;;;;; ledger-mode
+     `(ledger-font-directive-face ((,class (:foreground ,meta))))
+     `(ledger-font-posting-amount-face ((,class (:foreground ,yellow))))
+     `(ledger-font-posting-date-face ((,class (:foreground ,head1))))
+     `(ledger-occur-xact-face ((,class (:background ,bg2))))
+
 ;;;;; linum-mode
-     `(linum ((,class (:foreground ,lnum :background ,bg2))))
+     `(linum ((,class (:foreground ,lnum :background ,bg2 :inherit default))))
+
+;;;;; line-numbers-mode (Emacs 26+)
+     (when (>= emacs-major-version 26)
+       `(line-number ((,class (:foreground ,lnum :background ,bg2)))))
 
 ;;;;; linum-relative
      `(linum-relative-current-face ((,class (:foreground ,comp))))
@@ -498,12 +553,8 @@
      `(magit-branch-local ((,class (:background ,blue-bg :foreground ,blue :inherit bold))))
      `(magit-branch-remote ((,class (:background ,aqua-bg :foreground ,aqua :inherit bold))))
      `(magit-diff-context-highlight ((,class (:background ,bg2 :foreground ,base))))
-     `(magit-diff-file-header ((,class (:background ,comment-bg :foreground ,comment))))
-     `(magit-diff-file-heading ((,class (:background ,comment-bg :foreground ,comment))))
-     `(magit-diff-file-heading-highlight ((,class (:background ,comment-bg :foreground ,comment))))
-     `(magit-diff-hunk-header ((,class (:background ,ttip-bg :foreground ,ttip))))
      `(magit-diff-hunk-heading ((,class (:background ,ttip-bg :foreground ,ttip))))
-     `(magit-diff-hunk-heading-highlight ((,class (:background ,ttip-bg :foreground ,ttip))))
+     `(magit-diff-hunk-heading-highlight ((,class (:background ,ttip-sl :foreground ,base))))
      `(magit-hash ((,class (:foreground ,var))))
      `(magit-hunk-heading           ((,class (:background ,bg3))))
      `(magit-hunk-heading-highlight ((,class (:background ,bg3))))
@@ -542,6 +593,7 @@
      `(markdown-header-face-4 ((,class (:bold nil :foreground ,head4 :background ,(when spacemacs-theme-org-highlight head4-bg)))))
      `(markdown-header-face-5 ((,class (:bold nil :foreground ,head1))))
      `(markdown-header-face-6 ((,class (:bold nil :foreground ,head2))))
+     `(markdown-table-face ((,class (:foreground ,base :background ,head1-bg))))
 
 ;;;;; mode-line
      `(mode-line           ((,class (:foreground ,base :background ,act1 :box (:color ,border :line-width 1)))))
@@ -549,12 +601,32 @@
      `(mode-line-inactive  ((,class (:foreground ,base :background ,bg1  :box (:color ,border :line-width 1)))))
 
 ;;;;; mu4e
-     `(mu4e-cited-1-face ((,class (:foreground ,base))))
-     `(mu4e-cited-7-face ((,class (:foreground ,base))))
-     `(mu4e-header-key-face ((,class (:foreground ,head2 :inherit bold))))
+     `(mu4e-attach-number-face ((,class (:foreground ,var))))
+     `(mu4e-cited-1-face ((,class (:foreground ,head1))))
+     `(mu4e-cited-2-face ((,class (:foreground ,head2))))
+     `(mu4e-cited-3-face ((,class (:foreground ,head3))))
+     `(mu4e-cited-4-face ((,class (:foreground ,head4))))
+     `(mu4e-cited-5-face ((,class (:foreground ,head1))))
+     `(mu4e-cited-6-face ((,class (:foreground ,head2))))
+     `(mu4e-cited-7-face ((,class (:foreground ,head3))))
+     `(mu4e-contact-face ((,class (:foreground ,func))))
+     `(mu4e-draft-face ((,class (:foreground ,var))))
+     `(mu4e-flagged-face ((,class (:foreground ,yellow :inherit bold))))
+     `(mu4e-header-key-face ((,class (:foreground ,meta :inherit bold))))
+     `(mu4e-header-title-face ((,class (:foreground ,keyword :inherit bold))))
      `(mu4e-header-marks-face ((,class (:foreground ,comp))))
-     `(mu4e-unread-face ((,class (:foreground ,yellow :inherit bold))))
+     `(mu4e-header-value-face ((,class (:foreground ,keyword :inherit bold))))
+     `(mu4e-header-highlight-face ((,class (:background ,highlight))))
+     `(mu4e-highlight-face ((,class (:foreground ,comp))))
+     `(mu4e-title-face ((,class (:foreground ,head2 :inherit bold))))
+     `(mu4e-replied-face ((,class (:foreground ,green))))
+     `(mu4e-modeline-face ((,class (:foreground ,func))))
+     `(mu4e-special-header-value-face ((,class (:foreground ,green))))
+     `(mu4e-unread-face ((,class (:foreground ,head1 :inherit bold))))
      `(mu4e-view-url-number-face ((,class (:foreground ,comp))))
+
+;;;;; mu4e-maildirs
+     `(mu4e-maildirs-extension-maildir-hl-face ((,class (:foreground ,head1 :inherit bold))))
 
 ;;;;; notmuch
      `(notmuch-search-date ((,class (:foreground ,func))))
@@ -608,11 +680,14 @@
      `(org-quote ((,class (:inherit org-block :slant italic))))
      `(org-scheduled ((,class (:foreground ,comp))))
      `(org-scheduled-today ((,class (:foreground ,func :height ,(if spacemacs-theme-org-agenda-height 1.2 1.0)))))
+     `(org-scheduled-previously ((,class (:foreground ,base :slant italic))))
      `(org-sexp-date ((,class (:foreground ,base))))
      `(org-special-keyword ((,class (:foreground ,func))))
      `(org-table ((,class (:foreground ,base :background ,head1-bg))))
+     `(org-tag ((,class (:foreground ,meta))))
      `(org-time-grid ((,class (:foreground ,str))))
      `(org-todo ((,class (:foreground ,war :inherit bold :background ,yellow-bg))))
+     `(org-upcoming-deadline ((,class (:foreground ,war :inherit org-priority))))
      `(org-verbatim ((,class (:foreground ,keyword))))
      `(org-verse ((,class (:inherit org-block :slant italic))))
      `(org-warning ((,class (:foreground ,err))))
@@ -668,6 +743,15 @@
      `(sp-pair-overlay-face ((,class (:background ,highlight :foreground nil))))
      `(sp-show-pair-match-face ((,class (:foreground ,mat :inherit bold :underline t))))
 
+;;;;; smerge
+     `(smerge-base ((,class (:background ,yellow-bg))))
+     `(smerge-markers ((,class (:background ,ttip-bg :foreground ,ttip))))
+     `(smerge-mine ((,class (:background ,red-bg))))
+     `(smerge-other ((,class (:background ,green-bg))))
+     `(smerge-refined-added ((,class (:background ,green-bg-s :foreground ,green))))
+     `(smerge-refined-changed ((,class (:background ,blue-bg-s :foreground ,blue))))
+     `(smerge-refined-removed ((,class (:background ,red-bg-s :foreground ,red))))
+
 ;;;;; spaceline
      `(spaceline-flycheck-error  ((,class (:foreground ,err))))
      `(spaceline-flycheck-info   ((,class (:foreground ,keyword))))
@@ -704,6 +788,16 @@
      `(term-color-white ((,class (:foreground ,base))))
      `(term-color-yellow ((,class (:foreground ,yellow))))
 
+;;;;; tide
+     `(tide-hl-identifier-face ((,class (:foreground ,yellow :background ,yellow-bg))))
+
+;;;;; treemacs
+     `(treemacs-git-added-face ((,class (:foreground ,green :background ,green-bg))))
+     `(treemacs-git-conflict-face ((,class (:foreground ,red :background ,red-bg))))
+     `(treemacs-git-ignored-face ((,class (:foreground ,yellow))))
+     `(treemacs-git-modified-face ((,class (:foreground ,blue :background ,blue-bg))))
+     `(treemacs-git-untracked-face ((,class (:foreground ,aqua :background ,aqua-bg))))
+
 ;;;;; web-mode
      `(web-mode-builtin-face ((,class (:inherit ,font-lock-builtin-face))))
      `(web-mode-comment-face ((,class (:inherit ,font-lock-comment-face))))
@@ -737,7 +831,7 @@
      `(whitespace-space ((,class (:background nil :foreground ,act2))))
      `(whitespace-space-after-tab ((,class (:background nil :foreground ,yellow))))
      `(whitespace-space-before-tab ((,class (:background nil :foreground ,yellow))))
-     `(whitespace-tab ((,class (:background nil))))
+     `(whitespace-tab ((,class (:background nil :foreground ,act2))))
      `(whitespace-trailing ((,class (:background ,err :foreground ,war))))
 
 ;;;;; other, need more work

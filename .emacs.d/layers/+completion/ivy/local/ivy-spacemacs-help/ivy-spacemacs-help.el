@@ -67,6 +67,8 @@
     ;; give each document an appropriate title
     (mapcar (lambda (r)
               (cond
+               ((string-equal r "BEGINNERS_TUTORIAL.org")
+                `("Beginners tutorial" . ,r))
                ((string-equal r "CONTRIBUTING.org")
                 `("How to contribute to Spacemacs" . ,r))
                ((string-equal r "CONVENTIONS.org")
@@ -143,7 +145,7 @@
 
 (defun ivy-spacemacs-help//layer-action-add-layer (candidate)
   "Adds layer to dotspacemacs file and reloads configuration"
-  (if (configuration-layer/layer-usedp (intern candidate))
+  (if (configuration-layer/layer-used-p (intern candidate))
       (message "Layer already added.")
     (let ((dotspacemacs   (find-file-noselect (dotspacemacs/location))))
       (with-current-buffer dotspacemacs
@@ -228,7 +230,7 @@
                           layer
                           (propertize "no packages"
                                       'face 'warning))
-                  layer
+                  (symbol-name layer)
                   nil)
             result))
     (sort result (lambda (a b) (string< (car a) (car b))))))
@@ -277,7 +279,7 @@
 
 (defun ivy-spacemacs-help//help-action-add-layer (args)
   "Adds layer to dotspacemacs file and reloads configuration"
-  (if (configuration-layer/layer-usedp (intern (cadr args)))
+  (if (configuration-layer/layer-used-p (intern (cadr args)))
       (message "Layer already added.")
     (let ((dotspacemacs   (find-file-noselect (dotspacemacs/location))))
       (with-current-buffer dotspacemacs

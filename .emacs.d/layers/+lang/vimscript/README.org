@@ -1,13 +1,15 @@
 #+TITLE: Vimscript language layer
 
 * Table of Contents                                         :TOC_4_gh:noexport:
- - [[#description][Description]]
- - [[#install][Install]]
+- [[#description][Description]]
+  - [[#features][Features:]]
+- [[#install][Install]]
 
 * Description
+This layer adds basic support for vimscript and pentadactyl config files.
 
-This layer adds syntax highlighting support for vim filetypes, in addition to
-the pentadactyl firefox extension.
+** Features:
+- Syntax highlighting
 
 * Install
 To use this configuration layer, add it to your =~/.spacemacs=. You will need to

@@ -1,6 +1,6 @@
 ;;; core-spacemacs-buffer.el --- Spacemacs Core File
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -13,7 +13,7 @@
 ;;
 ;;; Code:
 
-(defconst spacemacs-buffer-version-info "0.200.13"
+(defconst spacemacs-buffer-version-info "0.300"
   "Current version used to display addition release information.")
 
 (defconst spacemacs-buffer-name "*spacemacs*"
@@ -509,11 +509,13 @@ allowed types are `quickhelp' and `release-note'"
             (message "Unknown note type: %s" 'type))))
     (setq spacemacs-buffer--current-note-type nil)))
 
-(defun spacemacs-buffer/set-mode-line (format)
+(defun spacemacs-buffer/set-mode-line (format &optional redisplay)
   "Set mode-line format for spacemacs buffer.
-FORMAT: the `mode-line-format' variable Emacs will use to build the mode-line."
+FORMAT: the `mode-line-format' variable Emacs will use to build the mode-line.
+If REDISPLAY is non-nil then force a redisplay as well"
   (with-current-buffer (get-buffer-create spacemacs-buffer-name)
-    (setq mode-line-format format)))
+    (setq mode-line-format format))
+  (when redisplay (spacemacs//redisplay)))
 
 (defun spacemacs-buffer/message (msg &rest args)
   "Display MSG in *Messages* prepended with '(Spacemacs)'.
@@ -521,6 +523,17 @@ The message is displayed only if `init-file-debug' is non nil.
 ARGS: format string arguments."
   (when init-file-debug
     (message "(Spacemacs) %s" (apply 'format msg args))))
+
+(defvar spacemacs-buffer--errors nil
+  "List of errors during startup.")
+
+(defun spacemacs-buffer/error (msg &rest args)
+  "Display MSG as an Error message in `*Messages*' buffer.
+ARGS: format string arguments."
+  (let ((msg (apply 'format msg args)))
+    (message "(Spacemacs) Error: %s" msg)
+    (when message-log-max
+      (add-to-list 'spacemacs-buffer--errors msg 'append))))
 
 (defvar spacemacs-buffer--warnings nil
   "List of warnings during startup.")
@@ -576,8 +589,8 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
                                     spacemacs-loading-dots-chunk-threshold)))
                        (length suffix)))
                spacemacs-loading-char))
-        (spacemacs-buffer/set-mode-line (concat spacemacs-loading-string
-                                                suffix)))
+        (spacemacs-buffer/set-mode-line
+         (concat spacemacs-loading-string suffix)))
       (spacemacs//redisplay))))
 
 (defmacro spacemacs-buffer||add-shortcut
@@ -694,9 +707,9 @@ REAL-WIDTH: the real width of the line.  If the line contains an image, the size
                  (lambda (&rest ignore)
                    (let ((comp-frontend
                           (cond
-                           ((configuration-layer/layer-usedp 'helm)
+                           ((configuration-layer/layer-used-p 'helm)
                             'helm-spacemacs-help)
-                           ((configuration-layer/layer-usedp 'ivy)
+                           ((configuration-layer/layer-used-p 'ivy)
                             'ivy-spacemacs-help))))
                      (call-interactively comp-frontend)))
                  :mouse-face 'highlight
@@ -770,7 +783,7 @@ TYPES: list of `org-mode' types to fetch."
   (require 'org-agenda)
   (let ((date (calendar-gregorian-from-absolute (org-today))))
     (apply #'append
-           (loop for file in (org-agenda-files nil 'ifmode)
+           (cl-loop for file in (org-agenda-files nil 'ifmode)
                  collect
                  (spacemacs-buffer//make-org-items
                   file
@@ -791,7 +804,7 @@ TYPES: list of `org-mode' types to fetch."
   "Make a spacemacs-buffer org item list.
 FILE: file name.
 ITEMS:"
-  (loop
+  (cl-loop
    for item in items
    collect
    (spacemacs-buffer//make-org-item file item)))
@@ -885,8 +898,11 @@ SEQ, START and END are the same arguments as for `cl-subseq'"
               (cond
                ((eq el 'warnings)
                 (when (spacemacs-buffer//insert-string-list
-                       "Warnings:"
-                       spacemacs-buffer--warnings)
+                       "Errors:" spacemacs-buffer--errors)
+                  (spacemacs-buffer||add-shortcut "e" "Errors:")
+                  (insert list-separator))
+                (when (spacemacs-buffer//insert-string-list
+                       "Warnings:" spacemacs-buffer--warnings)
                   (spacemacs-buffer||add-shortcut "w" "Warnings:")
                   (insert list-separator)))
                ((eq el 'recents)
@@ -911,7 +927,7 @@ SEQ, START and END are the same arguments as for `cl-subseq'"
                   (spacemacs-buffer||add-shortcut "c" "Agenda:")
                   (insert list-separator)))
                ((eq el 'bookmarks)
-                (when (configuration-layer/layer-usedp 'spacemacs-helm)
+                (when (configuration-layer/layer-used-p 'spacemacs-helm)
                   (helm-mode))
                 (require 'bookmark)
                 (when (spacemacs-buffer//insert-bookmark-list
@@ -992,13 +1008,13 @@ SEQ, START and END are the same arguments as for `cl-subseq'"
     (if configuration-layer-error-count
         (progn
           (spacemacs-buffer-mode)
+          (face-remap-add-relative 'mode-line
+                                   '((:background "red") mode-line))
           (spacemacs-buffer/set-mode-line
            (format
             (concat "%s error(s) at startup! "
                     "Spacemacs may not be able to operate properly.")
-            configuration-layer-error-count))
-          (face-remap-add-relative 'mode-line
-                                   '((:background "red") mode-line)))
+            configuration-layer-error-count) t))
       (spacemacs-buffer/set-mode-line spacemacs--default-mode-line)
       (spacemacs-buffer-mode))
     (force-mode-line-update)
@@ -1039,12 +1055,12 @@ REFRESH if the buffer should be redrawn."
             (spacemacs-buffer//insert-footer)
             (spacemacs-buffer/set-mode-line spacemacs--default-mode-line)
             (force-mode-line-update)
-            (spacemacs-buffer-mode))))
-      (if save-line
-          (progn (goto-char (point-min))
-                 (forward-line (1- save-line))
-                 (forward-to-indentation 0))
-        (spacemacs-buffer/goto-link-line))
+            (spacemacs-buffer-mode)))
+        (if save-line
+            (progn (goto-char (point-min))
+                   (forward-line (1- save-line))
+                   (forward-to-indentation 0))
+          (spacemacs-buffer/goto-link-line)))
       (switch-to-buffer spacemacs-buffer-name)
       (spacemacs//redisplay))))
 

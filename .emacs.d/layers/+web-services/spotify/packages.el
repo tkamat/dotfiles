@@ -1,6 +1,6 @@
 ;;; packages.el --- spotify Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Brian Hicks <brian@brianthicks.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -12,7 +12,7 @@
 (setq spotify-packages
       '(
         spotify
-        (helm-spotify-plus :toggle (configuration-layer/package-usedp 'helm))
+        (helm-spotify-plus :requires helm)
         ))
 
 (defun spotify/init-spotify ()

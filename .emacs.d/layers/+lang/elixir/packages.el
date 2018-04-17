@@ -1,6 +1,6 @@
 ;;; packages.el --- Elixir Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -18,6 +18,7 @@
     flycheck-mix
     flycheck-credo
     ggtags
+    counsel-gtags
     helm-gtags
     ob-elixir
     popwin
@@ -25,8 +26,10 @@
     ))
 
 (defun elixir/post-init-company ()
-  (spacemacs|add-company-hook elixir-mode)
-  (spacemacs|add-company-hook alchemist-iex-mode))
+  (when (configuration-layer/package-used-p 'alchemist)
+    (spacemacs|add-company-backends
+      :backends alchemist-company
+      :modes elixir-mode alchemist-iex-mode)))
 
 (defun elixir/init-alchemist ()
   (use-package alchemist
@@ -37,21 +40,20 @@
       (add-hook 'elixir-mode-hook 'alchemist-mode)
       (setq alchemist-project-compile-when-needed t
             alchemist-test-status-modeline nil)
-      ;; setup company backends
-      (push 'alchemist-company company-backends-elixir-mode)
-      (push 'alchemist-company company-backends-alchemist-iex-mode)
       (add-to-list 'spacemacs-jump-handlers-elixir-mode
                 'alchemist-goto-definition-at-point))
     :config
+    (spacemacs/declare-prefix-for-mode 'elixir-mode "mX" "hex")
     (spacemacs/declare-prefix-for-mode 'elixir-mode "mc" "compile")
     (spacemacs/declare-prefix-for-mode 'elixir-mode "me" "eval")
-    (spacemacs/declare-prefix-for-mode 'elixir-mode "mp" "project")
-    (spacemacs/declare-prefix-for-mode 'elixir-mode "mh" "help")
-    (spacemacs/declare-prefix-for-mode 'elixir-mode "mt" "test")
-    (spacemacs/declare-prefix-for-mode 'elixir-mode "ms" "iex")
-    (spacemacs/declare-prefix-for-mode 'elixir-mode "mm" "mix")
-    (spacemacs/declare-prefix-for-mode 'elixir-mode "mx" "execute")
     (spacemacs/declare-prefix-for-mode 'elixir-mode "mg" "goto")
+    (spacemacs/declare-prefix-for-mode 'elixir-mode "mh" "help")
+    (spacemacs/declare-prefix-for-mode 'elixir-mode "mm" "mix")
+    (spacemacs/declare-prefix-for-mode 'elixir-mode "mo" "macroexpand")
+    (spacemacs/declare-prefix-for-mode 'elixir-mode "mp" "project")
+    (spacemacs/declare-prefix-for-mode 'elixir-mode "ms" "iex")
+    (spacemacs/declare-prefix-for-mode 'elixir-mode "mt" "test")
+    (spacemacs/declare-prefix-for-mode 'elixir-mode "mx" "execute")
     (spacemacs/set-leader-keys-for-major-mode 'elixir-mode
       "el" 'alchemist-eval-current-line
       "eL" 'alchemist-eval-print-current-line
@@ -73,12 +75,11 @@
       "h:" 'alchemist-help
       "hH" 'alchemist-help-history
       "hh" 'alchemist-help-search-at-point
-      "hr" 'alchemist-help-search-marked-region
+      "hr" 'alchemist-help--search-marked-region
 
       "m:" 'alchemist-mix
       "mc" 'alchemist-mix-compile
       "mx" 'alchemist-mix-run
-      "mh" 'alchemist-mix-help
 
       "'"  'alchemist-iex-run
       "sc" 'alchemist-iex-compile-this-buffer
@@ -92,11 +93,14 @@
 
       "ta" 'alchemist-mix-test
       "tb" 'alchemist-mix-test-this-buffer
+      "tB" 'alchemist-project-run-tests-for-current-file
       "tt" 'alchemist-mix-test-at-point
-      "tf" 'alchemist-test-file
-      "tn" 'alchemist-test-jump-to-next-test
-      "tp" 'alchemist-test-jump-to-previous-test
+      "tf" 'alchemist-mix-test-file
+      "tn" 'alchemist-test-mode-jump-to-next-test
+      "tN" 'alchemist-test-mode-jump-to-previous-test
       "tr" 'alchemist-mix-rerun-last-test
+      "ts" 'alchemist-mix-test-stale
+      "tR" 'alchemist-test-toggle-test-report-display
 
       "xb" 'alchemist-execute-this-buffer
       "xf" 'alchemist-execute-file
@@ -106,7 +110,28 @@
       "cf" 'alchemist-compile-file
       "c:" 'alchemist-compile
 
-      "," 'alchemist-goto-jump-back)
+      "gg" 'alchemist-goto-definition-at-point
+      "." 'alchemist-goto-definition-at-point
+      "gb" 'alchemist-goto-jump-back
+      ","  'alchemist-goto-jump-back
+      "gN" 'alchemist-goto-jump-to-previous-def-symbol
+      "gn" 'alchemist-goto-jump-to-next-def-symbol
+      "gj" 'alchemist-goto-list-symbol-definitions
+
+      "Xi" 'alchemist-hex-info-at-point
+      "Xr" 'alchemist-hex-releases-at-point
+      "XR" 'alchemist-hex-releases
+      "XI" 'alchemist-hex-info
+      "Xs" 'alchemist-hex-search
+
+      "ol" 'alchemist-macroexpand-once-current-line
+      "oL" 'alchemist-macroexpand-once-print-current-line
+      "ok" 'alchemist-macroexpand-current-line
+      "oK" 'alchemist-macroexpand-print-current-line
+      "oi" 'alchemist-macroexpand-once-region
+      "oI" 'alchemist-macroexpand-once-print-region
+      "or" 'alchemist-macroexpand-region
+      "oR" 'alchemist-macroexpand-print-region)
 
     (dolist (mode (list alchemist-compile-mode-map
                         alchemist-eval-mode-map
@@ -142,18 +167,14 @@
     :defer t))
 
 (defun elixir/post-init-flycheck ()
-  (spacemacs/add-flycheck-hook 'elixir-mode))
+  (spacemacs/enable-flycheck 'elixir-mode))
 
-(defun elixir/pre-init-org ()
-  (spacemacs|use-package-add-hook org
-    :post-config (add-to-list 'org-babel-load-languages '(elixir . t))))
-
-(defun elixir/init-ob-elixir ()
+(defun elixir/pre-init-ob-elixir ()
   (spacemacs|use-package-add-hook org
     :post-config
     (use-package ob-elixir
       :init (add-to-list 'org-babel-load-languages '(elixir . t)))))
-
+(defun elixir/init-ob-elixir ())
 
 (defun elixir/pre-init-popwin ()
   (spacemacs|use-package-add-hook popwin
@@ -182,6 +203,9 @@
 
 (defun elixir/post-init-ggtags ()
   (add-hook 'elixir-mode-local-vars-hook #'spacemacs/ggtags-mode-enable))
+
+(defun elixir/post-init-counsel-gtags ()
+  (spacemacs/counsel-gtags-define-keys-for-mode 'elixir-mode))
 
 (defun elixir/post-init-helm-gtags ()
   (spacemacs/helm-gtags-define-keys-for-mode 'elixir-mode))

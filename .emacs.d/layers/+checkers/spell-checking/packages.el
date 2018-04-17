@@ -1,6 +1,6 @@
 ;;; packages.el --- Spell Checking Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -14,10 +14,10 @@
     auto-dictionary
     flyspell
     flyspell-correct
-    (flyspell-correct-ivy :toggle (configuration-layer/layer-usedp 'ivy))
-    (flyspell-correct-helm :toggle (configuration-layer/layer-usedp 'helm))
-    (flyspell-correct-popup :toggle (and (not (configuration-layer/layer-usedp 'ivy))
-                                         (not (configuration-layer/layer-usedp 'helm))))
+    (flyspell-correct-ivy :toggle (configuration-layer/layer-used-p 'ivy))
+    (flyspell-correct-helm :toggle (configuration-layer/layer-used-p 'helm))
+    (flyspell-correct-popup :toggle (and (not (configuration-layer/layer-used-p 'ivy))
+                                         (not (configuration-layer/layer-used-p 'helm))))
     (flyspell-popup :toggle enable-flyspell-auto-completion)))
 
 (defun spell-checking/init-auto-dictionary ()

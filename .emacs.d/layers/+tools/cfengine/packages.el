@@ -1,6 +1,6 @@
 ;;; packages.el --- cfengine layer packages file for Spacemacs.
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Nick Anderson <nick@cmdln.org>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -15,6 +15,8 @@
     company
     eldoc
     flycheck
+    (ob-cfengine3 :requires org)
+    org
     ))
 
 (defun cfengine/init-cfengine3-mode ()
@@ -25,10 +27,19 @@
             "j" 'cfengine3-reformat-json-string)))
 
 (defun cfengine/post-init-company ()
-  (spacemacs|add-company-hook cfengine3-mode))
+  (spacemacs|add-company-backends :modes cfengine3-mode))
 
 (defun cfengine/post-init-eldoc ()
   (add-hook 'cfengine3-mode-hook 'eldoc-mode))
 
 (defun cfengine/post-init-flycheck ()
-  (spacemacs/add-flycheck-hook 'cfengine3-mode-hook))
+  (spacemacs/enable-flycheck 'cfengine3-mode-hook))
+
+(defun cfengine/init-ob-cfengine3 ()
+  (use-package ob-cfengine3
+    :defer t))
+
+(defun cfengine/pre-init-org ()
+  (when (configuration-layer/package-used-p 'org)
+    (spacemacs|use-package-add-hook org
+      :post-config (add-to-list 'org-babel-load-languages '(cfengine . t)))))

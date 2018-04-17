@@ -1,6 +1,6 @@
 ;;; core-spacemacs.el --- Spacemacs Core File
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -84,7 +84,7 @@ users on `develop' branch must manually pull last commits instead."
           (t (message "Update aborted.")))))
 
 (defun spacemacs/check-for-new-version (force &optional interval)
-  "Periodicly check for new for new Spacemacs version.
+  "Periodically check for new for new Spacemacs version.
 Update `spacemacs-new-version' variable if any new version has been
 found."
   (interactive "P")

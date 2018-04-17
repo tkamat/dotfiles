@@ -1,6 +1,6 @@
 ;;; packages.el --- deft Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -33,7 +33,11 @@
         ;; When opening it you always want to filter right away
         (evil-insert-state nil)))
     :config (spacemacs/set-leader-keys-for-major-mode 'deft-mode
+              "c" 'deft-filter-clear
               "d" 'deft-delete-file
               "i" 'deft-toggle-incremental-search
               "n" 'deft-new-file
+              "N" 'deft-new-file-named
+              "q" 'quit-window
+              "o" 'deft-open-file-other-window
               "r" 'deft-rename-file)))
