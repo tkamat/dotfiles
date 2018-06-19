@@ -80,6 +80,7 @@ values."
    dotspacemacs-additional-packages '(gradle-mode
                                       groovy-mode
                                       dired
+                                      www-synonyms
                                       gnuplot
                                       gnuplot-mode
                                       writegood-mode
@@ -380,12 +381,11 @@ you should place your code here."
 
   ;; clojure config
   (add-hook 'prog-mode-hook 'rainbow-mode)
-  (require 'seq-25)
+  (require 'seq)
   (setq cider-cljs-lein-repl
         "(do (require 'figwheel-sidecar.repl-api)
          (figwheel-sidecar.repl-api/start-figwheel!)
          (figwheel-sidecar.repl-api/cljs-repl))")
-
 
  (defun my-add-pretty-lambda ()
    "make some word or string show as pretty Unicode symbols"
@@ -463,12 +463,12 @@ you should place your code here."
         (quote ((sequence "TODO(t)" "ONGOING(o)" "FUTURE(f)" "|" "DONE(d)")
                 (sequence "WAITING(w@/!)" "|" "CANCELLED(c@/!)"))))
   (setq org-todo-keyword-faces
-        (quote (("TODO" :foreground "red" :weight bold)
-                ("ONGOING" :foreground "light blue" :weight bold)
-                ("FUTURE" :foreground "purple" :weight bold)
-                ("DONE" :foreground "forest green" :weight bold)
-                ("WAITING" :foreground "orange" :weight bold)
-                ("CANCELLED" :foreground "forest green" :weight bold))))
+        (quote (("TODO" :foreground "red" :background "pink" :weight bold)
+                ("ONGOING" :foreground "blue" :background "light blue" :weight bold)
+                ("FUTURE" :foreground "purple" :background "lavender" :weight bold)
+                ("DONE" :foreground "forest green" :background "light green" :weight bold)
+                ("WAITING" :foreground "orange" :background "gold" :weight bold)
+                ("CANCELLED" :foreground "forest green" :background "light green" :weight bold))))
   (setq org-use-fast-todo-selection t)
   (setq org-default-notes-file "~/Dropbox/org/todo.org.txt")
   ;; capture settings
@@ -493,7 +493,7 @@ you should place your code here."
             (subtree-end (save-excursion (org-end-of-subtree t))))
         (if (member (org-get-todo-state) org-todo-keywords-1)
             (if (member (org-get-todo-state) org-done-keywords)
-                (let* ((daynr (string-to-int (format-time-string "%d" (current-time))))
+                (let* ((daynr (string-to-number (format-time-string "%d" (current-time))))
                        (a-month-ago (* 60 60 24 (+ daynr 1)))
                        (last-month (format-time-string "%Y-%m-" (time-subtract (current-time) (seconds-to-time a-month-ago))))
                        (this-month (format-time-string "%Y-%m-" (current-time)))
@@ -536,10 +536,11 @@ you should place your code here."
   (evil-leader/set-key-for-mode 'org-agenda-mode "g" 'my/org-agenda-gcal)
   (evil-leader/set-key-for-mode 'org-agenda-mode "l" 'org-agenda-open-link)
   (evil-leader/set-key-for-mode 'org-agenda-mode "r" 'org-gcal-sync)
-  (evil-leader/set-key-for-mode 'latex-mode "w" 'thesaurus-choose-synonym-and-replace)
+  (setq www-synonyms-key "27LYjl9mcQDmUkVhDakm")
+  (evil-leader/set-key-for-mode 'latex-mode "w" 'www-synonyms-insert-synonym)
 
   ;; java config
-  (add-hook 'java-mode-hook
+  (add-hook 'meghanada-mode-hook
             (lambda () (add-hook 'post-self-insert-hook
                              (lambda () (when (= (char-before) ?\;)
                                       (save-buffer))) nil t)))
@@ -697,11 +698,12 @@ you should place your code here."
  (setq yas-triggers-in-field nil)
 
  ;; my-keys mode
+
  (require 'helm-bookmark)
  (defvar my-keys-minor-mode-map
    (let ((map (make-sparse-keymap)))
-     (define-key map (kbd "C-k") 'evil-scroll-up)
-     (define-key map (kbd "C-j") 'evil-scroll-down)
+     (define-key map (kbd "C-k") 'pixel-scroll-down)
+     (define-key map (kbd "C-j") 'pixel-scroll-up)
      (define-key map (kbd "C-'") 'flyspell-auto-correct-previous-word)
      (define-key map (kbd "C-;") 'insert-semicolon-at-the-end-of-this-line)
      (define-key map (kbd "C-SPC") 'er/expand-region)
@@ -1014,13 +1016,12 @@ static char *note[] = {
      ("MELPA" . "melpa.milkbox.net/#/"))))
  '(package-selected-packages
    (quote
-    (white-sand-theme rebecca-theme gandalf-theme flatui-theme flatland-theme exotica-theme spotify helm-spotify-plus multi org-mime auctex-latexmk gnuplot-mode ob-clojure-literate rainbow-mode php-mode dired-hacks-utils ox-twbs org-ref pdf-tools key-chord ivy helm-bibtex biblio parsebib biblio-core tablist ox-reveal csv-mode sequences disaster company-c-headers cmake-mode clang-format yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic drupal-mode mmt markdown-mode magit diminish autothemer packed auto-complete avy auctex eclim magit-popup highlight smartparens evil flyspell-correct git-commit with-editor yasnippet helm helm-core async company flycheck request alert log4e projectile f hydra dash s hlinum winum unfill sudoku solarized-theme madhat2r-theme fuzzy Ard-Dark-theme Arc-dark-theme intero hlint-refactor hindent helm-hoogle flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode haskell-snippets yaml-mode evil-smartparens evil-mu4e mu4e-maildirs-extension mu4e-alert ht org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org thesaurus tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
+    (white-sand-theme rebecca-theme gandalf-theme flatui-theme flatland-theme exotica-theme spotify helm-spotify-plus multi org-mime auctex-latexmk gnuplot-mode ob-clojure-literate rainbow-mode php-mode dired-hacks-utils ox-twbs org-ref pdf-tools key-chord ivy helm-bibtex biblio parsebib biblio-core tablist ox-reveal csv-mode sequences disaster company-c-headers cmake-mode clang-format yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic drupal-mode mmt markdown-mode magit diminish autothemer packed auto-complete avy auctex eclim magit-popup highlight smartparens evil flyspell-correct git-commit with-editor yasnippet helm helm-core async company flycheck request alert log4e projectile f hydra dash s hlinum winum unfill sudoku solarized-theme madhat2r-theme fuzzy Ard-Dark-theme Arc-dark-theme intero hlint-refactor hindent helm-hoogle flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode haskell-snippets yaml-mode evil-smartparens evil-mu4e mu4e-maildirs-extension mu4e-alert ht org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
  '(pdf-latex-command "pdflatex -shell-escape")
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(send-mail-function (quote mailclient-send-it))
  '(tab-always-indent t)
  '(tdd-mode t)
- '(thesaurus-bhl-api-key "c8a8969932f1c69d2f464578b9761c48" t)
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
    (quote
@@ -1244,8 +1245,6 @@ This function is called at the very end of Spacemacs initialization."
    (quote
     (opts-or-alts required-fields numerical-fields realign)))
  '(cider-auto-test-mode t)
- '(cider-clojure-cli-command "clojure")
- '(cider-default-repl-command "lein")
  '(company-quickhelp-color-background "#4F4F4F")
  '(company-quickhelp-color-foreground "#DCDCCC")
  '(custom-safe-themes
@@ -1334,7 +1333,7 @@ static char *note[] = {
  '(org-confirm-babel-evaluate nil)
  '(org-habit-graph-column 40)
  '(org-refile-use-outline-path t)
- '(org-src-tab-acts-natively t)
+ '(org-src-tab-acts-natively t t)
  '(package-archives
    (quote
     (("melpa" . "https://melpa.org/packages/")
@@ -1343,13 +1342,12 @@ static char *note[] = {
      ("MELPA" . "melpa.milkbox.net/#/"))))
  '(package-selected-packages
    (quote
-    (yasnippet-snippets symon string-inflection spaceline-all-the-icons all-the-icons memoize powerline sayid realgud test-simple loc-changes load-relative ranger pippel pipenv password-generator overseer request-deferred org-brain nameless mvn gntp meghanada maven-test-mode linum-relative importmagic epc ctable concurrent deferred impatient-mode simple-httpd dash-functional parent-mode helm-xref helm-rtags helm-purpose window-purpose imenu-list helm-mu pcache google-c-style gitignore-mode fringe-helper git-gutter+ git-gutter flycheck-rtags flx evil-org ghub let-alist evil-lion iedit evil-cleverparens anzu ensime sbt-mode scala-mode editorconfig dante lcr counsel-projectile counsel swiper company-rtags rtags pos-tip clojure-snippets clojure-cheatsheet clj-refactor inflections edn paredit peg cider-eval-sexp-fu cider seq spinner queue pkg-info clojure-mode epl centered-cursor-mode browse-at-remote popup font-lock+ goto-chg undo-tree bind-map bind-key white-sand-theme rebecca-theme gandalf-theme flatui-theme flatland-theme exotica-theme spotify helm-spotify-plus multi org-mime auctex-latexmk gnuplot-mode ob-clojure-literate rainbow-mode php-mode dired-hacks-utils ox-twbs org-ref pdf-tools key-chord ivy helm-bibtex biblio parsebib biblio-core tablist ox-reveal csv-mode sequences disaster company-c-headers cmake-mode clang-format yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic drupal-mode mmt markdown-mode magit diminish autothemer packed auto-complete avy auctex eclim magit-popup highlight smartparens evil flyspell-correct git-commit with-editor yasnippet helm helm-core async company flycheck request alert log4e projectile f hydra dash s hlinum winum unfill sudoku solarized-theme madhat2r-theme fuzzy Ard-Dark-theme Arc-dark-theme intero hlint-refactor hindent helm-hoogle flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode haskell-snippets yaml-mode evil-smartparens evil-mu4e mu4e-maildirs-extension mu4e-alert ht org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org thesaurus tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
+    (www-synonyms white-sand-theme rebecca-theme gandalf-theme flatui-theme flatland-theme exotica-theme spotify helm-spotify-plus multi org-mime auctex-latexmk gnuplot-mode ob-clojure-literate rainbow-mode php-mode dired-hacks-utils ox-twbs org-ref pdf-tools key-chord ivy helm-bibtex biblio parsebib biblio-core tablist ox-reveal csv-mode sequences disaster company-c-headers cmake-mode clang-format yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic drupal-mode mmt markdown-mode magit diminish autothemer packed auto-complete avy auctex eclim magit-popup highlight smartparens evil flyspell-correct git-commit with-editor yasnippet helm helm-core async company flycheck request alert log4e projectile f hydra dash s hlinum winum unfill sudoku solarized-theme madhat2r-theme fuzzy Ard-Dark-theme Arc-dark-theme intero hlint-refactor hindent helm-hoogle flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode haskell-snippets yaml-mode evil-smartparens evil-mu4e mu4e-maildirs-extension mu4e-alert ht org-alert litable groovy-imports focus-autosave-mode org-gcal stickyfunc-enhance srefactor multiple-cursors web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zonokai-theme zenburn-theme zen-and-art-theme xterm-color ws-butler writegood-mode window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme typit twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme reverse-theme restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox pandoc-mode pacmacs orgit organic-green-theme org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum link-hint light-soap-theme latex-preview-pane langtool jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gradle-mode gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme django-theme diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-statistics company-quickhelp company-emacs-eclim company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell 2048-game)))
  '(pdf-latex-command "pdflatex -shell-escape")
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(send-mail-function (quote mailclient-send-it))
  '(tab-always-indent t)
  '(tdd-mode t)
- '(thesaurus-bhl-api-key "c8a8969932f1c69d2f464578b9761c48" t)
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
    (quote
